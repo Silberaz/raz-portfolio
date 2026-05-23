@@ -1,0 +1,2712 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" data-density="dense">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Raz Silberman — Product Designer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Afacad:wght@400;500;600;700&family=Afacad+Flux:wght@400;500;600;700;800;900&family=Inter+Tight:wght@500;700;900&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ─── Tokens ─── */
+:root {
+  /* Dark theme (default) */
+  --ground:    #0C0C0E;
+  --surface:   #131316;
+  --surface-2: #1A1A1F;
+  --rim:       #26262C;
+  --rim-soft:  rgba(232,228,220,.06);
+  --ink:       #E8E4DC;
+  --ink-dim:   #98948C;
+  --muted:     #545058;
+  --accent:    oklch(0.74 0.05 145);
+  --accent-lo: color-mix(in oklab, var(--accent) 14%, transparent);
+  --accent-md: color-mix(in oklab, var(--accent) 30%, transparent);
+}
+[data-theme="light"] {
+  --ground:    #F5F1EA;
+  --surface:   #EFEAE0;
+  --surface-2: #E8E2D5;
+  --rim:       #D6CFC0;
+  --rim-soft:  rgba(20,18,14,.08);
+  --ink:       #1A1814;
+  --ink-dim:   #5C574E;
+  --muted:     #8A8478;
+  --accent:    oklch(0.55 0.06 145);
+  --accent-lo: color-mix(in oklab, var(--accent) 12%, transparent);
+  --accent-md: color-mix(in oklab, var(--accent) 28%, transparent);
+}
+
+:root {
+  --ff-display: 'Afacad Flux', system-ui, sans-serif;
+  --ff-body:    'Afacad', system-ui, sans-serif;
+  --ff-mono:    'JetBrains Mono', ui-monospace, monospace;
+  --expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --circ: cubic-bezier(0.85, 0, 0.15, 1);
+  --pad-x: clamp(1.5rem, 4vw, 3rem);
+}
+
+/* ─── Reset ─── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+html.cursor-on, html.cursor-on * { cursor: none !important; }
+body {
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--ff-body);
+  font-weight: 400;
+  line-height: 1.6;
+  overflow-x: hidden;
+  transition: background .6s var(--expo), color .6s var(--expo);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; }
+::selection { background: var(--accent-md); color: var(--ink); }
+
+/* ─── Grain ─── */
+.grain {
+  content: ''; position: fixed; inset: -200%; width: 400%; height: 400%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: .08; pointer-events: none; z-index: 9990;
+  animation: grain .5s steps(2) infinite; mix-blend-mode: overlay;
+}
+[data-theme="light"] .grain { opacity: .09; mix-blend-mode: multiply; }
+.grain.off { display: none; }
+@keyframes grain {
+  0%   { transform: translate(0,0); }
+  25%  { transform: translate(-2%,-3%); }
+  50%  { transform: translate(3%,1%); }
+  75%  { transform: translate(-1%,2%); }
+  100% { transform: translate(2%,-1%); }
+}
+
+/* ─── Blob cursor ─── */
+.blob-cursor {
+  position: fixed; top: 0; left: 0; width: 38px; height: 38px;
+  pointer-events: none; z-index: 9999;
+  mix-blend-mode: difference;
+  transform: translate(-50%, -50%);
+  transition: width .35s var(--expo), height .35s var(--expo), opacity .25s ease;
+}
+.blob-cursor svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.blob-cursor .blob-outer {
+  fill: var(--ink);
+  animation: blobMorph 4s ease-in-out infinite, blobSpin 6s linear infinite;
+  transform-origin: 50px 50px;
+}
+.blob-cursor .blob-inner {
+  fill: var(--ground);
+  animation: blobMorphR 3.5s ease-in-out infinite, blobSpinR 4.5s linear infinite;
+  transform-origin: 50px 50px;
+}
+@keyframes blobSpin  { to { transform: rotate(360deg); } }
+@keyframes blobSpinR { to { transform: rotate(-360deg); } }
+@keyframes blobMorph {
+  0%,100% { d: path("M50,4 C82,2 98,32 88,56 C100,82 64,102 38,90 C10,98 -2,62 12,38 C4,12 30,2 50,4 Z"); }
+  33%     { d: path("M50,12 C84,16 92,42 80,66 C92,86 56,102 34,86 C8,84 6,58 18,38 C14,10 32,2 50,12 Z"); }
+  66%     { d: path("M50,2 C68,16 100,18 96,50 C104,78 72,102 44,94 C14,100 -4,72 8,46 C-2,18 28,-2 50,2 Z"); }
+}
+@keyframes blobMorphR {
+  0%,100% { d: path("M50,18 C76,16 88,38 76,58 C86,78 56,88 40,78 C20,84 10,58 22,40 C16,28 34,18 50,18 Z"); }
+  50%     { d: path("M50,28 C62,18 86,42 84,60 C76,80 52,90 38,74 C18,76 14,54 26,38 C24,24 38,20 50,28 Z"); }
+}
+
+.blob-cursor.big { width: 78px; height: 78px; }
+.blob-cursor.text {
+  width: 3px; height: 22px;
+  background: var(--ink); border-radius: 1px;
+}
+.blob-cursor.text svg { display: none; }
+
+/* Light mode: keep `difference` blending so cursor inverts what it's over.
+   Use a pale fill so against the pale ground it inverts to strong dark,
+   and against dark imagery/cards it stays bright. */
+[data-theme="light"] .blob-cursor .blob-outer { fill: #FFFFFF; }
+[data-theme="light"] .blob-cursor .blob-inner { fill: #1A1814; }
+[data-theme="light"] .puddle-cursor .puddle-body { fill: #FFFFFF; }
+[data-theme="light"] .cur-trail-drop { background: #FFFFFF; }
+[data-theme="light"] .ripple-cursor .rc-core { background: #FFFFFF; }
+[data-theme="light"] .ripple-cursor .rc-halo {
+  background: radial-gradient(circle, rgba(255,255,255,.45) 0%, transparent 65%);
+}
+[data-theme="light"] .water-veil {
+  background: radial-gradient(circle 90px at var(--mx, 50%) var(--my, 50%),
+    rgba(255,255,255,.28) 0%, rgba(255,255,255,.08) 50%, transparent 75%);
+}
+[data-theme="light"] .water-ring {
+  border-color: rgba(255,255,255,.85);
+  box-shadow:
+    inset 0 0 18px rgba(255,255,255,.4),
+    0 0 30px rgba(255,255,255,.18);
+}
+
+/* ─── Puddle cursor (gooey, stretchy substance) ─── */
+.puddle-cursor {
+  position: fixed; top: 0; left: 0; width: 64px; height: 64px;
+  pointer-events: none; z-index: 9999;
+  transform: translate(-50%, -50%);
+  filter: url(#gooey-puddle);
+  mix-blend-mode: difference;
+  transition: width .35s var(--expo), height .35s var(--expo);
+}
+.puddle-cursor .puddle-svg {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  overflow: visible; display: block;
+  transform: rotate(var(--ang, 0deg)) scale(var(--sx, 1), var(--sy, 1));
+  transform-origin: center;
+}
+.puddle-cursor .puddle-body {
+  fill: var(--ink);
+  animation: puddleMorph 3s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@keyframes puddleMorph {
+  0%   { d: path("M50,18 C72,12 90,28 88,52 C92,72 70,90 50,86 C30,90 12,74 12,52 C10,30 28,16 50,18 Z"); }
+  25%  { d: path("M52,14 C76,18 92,36 84,58 C90,80 60,92 42,84 C18,86 8,62 18,40 C16,22 34,12 52,14 Z"); }
+  50%  { d: path("M48,16 C70,10 94,30 90,54 C88,78 62,94 44,86 C20,90 6,68 14,46 C12,26 32,18 48,16 Z"); }
+  75%  { d: path("M54,20 C74,16 88,38 86,56 C94,76 64,90 46,82 C24,88 10,66 20,42 C18,24 36,16 54,20 Z"); }
+  100% { d: path("M50,18 C72,12 90,28 88,52 C92,72 70,90 50,86 C30,90 12,74 12,52 C10,30 28,16 50,18 Z"); }
+}
+.puddle-cursor .puddle-bead {
+  position: absolute; left: 50%; top: 50%;
+  width: 30%; height: 30%; background: var(--ink);
+  border-radius: 50%;
+  transform: translate(-50%,-50%);
+}
+.puddle-cursor .b1 { animation: puddleBead1 2.6s ease-in-out infinite; }
+.puddle-cursor .b2 { animation: puddleBead2 3.2s ease-in-out -1s infinite; width: 22%; height: 22%; }
+@keyframes puddleBead1 {
+  0%,100% { transform: translate(-50%,-50%) translate(14px, -8px) scale(.9); }
+  50%     { transform: translate(-50%,-50%) translate(-2px, 4px) scale(.4); }
+}
+@keyframes puddleBead2 {
+  0%,100% { transform: translate(-50%,-50%) translate(-12px, 10px) scale(.85); }
+  50%     { transform: translate(-50%,-50%) translate(2px, -2px) scale(.3); }
+}
+.puddle-cursor.big { width: 100px; height: 100px; }
+.puddle-cursor.text {
+  width: 3px; height: 22px; filter: none;
+}
+.puddle-cursor.text .puddle-svg { display: none; }
+.puddle-cursor.text .puddle-bead { display: none; }
+.puddle-cursor.text::before {
+  content: ''; position: absolute; inset: 0; background: var(--ink); border-radius: 1px;
+}
+
+/* Goo trail — droplets joined by the gooey filter into a stretchy tail */
+.cur-trail-layer {
+  position: fixed; inset: 0; pointer-events: none; z-index: 9998;
+  filter: url(#gooey-puddle);
+  mix-blend-mode: difference;
+}
+.cur-trail-drop {
+  position: fixed; border-radius: 50%;
+  background: var(--ink);
+  transform: translate(-50%, -50%) rotate(var(--rot, 0deg)) scale(1, .85);
+  animation: trailFade .75s ease-out forwards;
+  pointer-events: none;
+}
+@keyframes trailFade {
+  0%   { opacity: .9;  transform: translate(-50%,-50%) rotate(var(--rot, 0deg)) scale(1, .85); }
+  100% { opacity: 0;   transform: translate(-50%,-50%) rotate(var(--rot, 0deg)) scale(.15, .15); }
+}
+
+/* ─── Ripple cursor — water surface (graphic only) ─── */
+.water-veil {
+  position: fixed; inset: 0; pointer-events: none; z-index: 9996;
+  background:
+    radial-gradient(circle 90px at var(--mx, 50%) var(--my, 50%),
+      color-mix(in srgb, var(--ink) 14%, transparent) 0%,
+      color-mix(in srgb, var(--ink) 4%, transparent) 50%,
+      transparent 75%);
+  mix-blend-mode: difference;
+}
+
+.water-ring-layer { position: fixed; inset: 0; pointer-events: none; z-index: 9997; }
+.water-ring {
+  position: fixed; pointer-events: none;
+  width: 60px; height: 60px; border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--ink) 50%, transparent);
+  box-shadow:
+    inset 0 0 18px color-mix(in srgb, var(--ink) 18%, transparent),
+    0 0 30px color-mix(in srgb, var(--ink) 8%, transparent);
+  transform: translate(-50%,-50%) scale(calc(var(--rs, 1) * .3));
+  opacity: .9;
+  animation: waterRing 1.6s cubic-bezier(.2,.7,.2,1) forwards;
+  mix-blend-mode: difference;
+}
+@keyframes waterRing {
+  0%   { transform: translate(-50%,-50%) scale(calc(var(--rs, 1) * .3)); opacity: .9; border-width: 2px; }
+  60%  { opacity: .35; }
+  100% { transform: translate(-50%,-50%) scale(calc(var(--rs, 1) * 4.5));  opacity: 0; border-width: 1px; }
+}
+
+.ripple-cursor {
+  position: fixed; top: 0; left: 0; width: 18px; height: 18px;
+  pointer-events: none; z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: width .35s var(--expo), height .35s var(--expo);
+}
+.ripple-cursor .rc-core {
+  position: absolute; inset: 0; border-radius: 50%;
+  background: var(--ink); opacity: .35;
+  mix-blend-mode: difference;
+  filter: blur(1px);
+}
+.ripple-cursor .rc-halo {
+  position: absolute; inset: -10px; border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--ink) 22%, transparent) 0%, transparent 65%);
+  mix-blend-mode: difference;
+  animation: rcHaloPulse 2.4s ease-in-out infinite;
+}
+@keyframes rcHaloPulse {
+  0%,100% { transform: scale(1);   opacity: .8; }
+  50%     { transform: scale(1.4); opacity: .4; }
+}
+.ripple-cursor.big { width: 32px; height: 32px; }
+.ripple-cursor.text {
+  width: 3px; height: 22px; border-radius: 1px;
+}
+.ripple-cursor.text .rc-halo { display: none; }
+.ripple-cursor.text .rc-core { background: var(--ink); opacity: 1; filter: none; border-radius: 1px; }
+
+/* ─── Scroll progress ─── */
+.scroll-bar {
+  position: fixed; top: 0; left: 0; width: 1px; height: 0%;
+  background: var(--accent); z-index: 600;
+  transition: height .05s linear;
+}
+
+/* ─── Loader ─── */
+#loader {
+  position: fixed; inset: 0; background: var(--ground); z-index: 10000;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 2rem;
+}
+#loader.out { animation: slideUp .8s var(--circ) forwards; }
+@keyframes slideUp { to { transform: translateY(-100%); } }
+.loader-mark {
+  font-family: var(--ff-display); font-weight: 900;
+  font-size: clamp(2.4rem, 7vw, 5rem); letter-spacing: -.03em;
+  line-height: 1; color: var(--ink);
+  display: flex; align-items: baseline; gap: .04em;
+}
+.loader-mark .accent { color: var(--accent); }
+.loader-progress {
+  width: 200px; height: 1px; background: var(--rim); position: relative; overflow: hidden;
+}
+.loader-progress::after {
+  content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+  background: var(--accent); transition: left 1.4s var(--expo);
+}
+.loader-progress.run::after { left: 0; }
+.loader-sub {
+  font-family: var(--ff-mono); font-size: .68rem;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--muted);
+}
+
+/* ─── Wipe ─── */
+.wipe {
+  position: fixed; inset: 0; background: var(--surface); z-index: 8000;
+  clip-path: inset(0 100% 0 0); pointer-events: none;
+}
+.wipe.in  { animation: wipeIn  .55s var(--circ) forwards; }
+.wipe.out { animation: wipeOut .55s var(--circ) forwards; }
+@keyframes wipeIn  { to { clip-path: inset(0 0% 0 0); } }
+@keyframes wipeOut { from { clip-path: inset(0 0% 0 0); } to { clip-path: inset(0 0 0 100%); } }
+
+/* ─── Nav ─── */
+nav.top {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 400;
+  padding: 1.5rem var(--pad-x);
+  display: flex; align-items: center; justify-content: space-between;
+  transition: transform .4s var(--expo), padding .4s var(--expo), background .4s;
+}
+nav.top.compact {
+  padding: .9rem var(--pad-x);
+  background: color-mix(in srgb, var(--ground) 80%, transparent);
+  backdrop-filter: blur(12px);
+}
+nav.top.hidden { transform: translateY(-110%); }
+.nav-logo {
+  font-family: var(--ff-display); font-weight: 900; font-size: 1rem;
+  letter-spacing: -.02em; color: var(--ink);
+  display: inline-flex; align-items: baseline; gap: .12em;
+}
+.nav-logo .accent { color: var(--accent); }
+.nav-right { display: flex; align-items: center; gap: 2.25rem; }
+.nav-links {
+  list-style: none; display: flex; align-items: center; gap: 2rem;
+}
+.nav-links a {
+  font-family: var(--ff-mono); font-size: .7rem; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--ink-dim); position: relative;
+  padding: .25rem 0;
+  transition: color .25s;
+}
+.nav-links a::after {
+  content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 1px;
+  background: var(--accent); transition: width .35s var(--expo);
+}
+.nav-links a:hover, .nav-links a.active { color: var(--ink); }
+.nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+.nav-actions { display: flex; align-items: center; gap: 1rem; }
+.icon-btn {
+  appearance: none; background: transparent; border: 1px solid var(--rim);
+  color: var(--ink-dim); width: 32px; height: 32px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: color .25s, border-color .25s, background .25s;
+}
+.icon-btn:hover { color: var(--ink); border-color: var(--ink-dim); }
+.kbd {
+  font-family: var(--ff-mono); font-size: .62rem; letter-spacing: .05em;
+  color: var(--muted); border: 1px solid var(--rim); border-radius: 4px;
+  padding: 2px 6px; text-transform: none;
+}
+.avail {
+  display: inline-flex; align-items: center; gap: .5rem;
+  font-family: var(--ff-mono); font-size: .65rem; letter-spacing: .08em;
+  color: var(--ink-dim); text-transform: uppercase;
+}
+.avail-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+  box-shadow: 0 0 0 0 var(--accent-md);
+  animation: pulse 2.4s ease-out infinite;
+}
+@keyframes pulse {
+  0%   { box-shadow: 0 0 0 0 var(--accent-md); }
+  100% { box-shadow: 0 0 0 10px transparent; }
+}
+
+/* ─── Page transitions ─── */
+.page { display: none; min-height: 100vh; }
+.page.active { display: block; animation: pageIn .6s var(--expo); }
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Hero ─── */
+.hero {
+  min-height: 100vh; display: flex; flex-direction: column;
+  padding: 8rem var(--pad-x) 5rem;
+  position: relative; overflow: hidden;
+}
+.hero[data-align="top"]    { justify-content: flex-start; padding-top: 9rem; }
+.hero[data-align="center"] { justify-content: center; }
+.hero[data-align="bottom"] { justify-content: flex-end; padding-bottom: 6rem; }
+
+.hero::before {
+  content: ''; position: absolute;
+  width: 50vw; height: 50vw; border-radius: 50%;
+  background: radial-gradient(ellipse, var(--accent-lo) 0%, transparent 65%);
+  top: 5%; right: -15%; pointer-events: none;
+  filter: blur(20px);
+}
+.hero-eyebrow {
+  font-family: var(--ff-mono); font-size: .68rem; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--ink-dim);
+  display: flex; align-items: center; gap: .65rem;
+  margin-bottom: 2.25rem; overflow: hidden;
+}
+.hero-eyebrow > * {
+  transform: translateY(110%); opacity: 0;
+  transition: transform .9s var(--expo), opacity .9s ease;
+}
+.hero-eyebrow.up > * { transform: translateY(0); opacity: 1; }
+
+.hero-title {
+  font-family: var(--ff-display); font-weight: 900;
+  font-size: clamp(3.5rem, 9vw, 9.5rem);
+  line-height: .92; letter-spacing: -.025em; color: var(--ink);
+  max-width: 18ch;
+}
+.hero-title .word { display: inline-block; overflow: hidden; padding: 0 .04em .12em 0; margin-right: -.04em; }
+.hero-title .word-inner {
+  display: inline-block;
+  transform: translateY(115%); opacity: 0;
+  transition: transform 1s var(--expo), opacity 1s ease;
+}
+.hero-title.up .word-inner { transform: translateY(0); opacity: 1; }
+.hero-title .accent { color: var(--accent); }
+.hero-title em { font-style: italic; font-weight: 900; color: var(--ink-dim); }
+
+.hero-bottom {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  margin-top: 4rem; gap: 3rem;
+  transform: translateY(24px); opacity: 0;
+  transition: transform .9s var(--expo) .55s, opacity .9s ease .55s;
+}
+.hero-bottom.up { transform: translateY(0); opacity: 1; }
+.hero-desc {
+  font-size: 1rem; color: var(--ink-dim); line-height: 1.7;
+  max-width: 32rem;
+}
+.hero-meta {
+  display: flex; flex-direction: column; gap: .35rem; align-items: flex-end;
+  font-family: var(--ff-mono); font-size: .65rem; letter-spacing: .08em;
+  color: var(--muted); text-transform: uppercase; text-align: right;
+}
+.hero-meta b { color: var(--ink-dim); font-weight: 500; }
+
+/* ─── Section header ─── */
+.section { padding: 6rem var(--pad-x); }
+.section-head {
+  display: flex; align-items: baseline; justify-content: space-between;
+  padding-bottom: 2.5rem; border-top: 1px solid var(--rim-soft); padding-top: 3rem;
+  margin-bottom: 2rem;
+}
+.section-head h2 {
+  font-family: var(--ff-mono); font-size: .72rem; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--ink); font-weight: 500;
+  display: inline-flex; align-items: center; gap: .65rem;
+}
+.section-head h2::before {
+  content: ''; width: 8px; height: 8px; background: var(--accent); border-radius: 50%;
+}
+.section-head .right {
+  font-family: var(--ff-mono); font-size: .65rem; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--muted);
+}
+
+/* ─── Work grid (style variants) ─── */
+.work-grid { display: grid; gap: 1.5rem; }
+
+/* polaroid */
+.work-grid.polaroid { grid-template-columns: 1fr 1fr; }
+.polaroid .tile { cursor: pointer; }
+.polaroid .tile.wide { grid-column: span 2; }
+.polaroid .tile-img {
+  position: relative; overflow: hidden; background: var(--surface);
+  border: 1px solid var(--rim); aspect-ratio: 4/3;
+}
+.polaroid .tile.wide .tile-img { aspect-ratio: 21/9; }
+.polaroid .tile.tall .tile-img { aspect-ratio: 3/4; }
+.polaroid .tile-meta {
+  padding-top: .9rem; display: flex; align-items: baseline; justify-content: space-between;
+}
+
+/* full-bleed list */
+.work-grid.fullbleed { grid-template-columns: 1fr; gap: 0; }
+.fullbleed .tile {
+  border-top: 1px solid var(--rim-soft); padding: 2.5rem 0;
+  display: grid; grid-template-columns: 80px 1fr 1fr 80px;
+  gap: 2rem; align-items: center; cursor: pointer;
+  transition: padding .5s var(--expo);
+}
+.fullbleed .tile:hover { padding-left: 1rem; }
+.fullbleed .tile:last-child { border-bottom: 1px solid var(--rim-soft); }
+.fullbleed .tile .tile-img { display: none; }
+.fullbleed .tile .tile-num {
+  font-family: var(--ff-mono); font-size: .7rem; color: var(--muted); letter-spacing: .08em;
+}
+.fullbleed .tile .tile-name {
+  font-family: var(--ff-display); font-weight: 900; font-size: clamp(1.5rem, 3vw, 2.5rem);
+  letter-spacing: -.025em; color: var(--ink); transition: color .3s;
+}
+.fullbleed .tile:hover .tile-name { color: var(--accent); }
+.fullbleed .tile .tile-tags { font-family: var(--ff-mono); font-size: .7rem; color: var(--ink-dim); letter-spacing: .06em; }
+.fullbleed .tile .tile-arrow { justify-self: end; font-size: 1.4rem; color: var(--muted); transition: transform .4s var(--expo), color .3s; }
+.fullbleed .tile:hover .tile-arrow { transform: translateX(8px); color: var(--accent); }
+
+/* index list */
+.work-grid.index { grid-template-columns: 1fr; gap: 0; }
+.index .tile {
+  display: grid; grid-template-columns: 60px 2.6fr 1.4fr 1fr 80px;
+  gap: 1.5rem; align-items: center; padding: 1rem 0;
+  border-bottom: 1px solid var(--rim-soft);
+  font-family: var(--ff-mono); font-size: .8rem; cursor: pointer;
+  transition: padding .35s var(--expo), background .35s;
+}
+.index .tile:first-child { border-top: 1px solid var(--rim-soft); }
+.index .tile:hover { padding-left: .8rem; background: var(--surface); }
+.index .tile .tile-img { display: none; }
+.index .tile .tile-name {
+  font-family: var(--ff-display); font-weight: 900; font-size: 1.1rem;
+  letter-spacing: -.02em; color: var(--ink);
+}
+.index .tile .tile-num { color: var(--muted); }
+.index .tile .tile-tags, .index .tile .tile-year { color: var(--ink-dim); font-size: .72rem; letter-spacing: .04em; }
+.index .tile .tile-arrow { justify-self: end; color: var(--muted); transition: transform .35s var(--expo), color .25s; }
+.index .tile:hover .tile-arrow { transform: translateX(6px); color: var(--accent); }
+
+/* tile-img inner (polaroid) */
+.tile-img-bg {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--ff-display); font-weight: 900; font-size: 6rem;
+  letter-spacing: -.04em; transition: opacity .6s ease;
+}
+.tile-img-mark {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--ff-display); font-weight: 900; font-size: 6rem;
+  color: var(--rim); letter-spacing: -.04em;
+  transition: opacity .6s ease;
+}
+.tile:hover .tile-img-mark { opacity: 0; }
+.tile:hover .tile-img-bg  { opacity: 1; }
+.tile-img-bg { opacity: 0; }
+
+.tile-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,.85) 0%, transparent 55%);
+  opacity: 0; transition: opacity .5s;
+}
+.tile:hover .tile-overlay { opacity: 1; }
+.tile-label {
+  position: absolute; bottom: 1.2rem; left: 1.2rem;
+  font-family: var(--ff-mono); font-size: .65rem; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--ink);
+  opacity: 0; transform: translateY(6px);
+  transition: opacity .4s .15s, transform .4s var(--expo) .15s;
+}
+.tile:hover .tile-label { opacity: 1; transform: translateY(0); }
+.tile-arrow-corner {
+  position: absolute; top: 1rem; right: 1rem; width: 32px; height: 32px;
+  border: 1px solid var(--ink-dim); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--ink); font-size: .9rem;
+  opacity: 0; transform: scale(.6);
+  transition: opacity .4s, transform .4s var(--expo);
+}
+.tile:hover .tile-arrow-corner { opacity: 1; transform: scale(1); }
+
+.tile-name {
+  font-family: var(--ff-display); font-weight: 900;
+  font-size: clamp(1.05rem, 2.2vw, 1.4rem);
+  letter-spacing: -.02em; color: var(--ink);
+  transition: color .25s;
+}
+.tile:hover .tile-name { color: var(--accent); }
+.tile-tags {
+  font-family: var(--ff-mono); font-size: .65rem; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--ink-dim);
+}
+
+/* Filter chips */
+.filters {
+  display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 2.5rem;
+}
+.filter-chip {
+  appearance: none; background: transparent; border: 1px solid var(--rim);
+  color: var(--ink-dim); font-family: var(--ff-mono); font-size: .68rem;
+  letter-spacing: .08em; text-transform: uppercase; padding: .5rem 1rem;
+  border-radius: 100px; transition: all .25s;
+}
+.filter-chip:hover { color: var(--ink); border-color: var(--ink-dim); }
+.filter-chip.active { background: var(--ink); color: var(--ground); border-color: var(--ink); }
+.filter-spacer { flex: 1; }
+.filter-sort {
+  font-family: var(--ff-mono); font-size: .65rem; color: var(--muted); letter-spacing: .1em;
+  text-transform: uppercase; align-self: center;
+}
+
+/* ─── About ─── */
+.about {
+  display: grid; grid-template-columns: 1fr 1.4fr;
+  gap: 5rem; align-items: start;
+  padding: 6rem var(--pad-x); border-top: 1px solid var(--rim-soft);
+}
+.about-photo-col { position: sticky; top: 5rem; }
+.about-photo {
+  aspect-ratio: 3/4; max-height: 540px;
+  background: var(--surface); border: 1px solid var(--rim);
+  position: relative; overflow: hidden;
+}
+.about-photo::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, var(--accent-lo) 0%, transparent 60%);
+}
+.about-photo .inner {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: .75rem;
+}
+.about-photo .mono {
+  font-family: var(--ff-display); font-weight: 900; font-size: 5rem;
+  color: var(--rim); letter-spacing: -.04em;
+}
+.about-photo .note {
+  font-family: var(--ff-mono); font-size: .65rem;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--muted);
+}
+.about-eyebrow {
+  font-family: var(--ff-mono); font-size: .68rem; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 1.75rem;
+  display: flex; align-items: center; gap: .65rem;
+}
+.about-eyebrow::before {
+  content: ''; width: 1.25rem; height: 1px; background: var(--accent);
+}
+.about-headline {
+  font-family: var(--ff-display); font-weight: 900;
+  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+  letter-spacing: -.025em; line-height: 1.04;
+  color: var(--ink); margin-bottom: 1.75rem;
+  text-wrap: balance;
+}
+.about-headline em { font-style: italic; color: var(--ink-dim); }
+.about p {
+  font-size: 1rem; color: var(--ink-dim); line-height: 1.85; margin-bottom: 1.1rem;
+  max-width: 38rem;
+}
+.cap-list {
+  margin-top: 2.5rem; padding-top: 2.5rem; border-top: 1px solid var(--rim-soft);
+  display: flex; flex-wrap: wrap; gap: .5rem;
+}
+.cap-pill {
+  font-family: var(--ff-mono); font-size: .68rem; letter-spacing: .04em;
+  color: var(--ink-dim); border: 1px solid var(--rim); border-radius: 100px;
+  padding: .4rem .85rem;
+}
+
+/* ─── Contact ─── */
+.contact {
+  padding: 8rem var(--pad-x); border-top: 1px solid var(--rim-soft);
+  text-align: center; position: relative; overflow: hidden;
+}
+.contact::before {
+  content: ''; position: absolute;
+  width: 60vw; height: 60vw; border-radius: 50%;
+  background: radial-gradient(ellipse, var(--accent-lo) 0%, transparent 65%);
+  top: 50%; left: 50%; transform: translate(-50%, -50%);
+  pointer-events: none; filter: blur(20px);
+}
+.contact > * { position: relative; }
+.contact-eyebrow {
+  font-family: var(--ff-mono); font-size: .68rem; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--ink-dim); margin-bottom: 2rem;
+}
+.contact-headline {
+  font-family: var(--ff-display); font-weight: 900;
+  font-size: clamp(2.6rem, 8vw, 8.5rem);
+  letter-spacing: -.025em; line-height: .94; color: var(--ink);
+  margin-bottom: 3rem;
+}
+.contact-headline em { font-style: italic; font-weight: 900; color: var(--accent); }
+.contact-btn {
+  display: inline-flex; align-items: center; gap: 1rem;
+  background: var(--ink); color: var(--ground);
+  padding: 1.1rem 2.4rem; border-radius: 100px;
+  font-family: var(--ff-display); font-weight: 900; font-size: .95rem;
+  letter-spacing: -.015em;
+  transition: gap .3s var(--expo), transform .3s var(--expo);
+}
+.contact-btn:hover { gap: 1.4rem; transform: translateY(-2px); }
+.contact-links {
+  display: flex; justify-content: center; gap: 2.5rem; margin-top: 3rem;
+  list-style: none; flex-wrap: wrap;
+}
+.contact-links a {
+  font-family: var(--ff-mono); font-size: .68rem; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--ink-dim);
+  transition: color .25s;
+}
+.contact-links a:hover { color: var(--accent); }
+
+/* ─── Footer ─── */
+footer {
+  padding: 1.75rem var(--pad-x); border-top: 1px solid var(--rim-soft);
+  display: flex; align-items: center; justify-content: space-between;
+  font-family: var(--ff-mono); font-size: .65rem; letter-spacing: .08em;
+  color: var(--muted); text-transform: uppercase;
+}
+footer a:hover { color: var(--accent); }
+
+/* ─── Reveal ─── */
+.reveal { opacity: 0; transform: translateY(18px); transition: opacity .85s var(--expo), transform .85s var(--expo); }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.clip-reveal { clip-path: inset(0 0 100% 0); transition: clip-path .9s var(--expo); }
+.clip-reveal.visible { clip-path: inset(0 0 0% 0); }
+
+/* ─── Project page ─── */
+.back-btn {
+  display: inline-flex; align-items: center; gap: .65rem;
+  font-family: var(--ff-mono); font-size: .68rem; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--ink-dim);
+  padding: 6rem var(--pad-x) 1rem;
+  transition: gap .25s, color .25s;
+}
+.back-btn:hover { gap: 1.1rem; color: var(--accent); }
+
+.proj-hero {
+  min-height: 70vh; display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 2rem var(--pad-x) 4rem;
+  position: relative; overflow: hidden; border-bottom: 1px solid var(--rim-soft);
+}
+.proj-hero-bg { position: absolute; inset: 0; z-index: 0; }
+.proj-hero-glow {
+  position: absolute; width: 60vw; height: 60vw; border-radius: 50%;
+  top: -20%; right: -10%; pointer-events: none; z-index: 0;
+  background: radial-gradient(ellipse, var(--accent-lo) 0%, transparent 65%);
+  filter: blur(30px);
+}
+.proj-hero-inner {
+  position: relative; z-index: 1;
+  display: grid; grid-template-columns: 2fr 1fr; gap: 3rem; align-items: end;
+}
+.proj-eyebrow {
+  font-family: var(--ff-mono); font-size: .68rem; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 1.5rem;
+}
+.proj-hero-title {
+  font-family: var(--ff-display); font-weight: 900;
+  font-size: clamp(2.6rem, 6vw, 6rem);
+  line-height: .94; letter-spacing: -.025em; color: var(--ink);
+}
+.proj-hero-title em { font-style: italic; color: var(--accent); }
+.proj-summary {
+  margin-top: 1.75rem; font-size: 1.1rem; color: var(--ink-dim); line-height: 1.6;
+  max-width: 38rem;
+}
+.proj-meta { display: flex; flex-direction: column; gap: 1.25rem; }
+.proj-meta .row { }
+.proj-meta .k {
+  font-family: var(--ff-mono); font-size: .62rem; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--muted); margin-bottom: .25rem;
+}
+.proj-meta .v { font-size: .92rem; color: var(--ink-dim); }
+
+.proj-gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; background: var(--ground); }
+.g-cell { background: var(--surface); position: relative; overflow: hidden; }
+.g-cell.wide { grid-column: span 2; aspect-ratio: 21/9; }
+.g-cell.tall { aspect-ratio: 4/5; }
+.g-cell.sq   { aspect-ratio: 16/10; }
+.g-fill {
+  width: 100%; height: 100%;
+  display: flex; align-items: end; justify-content: start; padding: 1.25rem;
+  font-family: var(--ff-mono); font-size: .65rem; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--muted);
+  transition: color .35s;
+}
+.g-cell:hover .g-fill { color: var(--ink-dim); }
+.g-cell::before {
+  content: ''; position: absolute; inset: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent 0,
+    transparent 18px,
+    var(--rim-soft) 18px,
+    var(--rim-soft) 19px
+  );
+  opacity: .5;
+}
+
+.proj-content {
+  display: grid; grid-template-columns: 220px 1fr; gap: 4rem;
+  padding: 5rem var(--pad-x);
+}
+.proj-sidebar { position: sticky; top: 5rem; align-self: start; }
+.sidebar-label {
+  font-family: var(--ff-mono); font-size: .62rem; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 1.5rem;
+}
+.sidebar-nav { list-style: none; display: flex; flex-direction: column; gap: .65rem; }
+.sidebar-nav a {
+  font-family: var(--ff-mono); font-size: .78rem; color: var(--ink-dim);
+  display: flex; align-items: center; gap: .55rem;
+  transition: color .25s;
+}
+.sidebar-nav a::before {
+  content: ''; width: 0; height: 1px; background: var(--accent);
+  transition: width .3s var(--expo);
+}
+.sidebar-nav a:hover, .sidebar-nav a.active { color: var(--ink); }
+.sidebar-nav a.active { color: var(--accent); }
+.sidebar-nav a.active::before, .sidebar-nav a:hover::before { width: 1.2rem; }
+
+.proj-section { margin-bottom: 4.5rem; scroll-margin-top: 6rem; }
+.proj-section-title {
+  font-family: var(--ff-display); font-weight: 900;
+  font-size: 1.6rem; letter-spacing: -.02em; color: var(--ink);
+  margin-bottom: 1.5rem; padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--rim-soft);
+}
+.proj-section p {
+  font-size: 1.02rem; color: var(--ink-dim); line-height: 1.85; margin-bottom: 1.1rem;
+  max-width: 42rem;
+}
+
+.outcome-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px;
+  background: var(--rim-soft); margin: 1.5rem 0; max-width: 42rem;
+}
+.outcome-cell { background: var(--surface); padding: 1.75rem; }
+.outcome-num {
+  font-family: var(--ff-display); font-weight: 900;
+  font-size: clamp(2rem, 3.5vw, 2.6rem);
+  letter-spacing: -.03em; color: var(--ink); line-height: 1; margin-bottom: .5rem;
+}
+.outcome-label {
+  font-family: var(--ff-mono); font-size: .62rem; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--muted);
+}
+
+.next-proj {
+  border-top: 1px solid var(--rim-soft); padding: 4.5rem var(--pad-x);
+  display: flex; align-items: center; justify-content: space-between;
+  cursor: pointer; position: relative; overflow: hidden;
+  transition: padding .4s var(--expo);
+}
+.next-proj::before {
+  content: ''; position: absolute; inset: 0; background: var(--surface);
+  transform: scaleY(0); transform-origin: bottom;
+  transition: transform .55s var(--expo); z-index: 0;
+}
+.next-proj:hover::before { transform: scaleY(1); }
+.next-proj > * { position: relative; z-index: 1; }
+.next-proj:hover { padding-left: calc(var(--pad-x) + 1rem); }
+.next-label {
+  font-family: var(--ff-mono); font-size: .62rem; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--muted); margin-bottom: .5rem;
+}
+.next-title {
+  font-family: var(--ff-display); font-weight: 900;
+  font-size: clamp(1.8rem, 3.5vw, 3rem);
+  letter-spacing: -.025em; color: var(--ink); transition: color .25s;
+}
+.next-proj:hover .next-title { color: var(--accent); }
+.next-arrow {
+  font-family: var(--ff-display); font-weight: 900; font-size: 2rem;
+  color: var(--muted); transition: transform .4s var(--expo), color .25s;
+}
+.next-proj:hover .next-arrow { transform: translateX(8px); color: var(--accent); }
+
+/* ─── Resume page ─── */
+.resume { padding: 8rem var(--pad-x) 4rem; max-width: 1100px; margin: 0 auto; }
+.resume-head {
+  display: grid; grid-template-columns: 1fr auto;
+  gap: 3rem; padding-bottom: 3rem; border-bottom: 1px solid var(--rim-soft);
+  margin-bottom: 3rem; align-items: end;
+}
+.resume-head h1 {
+  font-family: var(--ff-display); font-weight: 900;
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  letter-spacing: -.025em; color: var(--ink); margin-bottom: .75rem;
+}
+.resume-head .role {
+  font-family: var(--ff-mono); font-size: .72rem; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 1.25rem;
+}
+.resume-head p { color: var(--ink-dim); max-width: 36rem; line-height: 1.6; }
+.resume-contact {
+  list-style: none; display: flex; flex-direction: column; gap: .55rem;
+  font-family: var(--ff-mono); font-size: .72rem; color: var(--ink-dim);
+  text-align: right;
+}
+.resume-contact .k {
+  font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted);
+  margin-right: .5rem;
+}
+
+.resume-block { margin-bottom: 3.5rem; }
+.resume-block h2 {
+  font-family: var(--ff-mono); font-size: .68rem; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--ink); font-weight: 500;
+  padding-bottom: 1rem; border-bottom: 1px solid var(--rim-soft);
+  margin-bottom: 1.5rem;
+  display: flex; align-items: center; gap: .65rem;
+}
+.resume-block h2::before {
+  content: ''; width: 6px; height: 6px; background: var(--accent); border-radius: 50%;
+}
+.resume-row {
+  display: grid; grid-template-columns: 160px 1fr;
+  gap: 2.5rem; padding: 1.25rem 0;
+  border-bottom: 1px solid var(--rim-soft);
+}
+.resume-row:last-child { border-bottom: none; }
+.resume-row .when {
+  font-family: var(--ff-mono); font-size: .72rem; letter-spacing: .06em;
+  color: var(--ink-dim); padding-top: .25rem;
+}
+.resume-row .where {
+  display: block; font-size: .65rem; color: var(--muted);
+  letter-spacing: .08em; text-transform: uppercase; margin-top: .35rem;
+}
+.resume-row .role-name {
+  font-family: var(--ff-display); font-weight: 900; font-size: 1.2rem;
+  letter-spacing: -.02em; color: var(--ink);
+}
+.resume-row .org { color: var(--ink-dim); margin-bottom: .85rem; font-size: .95rem; }
+.resume-row ul { list-style: none; display: flex; flex-direction: column; gap: .35rem; }
+.resume-row li {
+  font-size: .92rem; color: var(--ink-dim); line-height: 1.6;
+  padding-left: 1rem; position: relative;
+}
+.resume-row li::before {
+  content: ''; position: absolute; left: 0; top: .65em;
+  width: 4px; height: 1px; background: var(--accent);
+}
+
+.cap-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: .5rem;
+}
+
+/* ─── Company group (work index) ─── */
+.company-block { margin-bottom: 4rem; }
+.company-head {
+  display: grid; grid-template-columns: 1fr auto;
+  gap: 2rem; align-items: end;
+  padding: 2.5rem 0 1.5rem; border-bottom: 1px solid var(--rim-soft);
+  margin-bottom: 1.25rem;
+}
+.company-name {
+  font-family: var(--ff-display); font-weight: 900;
+  font-size: clamp(2rem, 4vw, 3rem); letter-spacing: -.025em;
+  color: var(--ink); display: inline-flex; align-items: baseline; gap: .5rem;
+}
+.company-name .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); display: inline-block; }
+.company-tag {
+  font-family: var(--ff-mono); font-size: .68rem; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--ink-dim); margin-top: .5rem;
+}
+.company-meta {
+  font-family: var(--ff-mono); font-size: .65rem; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--muted); text-align: right;
+  display: flex; flex-direction: column; gap: .35rem;
+}
+.company-meta b { color: var(--ink-dim); font-weight: 500; }
+.company-desc {
+  font-size: .98rem; color: var(--ink-dim); line-height: 1.7;
+  max-width: 42rem; margin: 1rem 0 1.5rem;
+}
+.crumbs {
+  display: inline-flex; align-items: center; gap: .5rem;
+  font-family: var(--ff-mono); font-size: .65rem; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 1.5rem;
+}
+.crumbs a { color: var(--ink-dim); transition: color .25s; }
+.crumbs a:hover { color: var(--accent); }
+.crumbs .sep { color: var(--muted); opacity: .6; }
+.crumbs .here { color: var(--ink); }
+
+@media (max-width: 900px) {
+  .company-head { grid-template-columns: 1fr; }
+  .company-meta { text-align: left; }
+}
+.cmdk-overlay {
+  position: fixed; inset: 0; z-index: 9000;
+  background: color-mix(in srgb, var(--ground) 75%, transparent);
+  backdrop-filter: blur(8px);
+  display: flex; align-items: flex-start; justify-content: center;
+  padding-top: 14vh; opacity: 0; pointer-events: none;
+  transition: opacity .25s ease;
+}
+.cmdk-overlay.open { opacity: 1; pointer-events: auto; }
+.cmdk {
+  width: min(560px, 92vw); background: var(--surface);
+  border: 1px solid var(--rim); border-radius: 12px;
+  overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,.4);
+  transform: translateY(-12px); transition: transform .3s var(--expo);
+}
+.cmdk-overlay.open .cmdk { transform: translateY(0); }
+.cmdk-input-row {
+  display: flex; align-items: center; gap: .9rem;
+  padding: 1rem 1.25rem; border-bottom: 1px solid var(--rim-soft);
+}
+.cmdk-input-row svg { color: var(--ink-dim); flex-shrink: 0; }
+.cmdk-input {
+  flex: 1; background: transparent; border: 0; outline: 0;
+  font-family: var(--ff-body); font-size: 1rem; color: var(--ink);
+}
+.cmdk-input::placeholder { color: var(--muted); }
+.cmdk-list { max-height: 50vh; overflow-y: auto; padding: .5rem; }
+.cmdk-group {
+  font-family: var(--ff-mono); font-size: .6rem; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--muted);
+  padding: .85rem .75rem .5rem;
+}
+.cmdk-item {
+  display: flex; align-items: center; gap: .85rem;
+  padding: .65rem .75rem; border-radius: 8px;
+  transition: background .2s;
+}
+.cmdk-item.sel, .cmdk-item:hover { background: var(--surface-2); }
+.cmdk-item .ic { width: 20px; color: var(--ink-dim); flex-shrink: 0; }
+.cmdk-item .lbl { flex: 1; font-size: .92rem; color: var(--ink); }
+.cmdk-item .sub { font-family: var(--ff-mono); font-size: .68rem; color: var(--muted); }
+
+/* ─── Density ─── */
+[data-density="loose"]   .section, [data-density="loose"]   .about, [data-density="loose"]   .contact { padding-top: 8rem; padding-bottom: 8rem; }
+[data-density="dense"]   .section, [data-density="dense"]   .about, [data-density="dense"]   .contact { padding-top: 4rem; padding-bottom: 4rem; }
+[data-density="dense"]   .work-grid { gap: 1rem; }
+[data-density="loose"]   .work-grid { gap: 2rem; }
+
+/* ─── Display font swap ─── */
+[data-display-font="serif"]  { --ff-display: 'Instrument Serif', 'Times New Roman', serif; }
+[data-display-font="mono"]   { --ff-display: 'JetBrains Mono', ui-monospace, monospace; }
+[data-display-font="sans"]   { --ff-display: 'Inter Tight', system-ui, sans-serif; }
+
+/* ─── Hero alignment helper ─── */
+.hero[data-align="center"] { text-align: left; }
+
+/* ─── Mobile ─── */
+@media (max-width: 900px) {
+  nav.top { padding: 1rem var(--pad-x); }
+  .nav-links { display: none; }
+  .hero { padding: 7rem var(--pad-x) 3rem; min-height: 90vh; }
+  .hero-bottom { flex-direction: column; align-items: flex-start; gap: 2rem; }
+  .hero-meta { align-items: flex-start; text-align: left; }
+  .work-grid.polaroid { grid-template-columns: 1fr; }
+  .polaroid .tile.wide { grid-column: span 1; }
+  .fullbleed .tile { grid-template-columns: 60px 1fr 60px; }
+  .fullbleed .tile .tile-tags { display: none; }
+  .index .tile { grid-template-columns: 40px 1fr 60px; }
+  .index .tile .tile-tags, .index .tile .tile-year { display: none; }
+  .about { grid-template-columns: 1fr; gap: 3rem; }
+  .about-photo-col { position: static; }
+  .proj-hero-inner { grid-template-columns: 1fr; gap: 2.5rem; }
+  .proj-content { grid-template-columns: 1fr; padding: 3rem var(--pad-x); }
+  .proj-sidebar { position: static; }
+  .outcome-grid { grid-template-columns: 1fr; }
+  .resume-head { grid-template-columns: 1fr; }
+  .resume-contact { text-align: left; }
+  .resume-row { grid-template-columns: 1fr; gap: .75rem; }
+}
+
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+// Portfolio data — Raz Silberman
+
+const COMPANIES = [
+  {
+    id: 'quill',
+    name: 'Quill',
+    tagline: 'Knowledge management for support teams',
+    description: 'B2B SaaS · Tel Aviv. The KMS lighthouse for support orgs — writers, agents, admins, and end-users sharing one knowledge graph.',
+    role: 'Senior → Lead Product Designer',
+    when: '2023 — Present',
+    accent: 'sage',
+    swatch: { from: '#1A1F1B', to: '#0C100D', mark: '#3E5142' },
+    projectIds: ['help-center', 'design-system', 'product-redesign'],
+  },
+  {
+    id: 'northbeam',
+    name: 'Northbeam',
+    tagline: 'B2B2C platform — admins set up, employees live in it',
+    description: 'Two-audience SaaS, sold to companies and used daily by their employees. Owned the analytics squad and rebuilt first-run.',
+    role: 'Product Designer',
+    when: '2021 — 2023',
+    accent: 'blue',
+    swatch: { from: '#181B1D', to: '#0B0D0E', mark: '#3E4448' },
+    projectIds: ['platform-redesign'],
+  },
+];
+
+const PROJECTS = [
+  {
+    id: 'help-center',
+    n: '01',
+    title: 'Help Center',
+    subtitle: 'Self-serve support, end to end',
+    role: 'Lead Product Designer',
+    year: '2024 — 2025',
+    timeline: 'Sep 2024 — Mar 2025',
+    platform: 'Web (admin + customer-facing)',
+    team: '1 designer, 4 engineers, PM',
+    sector: 'B2B SaaS · Knowledge management',
+    kind: 'B2B SaaS',
+    tile: 'wide',
+    summary: 'Replaced a stitched-together legacy help center with a coherent two-sided product: a writer-friendly admin and a fast, searchable end-user reading experience.',
+    swatch: { from: '#1A1F1B', to: '#0C100D', mark: '#3E5142' },
+    sections: [
+      { id: 'context', title: 'Context', body: [
+        'The existing help center was three different products taped together — a CMS for writers, an admin for support managers, and a public reader. None of them shared a layout, a search index, or a sense of voice.',
+        'The team had been adding to it for four years. By the time I joined, even the people who built it would routinely ask each other where a setting lived. Customers were churning on small things — they couldn\'t find articles they had read the day before.',
+      ]},
+      { id: 'shape', title: 'Shaping the work', body: [
+        'I split the project into two tracks that could ship independently: a unified reader experience (urgent — customers were complaining), and an admin redesign (slower, but unblocked everything else).',
+        'Within those, four discrete sub-projects: search & navigation, the article view, the writer\'s editor, and the manager\'s analytics view. Each had its own short doc and its own success metric.',
+      ]},
+      { id: 'reader', title: 'The reader', body: [
+        'Reframed the homepage from "marketing surface" to "reading list." The thing people actually wanted was to find the article they were here for in under five seconds.',
+        'Persistent left-rail navigation with the article tree. Inline search that searches as you type, weighted by what the user has already opened in this session.',
+      ]},
+      { id: 'admin', title: 'The admin', body: [
+        'Writers had been working in a Notion-like editor that was great for prose and terrible for the structured fields support articles actually need (steps, prerequisites, related articles).',
+        'New editor leans on the structure: title and intro are free-form, but the body is a typed tree of blocks with their own validation and preview.',
+      ]},
+      { id: 'outcomes', title: 'What changed', kind: 'outcomes', items: [
+        { num: '−42%', label: 'Time to first article' },
+        { num: '+3.1×', label: 'Self-serve resolution rate' },
+        { num: '94%', label: 'Writer satisfaction (was 51%)' },
+      ]},
+    ],
+    gallery: [
+      { kind: 'wide', label: 'Reader — article view', tone: '#11140F' },
+      { kind: 'sq', label: 'Search', tone: '#0F1311' },
+      { kind: 'sq', label: 'Admin · article tree', tone: '#10130E' },
+      { kind: 'tall', label: 'Editor', tone: '#0E1110' },
+      { kind: 'tall', label: 'Analytics', tone: '#101412' },
+    ],
+  },
+  {
+    id: 'design-system',
+    n: '02',
+    title: 'Telos Design System',
+    subtitle: 'A shared language across six product surfaces',
+    role: 'Design Systems Lead',
+    year: '2023 — 2024',
+    timeline: 'Apr 2023 — Feb 2024',
+    platform: 'Web · iOS · Android',
+    team: '2 designers, 3 engineers',
+    sector: 'Internal platform',
+    kind: 'Design system',
+    tile: 'tall',
+    summary: 'Built the company\'s first proper design system from the inside out — tokens, primitives, patterns, governance — and migrated four shipped products onto it without freezing a single feature team.',
+    swatch: { from: '#1F1A14', to: '#13100C', mark: '#5A4A33' },
+    sections: [
+      { id: 'context', title: 'Context', body: [
+        'Six product teams, three platforms, and exactly one shared component: the company logo. Buttons came in 14 visually distinct flavors. Spacing followed nobody\'s scale.',
+        'Leadership wanted "a design system." What that meant in practice was the much harder thing: a way for six teams to agree without anyone losing autonomy.',
+      ]},
+      { id: 'tokens', title: 'Tokens first', body: [
+        'I started at the bottom — a single source of truth for color, spacing, type, and motion, exported to CSS variables, Swift, and Compose from one JSON spec.',
+        'Tokens shipped before any components did. That decision made the rest of the project possible: teams could adopt the new visual language gradually, one variable at a time, without waiting for a button.',
+      ]},
+      { id: 'primitives', title: 'Primitives, not pages', body: [
+        'Resisted the temptation to ship a "card component" or a "form component." Instead: layout primitives (Stack, Cluster, Grid), surface primitives (Box, Sheet, Divider), and a small set of true components (Button, Field, Menu, Toast).',
+        'Pages and patterns live in product repos — not in the system. The system is the floor; product teams build the building.',
+      ]},
+      { id: 'governance', title: 'Governance', body: [
+        'Weekly office hours, a public Linear board for requests, and a clear rule: anything used in 3+ products gets promoted to the system; anything in 1 stays local.',
+        'The hardest part wasn\'t the components — it was teaching everyone that "this should be in the system" is a question, not a demand.',
+      ]},
+      { id: 'outcomes', title: 'What changed', kind: 'outcomes', items: [
+        { num: '4 → 1', label: 'Button implementations' },
+        { num: '−68%', label: 'Time to ship new screens' },
+        { num: '0', label: 'Frozen feature teams during migration' },
+      ]},
+    ],
+    gallery: [
+      { kind: 'wide', label: 'Token spec', tone: '#15110C' },
+      { kind: 'sq', label: 'Primitives', tone: '#13100B' },
+      { kind: 'sq', label: 'Components', tone: '#16120D' },
+    ],
+  },
+  {
+    id: 'product-redesign',
+    n: '03',
+    title: 'Product Redesign',
+    subtitle: 'System fields & AI-driven article navigation',
+    role: 'Senior Product Designer',
+    year: '2025',
+    timeline: 'Apr — Aug 2025',
+    platform: 'Web',
+    team: '2 designers, 5 engineers, ML lead',
+    sector: 'B2B SaaS',
+    kind: 'B2B SaaS',
+    tile: 'sq',
+    summary: 'Two adjacent redesigns inside the same product surface — one structural (rebuilding how system field metadata is edited), one applied-AI (a navigation menu that reshapes itself around the article you\'re reading).',
+    swatch: { from: '#1B1820', to: '#0E0C13', mark: '#4A4458' },
+    sections: [
+      { id: 'context', title: 'Context', body: [
+        'Two pieces of the product had reached the limit of incremental polish — the system fields editor (where admins configure metadata) and the article navigation menu (where readers find their next article).',
+        'I treated them as one project because both were really about the same thing: making structure visible without making it heavy.',
+      ]},
+      { id: 'fields', title: '01 · System fields', body: [
+        'System fields are the typed metadata attached to every article — author, audience, status, related products, locale. Twelve of them, sometimes more.',
+        'The old editor was a flat form: twelve labeled rows, one validation message per row, and no sense of which fields mattered for the article in front of you.',
+        'Redesigned it as a tray that lives next to the article. Fields collapse to a one-line summary when they\'re set; expand inline when they\'re not. Required-but-empty fields lift to the top with a quiet warning style.',
+      ]},
+      { id: 'nav', title: '02 · AI-driven article navigation', body: [
+        'The old navigation was a left-rail tree — every article in the help center, alphabetised under categories. It was complete and unhelpful.',
+        'New navigation is generated per-article by a model that ranks neighbours by likely relevance: prerequisites surface above the current article, follow-ups below, alternatives in a quiet "or you might want…" group at the bottom.',
+        'The hard part was making the AI legible. Each suggested article has a one-line "why this is here" that the model writes — it\'s editable by the writer and reviewable by the manager.',
+      ]},
+      { id: 'principles', title: 'Principles for AI surfaces', body: [
+        'Three rules I wrote for the team and have kept since: (1) the model never changes the page silently — every change is announced. (2) Every model output is editable by a human. (3) When the model is uncertain, the UI is uncertain — a soft state, not a confident wrong one.',
+      ]},
+      { id: 'outcomes', title: 'What changed', kind: 'outcomes', items: [
+        { num: '+58%', label: 'Article completion (read-through)' },
+        { num: '−71%', label: 'Field-editor support tickets' },
+        { num: '4.6/5', label: 'Writer trust in AI suggestions' },
+      ]},
+    ],
+    gallery: [
+      { kind: 'wide', label: 'Article + fields tray', tone: '#13101A' },
+      { kind: 'sq', label: 'AI nav menu', tone: '#15121C' },
+      { kind: 'sq', label: 'Field types', tone: '#100E16' },
+    ],
+  },
+  {
+    id: 'platform-redesign',
+    n: '04',
+    title: 'Platform Onboarding',
+    subtitle: 'First-run experience for a B2B2C SaaS',
+    role: 'Product Designer',
+    year: '2022 — 2023',
+    timeline: 'Oct 2022 — Mar 2023',
+    platform: 'Web',
+    team: '1 designer, 3 engineers',
+    sector: 'B2B2C SaaS',
+    kind: 'B2B2C SaaS',
+    tile: 'sq',
+    summary: 'Designed the first-run experience for a platform with two audiences — the admin who configures it and the end user who lives in it — and found a way to serve both without forking the product.',
+    swatch: { from: '#181B1D', to: '#0B0D0E', mark: '#3E4448' },
+    sections: [
+      { id: 'context', title: 'Context', body: [
+        'A platform sold to companies but used by their employees. Admins set it up once a quarter. End users open it every day. Both groups had been getting the same tour.',
+        'Admin completion was 78%, which sounded fine until you looked at the sub-step where they\'re asked to invite their team — only 31% finished that.',
+      ]},
+      { id: 'split', title: 'A two-track first run', body: [
+        'Forked the experience at the door: admins land on a configuration view, end users on a "what is this product even for" view. Each track is short — 4 steps for admin, 2 for end user.',
+        'Crucially, end users can be productive before their admin finishes setup. The product degrades gracefully into a personal mode.',
+      ]},
+      { id: 'outcomes', title: 'What changed', kind: 'outcomes', items: [
+        { num: '94%', label: 'Admin completion' },
+        { num: '78%', label: 'Team-invite completion' },
+        { num: '11d → 2d', label: 'Time to first end-user value' },
+      ]},
+    ],
+    gallery: [
+      { kind: 'wide', label: 'Admin setup', tone: '#101315' },
+      { kind: 'sq', label: 'End-user welcome', tone: '#0E1112' },
+    ],
+  },
+];
+
+const RESUME = {
+  name: 'Raz Silberman',
+  title: 'Product Designer',
+  blurb: 'Six years designing B2B and B2B2C SaaS products end-to-end — research, structure, interaction, visual, and the unglamorous follow-through that makes work actually ship.',
+  contact: [
+    { k: 'Email', v: 'hello@razsilberman.com' },
+    { k: 'Location', v: 'Tel Aviv · remote-friendly' },
+    { k: 'Read.cv', v: 'read.cv/raz' },
+    { k: 'LinkedIn', v: 'linkedin.com/in/raz' },
+  ],
+  experience: [
+    {
+      role: 'Senior Product Designer',
+      org: 'Quill (knowledge management)',
+      when: '2023 — Present',
+      where: 'Tel Aviv · hybrid',
+      notes: [
+        'Lead designer on the help center product (~3M monthly readers).',
+        'Built and shipped the company\'s first design system; migrated four products onto it.',
+        'Owned applied-AI navigation work — wrote the team\'s principles for AI surfaces.',
+      ],
+    },
+    {
+      role: 'Product Designer',
+      org: 'Northbeam (B2B2C platform)',
+      when: '2021 — 2023',
+      where: 'Remote',
+      notes: [
+        'Redesigned first-run for a two-audience SaaS; admin completion 78% → 94%.',
+        'Embedded with the analytics squad for a year — owned all dashboard surfaces.',
+      ],
+    },
+    {
+      role: 'Product Designer',
+      org: 'Studio Faun (agency)',
+      when: '2019 — 2021',
+      where: 'Berlin',
+      notes: [
+        'Lead designer on six client engagements across fintech, climate, and healthcare.',
+        'Founded the studio\'s component library practice.',
+      ],
+    },
+  ],
+  education: [
+    { role: 'BFA, Visual Communication', org: 'Bezalel Academy of Arts and Design', when: '2015 — 2019' },
+  ],
+  speaking: [
+    { role: 'Designing for AI uncertainty', org: 'Config (Figma) · panel', when: '2025' },
+    { role: 'Tokens before components', org: 'Friends of Figma TLV', when: '2024' },
+  ],
+  capabilities: [
+    'Product strategy', 'Information architecture', 'Interaction design', 'Visual design',
+    'Design systems', 'Prototyping (React)', 'User research (mod. + unmod.)', 'Applied AI surfaces',
+    'Design ops', 'Cross-functional facilitation',
+  ],
+};
+
+window.PROJECTS = PROJECTS;
+window.COMPANIES = COMPANIES;
+window.RESUME = RESUME;
+
+</script>
+<script type="text/babel">
+
+// tweaks-panel.jsx
+// Reusable Tweaks shell + form-control helpers.
+//
+// Owns the host protocol (listens for __activate_edit_mode / __deactivate_edit_mode,
+// posts __edit_mode_available / __edit_mode_set_keys / __edit_mode_dismissed) so
+// individual prototypes don't re-roll it. Ships a consistent set of controls so you
+// don't hand-draw <input type="range">, segmented radios, steppers, etc.
+//
+// Usage (in an HTML file that loads React + Babel):
+//
+//   const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+//     "primaryColor": "#D97757",
+//     "fontSize": 16,
+//     "density": "regular",
+//     "dark": false
+//   }/*EDITMODE-END*/;
+//
+//   function App() {
+//     const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+//     return (
+//       <div style={{ fontSize: t.fontSize, color: t.primaryColor }}>
+//         Hello
+//         <TweaksPanel>
+//           <TweakSection label="Typography" />
+//           <TweakSlider label="Font size" value={t.fontSize} min={10} max={32} unit="px"
+//                        onChange={(v) => setTweak('fontSize', v)} />
+//           <TweakRadio  label="Density" value={t.density}
+//                        options={['compact', 'regular', 'comfy']}
+//                        onChange={(v) => setTweak('density', v)} />
+//           <TweakSection label="Theme" />
+//           <TweakColor  label="Primary" value={t.primaryColor}
+//                        onChange={(v) => setTweak('primaryColor', v)} />
+//           <TweakToggle label="Dark mode" value={t.dark}
+//                        onChange={(v) => setTweak('dark', v)} />
+//         </TweaksPanel>
+//       </div>
+//     );
+//   }
+//
+// ─────────────────────────────────────────────────────────────────────────────
+
+const __TWEAKS_STYLE = `
+  .twk-panel{position:fixed;right:16px;bottom:16px;z-index:2147483646;width:280px;
+    max-height:calc(100vh - 32px);display:flex;flex-direction:column;
+    background:rgba(250,249,247,.78);color:#29261b;
+    -webkit-backdrop-filter:blur(24px) saturate(160%);backdrop-filter:blur(24px) saturate(160%);
+    border:.5px solid rgba(255,255,255,.6);border-radius:14px;
+    box-shadow:0 1px 0 rgba(255,255,255,.5) inset,0 12px 40px rgba(0,0,0,.18);
+    font:11.5px/1.4 ui-sans-serif,system-ui,-apple-system,sans-serif;overflow:hidden}
+  .twk-hd{display:flex;align-items:center;justify-content:space-between;
+    padding:10px 8px 10px 14px;cursor:move;user-select:none}
+  .twk-hd b{font-size:12px;font-weight:600;letter-spacing:.01em}
+  .twk-x{appearance:none;border:0;background:transparent;color:rgba(41,38,27,.55);
+    width:22px;height:22px;border-radius:6px;cursor:default;font-size:13px;line-height:1}
+  .twk-x:hover{background:rgba(0,0,0,.06);color:#29261b}
+  .twk-body{padding:2px 14px 14px;display:flex;flex-direction:column;gap:10px;
+    overflow-y:auto;overflow-x:hidden;min-height:0;
+    scrollbar-width:thin;scrollbar-color:rgba(0,0,0,.15) transparent}
+  .twk-body::-webkit-scrollbar{width:8px}
+  .twk-body::-webkit-scrollbar-track{background:transparent;margin:2px}
+  .twk-body::-webkit-scrollbar-thumb{background:rgba(0,0,0,.15);border-radius:4px;
+    border:2px solid transparent;background-clip:content-box}
+  .twk-body::-webkit-scrollbar-thumb:hover{background:rgba(0,0,0,.25);
+    border:2px solid transparent;background-clip:content-box}
+  .twk-row{display:flex;flex-direction:column;gap:5px}
+  .twk-row-h{flex-direction:row;align-items:center;justify-content:space-between;gap:10px}
+  .twk-lbl{display:flex;justify-content:space-between;align-items:baseline;
+    color:rgba(41,38,27,.72)}
+  .twk-lbl>span:first-child{font-weight:500}
+  .twk-val{color:rgba(41,38,27,.5);font-variant-numeric:tabular-nums}
+
+  .twk-sect{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+    color:rgba(41,38,27,.45);padding:10px 0 0}
+  .twk-sect:first-child{padding-top:0}
+
+  .twk-field{appearance:none;width:100%;height:26px;padding:0 8px;
+    border:.5px solid rgba(0,0,0,.1);border-radius:7px;
+    background:rgba(255,255,255,.6);color:inherit;font:inherit;outline:none}
+  .twk-field:focus{border-color:rgba(0,0,0,.25);background:rgba(255,255,255,.85)}
+  select.twk-field{padding-right:22px;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='rgba(0,0,0,.5)' d='M0 0h10L5 6z'/></svg>");
+    background-repeat:no-repeat;background-position:right 8px center}
+
+  .twk-slider{appearance:none;-webkit-appearance:none;width:100%;height:4px;margin:6px 0;
+    border-radius:999px;background:rgba(0,0,0,.12);outline:none}
+  .twk-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
+    width:14px;height:14px;border-radius:50%;background:#fff;
+    border:.5px solid rgba(0,0,0,.12);box-shadow:0 1px 3px rgba(0,0,0,.2);cursor:default}
+  .twk-slider::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
+    background:#fff;border:.5px solid rgba(0,0,0,.12);box-shadow:0 1px 3px rgba(0,0,0,.2);cursor:default}
+
+  .twk-seg{position:relative;display:flex;padding:2px;border-radius:8px;
+    background:rgba(0,0,0,.06);user-select:none}
+  .twk-seg-thumb{position:absolute;top:2px;bottom:2px;border-radius:6px;
+    background:rgba(255,255,255,.9);box-shadow:0 1px 2px rgba(0,0,0,.12);
+    transition:left .15s cubic-bezier(.3,.7,.4,1),width .15s}
+  .twk-seg.dragging .twk-seg-thumb{transition:none}
+  .twk-seg button{appearance:none;position:relative;z-index:1;flex:1;border:0;
+    background:transparent;color:inherit;font:inherit;font-weight:500;min-height:22px;
+    border-radius:6px;cursor:default;padding:4px 6px;line-height:1.2;
+    overflow-wrap:anywhere}
+
+  .twk-toggle{position:relative;width:32px;height:18px;border:0;border-radius:999px;
+    background:rgba(0,0,0,.15);transition:background .15s;cursor:default;padding:0}
+  .twk-toggle[data-on="1"]{background:#34c759}
+  .twk-toggle i{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;
+    background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .15s}
+  .twk-toggle[data-on="1"] i{transform:translateX(14px)}
+
+  .twk-num{display:flex;align-items:center;height:26px;padding:0 0 0 8px;
+    border:.5px solid rgba(0,0,0,.1);border-radius:7px;background:rgba(255,255,255,.6)}
+  .twk-num-lbl{font-weight:500;color:rgba(41,38,27,.6);cursor:ew-resize;
+    user-select:none;padding-right:8px}
+  .twk-num input{flex:1;min-width:0;height:100%;border:0;background:transparent;
+    font:inherit;font-variant-numeric:tabular-nums;text-align:right;padding:0 8px 0 0;
+    outline:none;color:inherit;-moz-appearance:textfield}
+  .twk-num input::-webkit-inner-spin-button,.twk-num input::-webkit-outer-spin-button{
+    -webkit-appearance:none;margin:0}
+  .twk-num-unit{padding-right:8px;color:rgba(41,38,27,.45)}
+
+  .twk-btn{appearance:none;height:26px;padding:0 12px;border:0;border-radius:7px;
+    background:rgba(0,0,0,.78);color:#fff;font:inherit;font-weight:500;cursor:default}
+  .twk-btn:hover{background:rgba(0,0,0,.88)}
+  .twk-btn.secondary{background:rgba(0,0,0,.06);color:inherit}
+  .twk-btn.secondary:hover{background:rgba(0,0,0,.1)}
+
+  .twk-swatch{appearance:none;-webkit-appearance:none;width:56px;height:22px;
+    border:.5px solid rgba(0,0,0,.1);border-radius:6px;padding:0;cursor:default;
+    background:transparent;flex-shrink:0}
+  .twk-swatch::-webkit-color-swatch-wrapper{padding:0}
+  .twk-swatch::-webkit-color-swatch{border:0;border-radius:5.5px}
+  .twk-swatch::-moz-color-swatch{border:0;border-radius:5.5px}
+`;
+
+// ── useTweaks ───────────────────────────────────────────────────────────────
+// Single source of truth for tweak values. setTweak persists via the host
+// (__edit_mode_set_keys → host rewrites the EDITMODE block on disk).
+function useTweaks(defaults) {
+  const [values, setValues] = React.useState(defaults);
+  // Accepts either setTweak('key', value) or setTweak({ key: value, ... }) so a
+  // useState-style call doesn't write a "[object Object]" key into the persisted
+  // JSON block.
+  const setTweak = React.useCallback((keyOrEdits, val) => {
+    const edits = typeof keyOrEdits === 'object' && keyOrEdits !== null
+      ? keyOrEdits : { [keyOrEdits]: val };
+    setValues((prev) => ({ ...prev, ...edits }));
+    window.parent.postMessage({ type: '__edit_mode_set_keys', edits }, '*');
+  }, []);
+  return [values, setTweak];
+}
+
+// ── TweaksPanel ─────────────────────────────────────────────────────────────
+// Floating shell. Registers the protocol listener BEFORE announcing
+// availability — if the announce ran first, the host's activate could land
+// before our handler exists and the toolbar toggle would silently no-op.
+// The close button posts __edit_mode_dismissed so the host's toolbar toggle
+// flips off in lockstep; the host echoes __deactivate_edit_mode back which
+// is what actually hides the panel.
+function TweaksPanel({ title = 'Tweaks', children }) {
+  const [open, setOpen] = React.useState(false);
+  const dragRef = React.useRef(null);
+  const offsetRef = React.useRef({ x: 16, y: 16 });
+  const PAD = 16;
+
+  const clampToViewport = React.useCallback(() => {
+    const panel = dragRef.current;
+    if (!panel) return;
+    const w = panel.offsetWidth, h = panel.offsetHeight;
+    const maxRight = Math.max(PAD, window.innerWidth - w - PAD);
+    const maxBottom = Math.max(PAD, window.innerHeight - h - PAD);
+    offsetRef.current = {
+      x: Math.min(maxRight, Math.max(PAD, offsetRef.current.x)),
+      y: Math.min(maxBottom, Math.max(PAD, offsetRef.current.y)),
+    };
+    panel.style.right = offsetRef.current.x + 'px';
+    panel.style.bottom = offsetRef.current.y + 'px';
+  }, []);
+
+  React.useEffect(() => {
+    if (!open) return;
+    clampToViewport();
+    if (typeof ResizeObserver === 'undefined') {
+      window.addEventListener('resize', clampToViewport);
+      return () => window.removeEventListener('resize', clampToViewport);
+    }
+    const ro = new ResizeObserver(clampToViewport);
+    ro.observe(document.documentElement);
+    return () => ro.disconnect();
+  }, [open, clampToViewport]);
+
+  React.useEffect(() => {
+    const onMsg = (e) => {
+      const t = e?.data?.type;
+      if (t === '__activate_edit_mode') setOpen(true);
+      else if (t === '__deactivate_edit_mode') setOpen(false);
+    };
+    window.addEventListener('message', onMsg);
+    window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+    return () => window.removeEventListener('message', onMsg);
+  }, []);
+
+  const dismiss = () => {
+    setOpen(false);
+    window.parent.postMessage({ type: '__edit_mode_dismissed' }, '*');
+  };
+
+  const onDragStart = (e) => {
+    const panel = dragRef.current;
+    if (!panel) return;
+    const r = panel.getBoundingClientRect();
+    const sx = e.clientX, sy = e.clientY;
+    const startRight = window.innerWidth - r.right;
+    const startBottom = window.innerHeight - r.bottom;
+    const move = (ev) => {
+      offsetRef.current = {
+        x: startRight - (ev.clientX - sx),
+        y: startBottom - (ev.clientY - sy),
+      };
+      clampToViewport();
+    };
+    const up = () => {
+      window.removeEventListener('mousemove', move);
+      window.removeEventListener('mouseup', up);
+    };
+    window.addEventListener('mousemove', move);
+    window.addEventListener('mouseup', up);
+  };
+
+  if (!open) return null;
+  return (
+    <>
+      <style>{__TWEAKS_STYLE}</style>
+      <div ref={dragRef} className="twk-panel" data-noncommentable=""
+           style={{ right: offsetRef.current.x, bottom: offsetRef.current.y }}>
+        <div className="twk-hd" onMouseDown={onDragStart}>
+          <b>{title}</b>
+          <button className="twk-x" aria-label="Close tweaks"
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={dismiss}>✕</button>
+        </div>
+        <div className="twk-body">{children}</div>
+      </div>
+    </>
+  );
+}
+
+// ── Layout helpers ──────────────────────────────────────────────────────────
+
+function TweakSection({ label, children }) {
+  return (
+    <>
+      <div className="twk-sect">{label}</div>
+      {children}
+    </>
+  );
+}
+
+function TweakRow({ label, value, children, inline = false }) {
+  return (
+    <div className={inline ? 'twk-row twk-row-h' : 'twk-row'}>
+      <div className="twk-lbl">
+        <span>{label}</span>
+        {value != null && <span className="twk-val">{value}</span>}
+      </div>
+      {children}
+    </div>
+  );
+}
+
+// ── Controls ────────────────────────────────────────────────────────────────
+
+function TweakSlider({ label, value, min = 0, max = 100, step = 1, unit = '', onChange }) {
+  return (
+    <TweakRow label={label} value={`${value}${unit}`}>
+      <input type="range" className="twk-slider" min={min} max={max} step={step}
+             value={value} onChange={(e) => onChange(Number(e.target.value))} />
+    </TweakRow>
+  );
+}
+
+function TweakToggle({ label, value, onChange }) {
+  return (
+    <div className="twk-row twk-row-h">
+      <div className="twk-lbl"><span>{label}</span></div>
+      <button type="button" className="twk-toggle" data-on={value ? '1' : '0'}
+              role="switch" aria-checked={!!value}
+              onClick={() => onChange(!value)}><i /></button>
+    </div>
+  );
+}
+
+function TweakRadio({ label, value, options, onChange }) {
+  const trackRef = React.useRef(null);
+  const [dragging, setDragging] = React.useState(false);
+  const opts = options.map((o) => (typeof o === 'object' ? o : { value: o, label: o }));
+  const idx = Math.max(0, opts.findIndex((o) => o.value === value));
+  const n = opts.length;
+
+  // The active value is read by pointer-move handlers attached for the lifetime
+  // of a drag — ref it so a stale closure doesn't fire onChange for every move.
+  const valueRef = React.useRef(value);
+  valueRef.current = value;
+
+  const segAt = (clientX) => {
+    const r = trackRef.current.getBoundingClientRect();
+    const inner = r.width - 4;
+    const i = Math.floor(((clientX - r.left - 2) / inner) * n);
+    return opts[Math.max(0, Math.min(n - 1, i))].value;
+  };
+
+  const onPointerDown = (e) => {
+    setDragging(true);
+    const v0 = segAt(e.clientX);
+    if (v0 !== valueRef.current) onChange(v0);
+    const move = (ev) => {
+      if (!trackRef.current) return;
+      const v = segAt(ev.clientX);
+      if (v !== valueRef.current) onChange(v);
+    };
+    const up = () => {
+      setDragging(false);
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+    };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+  };
+
+  return (
+    <TweakRow label={label}>
+      <div ref={trackRef} role="radiogroup" onPointerDown={onPointerDown}
+           className={dragging ? 'twk-seg dragging' : 'twk-seg'}>
+        <div className="twk-seg-thumb"
+             style={{ left: `calc(2px + ${idx} * (100% - 4px) / ${n})`,
+                      width: `calc((100% - 4px) / ${n})` }} />
+        {opts.map((o) => (
+          <button key={o.value} type="button" role="radio" aria-checked={o.value === value}>
+            {o.label}
+          </button>
+        ))}
+      </div>
+    </TweakRow>
+  );
+}
+
+function TweakSelect({ label, value, options, onChange }) {
+  return (
+    <TweakRow label={label}>
+      <select className="twk-field" value={value} onChange={(e) => onChange(e.target.value)}>
+        {options.map((o) => {
+          const v = typeof o === 'object' ? o.value : o;
+          const l = typeof o === 'object' ? o.label : o;
+          return <option key={v} value={v}>{l}</option>;
+        })}
+      </select>
+    </TweakRow>
+  );
+}
+
+function TweakText({ label, value, placeholder, onChange }) {
+  return (
+    <TweakRow label={label}>
+      <input className="twk-field" type="text" value={value} placeholder={placeholder}
+             onChange={(e) => onChange(e.target.value)} />
+    </TweakRow>
+  );
+}
+
+function TweakNumber({ label, value, min, max, step = 1, unit = '', onChange }) {
+  const clamp = (n) => {
+    if (min != null && n < min) return min;
+    if (max != null && n > max) return max;
+    return n;
+  };
+  const startRef = React.useRef({ x: 0, val: 0 });
+  const onScrubStart = (e) => {
+    e.preventDefault();
+    startRef.current = { x: e.clientX, val: value };
+    const decimals = (String(step).split('.')[1] || '').length;
+    const move = (ev) => {
+      const dx = ev.clientX - startRef.current.x;
+      const raw = startRef.current.val + dx * step;
+      const snapped = Math.round(raw / step) * step;
+      onChange(clamp(Number(snapped.toFixed(decimals))));
+    };
+    const up = () => {
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+    };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+  };
+  return (
+    <div className="twk-num">
+      <span className="twk-num-lbl" onPointerDown={onScrubStart}>{label}</span>
+      <input type="number" value={value} min={min} max={max} step={step}
+             onChange={(e) => onChange(clamp(Number(e.target.value)))} />
+      {unit && <span className="twk-num-unit">{unit}</span>}
+    </div>
+  );
+}
+
+function TweakColor({ label, value, onChange }) {
+  return (
+    <div className="twk-row twk-row-h">
+      <div className="twk-lbl"><span>{label}</span></div>
+      <input type="color" className="twk-swatch" value={value}
+             onChange={(e) => onChange(e.target.value)} />
+    </div>
+  );
+}
+
+function TweakButton({ label, onClick, secondary = false }) {
+  return (
+    <button type="button" className={secondary ? 'twk-btn secondary' : 'twk-btn'}
+            onClick={onClick}>{label}</button>
+  );
+}
+
+Object.assign(window, {
+  useTweaks, TweaksPanel, TweakSection, TweakRow,
+  TweakSlider, TweakToggle, TweakRadio, TweakSelect,
+  TweakText, TweakNumber, TweakColor, TweakButton,
+});
+
+</script>
+<script type="text/babel">
+// app.jsx — main portfolio app
+const { useState, useEffect, useRef, useCallback, useMemo } = React;
+
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "accent": "blue",
+  "displayFont": "afacad",
+  "theme": "light",
+  "tileStyle": "polaroid",
+  "heroAlign": "bottom",
+  "density": "dense",
+  "cursorOn": true,
+  "cursorStyle": "puddle",
+  "grain": true
+}/*EDITMODE-END*/;
+
+const ACCENTS = {
+  sage:    'oklch(0.74 0.05 145)',
+  clay:    'oklch(0.72 0.08 45)',
+  blue:    'oklch(0.72 0.08 240)',
+  amber:   'oklch(0.78 0.10 75)',
+  mono:    'oklch(0.85 0.005 250)',
+  violet:  '#6B5FFF',
+};
+const ACCENTS_LIGHT = {
+  sage:    'oklch(0.45 0.06 145)',
+  clay:    'oklch(0.50 0.10 45)',
+  blue:    'oklch(0.45 0.09 240)',
+  amber:   'oklch(0.52 0.10 75)',
+  mono:    'oklch(0.30 0.005 250)',
+  violet:  '#5448E0',
+};
+
+/* ─── Cursors (3 styles: blob | puddle | ripple) ─── */
+function CursorFilters() {
+  // Global SVG filters used by puddle (gooey merge) and ripple (water displacement).
+  return (
+    <svg width="0" height="0" style={{position:'absolute', pointerEvents:'none'}} aria-hidden="true">
+      <defs>
+        <filter id="gooey-puddle" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="b" />
+          <feColorMatrix in="b" mode="matrix"
+            values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 28 -14" result="g" />
+          <feComposite in="SourceGraphic" in2="g" operator="atop" />
+        </filter>
+        {/* Real water-distortion filter applied to the whole #root.
+            Turbulence + Displacement = the UI literally warps under the cursor. */}
+        <filter id="water-distort" x="0%" y="0%" width="100%" height="100%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.014 0.020" numOctaves="2" seed="4" result="noise">
+            <animate attributeName="baseFrequency" dur="18s"
+              values="0.014 0.020;0.022 0.014;0.014 0.020" repeatCount="indefinite" />
+          </feTurbulence>
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="6" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+      </defs>
+    </svg>
+  );
+}
+
+function BlobCursor({ enabled, style }) {
+  const dotRef = useRef(null);
+  const trailRef = useRef(null);
+  const ringLayerRef = useRef(null);
+  useEffect(() => {
+    if (!enabled) return;
+    document.documentElement.classList.add('cursor-on');
+    document.documentElement.classList.toggle('cursor-water', style === 'ripple');
+    let mx = window.innerWidth/2, my = window.innerHeight/2;
+    let rx = mx, ry = my, prx = mx, pry = my;
+    const onMove = e => {
+      mx = e.clientX; my = e.clientY;
+      if (style === 'ripple') {
+        document.documentElement.style.setProperty('--mx', mx + 'px');
+        document.documentElement.style.setProperty('--my', my + 'px');
+      }
+    };
+    window.addEventListener('mousemove', onMove);
+
+    // Ripple-on-click + occasional ripple while moving
+    let lastRing = 0;
+    const spawnRing = (x, y, scale = 1) => {
+      const r = document.createElement('div');
+      r.className = 'water-ring';
+      r.style.left = x + 'px';
+      r.style.top  = y + 'px';
+      r.style.setProperty('--rs', scale.toFixed(2));
+      (ringLayerRef.current || document.body).appendChild(r);
+      setTimeout(() => r.remove(), 1800);
+    };
+    const onDown = (e) => {
+      if (style !== 'ripple') return;
+      spawnRing(e.clientX, e.clientY, 1.6);
+      setTimeout(() => spawnRing(e.clientX, e.clientY, 1.2), 120);
+    };
+    window.addEventListener('mousedown', onDown);
+
+    let lastTrail = 0;
+    let raf;
+    const tick = (ts) => {
+      rx += (mx - rx) * 0.18;
+      ry += (my - ry) * 0.18;
+      const dx = rx - prx, dy = ry - pry;
+      const v = Math.min(28, Math.hypot(dx, dy));
+      if (dotRef.current) {
+        dotRef.current.style.left = rx + 'px';
+        dotRef.current.style.top  = ry + 'px';
+        dotRef.current.style.setProperty('--vel', v.toFixed(2));
+        dotRef.current.style.setProperty('--ang', (Math.atan2(dy, dx) * 180 / Math.PI).toFixed(1) + 'deg');
+        if (style === 'puddle') {
+          // strong elastic stretch along direction of motion
+          const sx = 1 + v * 0.06;
+          const sy = 1 - v * 0.038;
+          dotRef.current.style.setProperty('--sx', sx.toFixed(3));
+          dotRef.current.style.setProperty('--sy', Math.max(0.45, sy).toFixed(3));
+        }
+
+        // ripple: emit water rings while moving
+        if (style === 'ripple' && v > 1.2 && (!lastRing || ts - lastRing > 130)) {
+          lastRing = ts;
+          spawnRing(rx, ry, 0.9 + Math.min(0.6, v * 0.04));
+        }
+      }
+      prx = rx; pry = ry;
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+
+    const onOver = (e) => {
+      const t = e.target.closest?.('a, button, [data-hover], input, textarea');
+      if (!dotRef.current) return;
+      dotRef.current.classList.remove('big', 'text');
+      if (!t) return;
+      if (t.matches('input, textarea, [contenteditable]')) dotRef.current.classList.add('text');
+      else dotRef.current.classList.add('big');
+    };
+    document.addEventListener('mouseover', onOver);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mousedown', onDown);
+      document.removeEventListener('mouseover', onOver);
+      document.documentElement.classList.remove('cursor-on');
+      document.documentElement.classList.remove('cursor-water');
+    };
+  }, [enabled, style]);
+  if (!enabled) return null;
+
+  if (style === 'puddle') {
+    return (
+      <>
+        <CursorFilters />
+        <div ref={trailRef} className="cur-trail-layer" />
+        <div ref={dotRef} className="puddle-cursor">
+          <svg viewBox="0 0 100 100" aria-hidden="true" className="puddle-svg">
+            <path className="puddle-body" d="M50,18 C72,12 90,28 88,52 C92,72 70,90 50,86 C30,90 12,74 12,52 C10,30 28,16 50,18 Z" />
+          </svg>
+        </div>
+      </>
+    );
+  }
+
+  if (style === 'ripple') {
+    return (
+      <>
+        <CursorFilters />
+        <div className="water-veil" />
+        <div ref={ringLayerRef} className="water-ring-layer" />
+        <div ref={dotRef} className="ripple-cursor">
+          <span className="rc-core" />
+          <span className="rc-halo" />
+        </div>
+      </>
+    );
+  }
+
+  // default — blob
+  return (
+    <div ref={dotRef} className="blob-cursor">
+      <svg viewBox="0 0 100 100" aria-hidden="true">
+        <path className="blob-outer" d="M50,8 C72,6 94,22 94,46 C96,68 80,90 56,94 C32,98 10,82 6,58 C2,36 18,12 50,8 Z" />
+        <path className="blob-inner" d="M50,22 C66,20 82,32 80,52 C82,68 66,80 48,80 C30,80 18,66 20,48 C22,32 36,22 50,22 Z" />
+      </svg>
+    </div>
+  );
+}
+
+/* ─── Loader ─── */
+function Loader({ onDone }) {
+  const ref = useRef(null);
+  const progRef = useRef(null);
+  const subRef = useRef(null);
+  useEffect(() => {
+    const final = 'Raz Silberman — Portfolio';
+    const glyphs = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789·×#@%&*';
+    // Each char gets a "lock-in" frame; before that, it scrambles.
+    const lockAt = final.split('').map((_, i) => 6 + i * 2 + Math.floor(Math.random() * 4));
+    let frame = 0;
+    const totalFrames = Math.max(...lockAt) + 4;
+    const scrambleId = setInterval(() => {
+      frame++;
+      const out = final.split('').map((ch, i) => {
+        if (ch === ' ' || ch === '—') return ch;
+        if (frame >= lockAt[i]) return ch;
+        return glyphs[Math.floor(Math.random() * glyphs.length)];
+      }).join('');
+      if (subRef.current) subRef.current.textContent = out;
+      if (frame >= totalFrames) clearInterval(scrambleId);
+    }, 45);
+
+    const t1 = setTimeout(() => progRef.current?.classList.add('run'), 100);
+    const t2 = setTimeout(() => {
+      ref.current?.classList.add('out');
+      setTimeout(onDone, 800);
+    }, 1900);
+    return () => { clearInterval(scrambleId); clearTimeout(t1); clearTimeout(t2); };
+  }, [onDone]);
+  return (
+    <div id="loader" ref={ref}>
+      <div className="loader-mark">RS<span className="accent">·</span></div>
+      <div className="loader-progress" ref={progRef}></div>
+      <div className="loader-sub" ref={subRef}>Raz Silberman — Portfolio</div>
+    </div>
+  );
+}
+
+/* ─── Nav ─── */
+function Nav({ page, setPage, onCmdK, theme, toggleTheme }) {
+  const [compact, setCompact] = useState(false);
+  const [hidden, setHidden] = useState(false);
+  const lastY = useRef(0);
+  useEffect(() => {
+    const onScroll = () => {
+      const y = window.scrollY;
+      setCompact(y > 60);
+      setHidden(y > lastY.current && y > 120);
+      lastY.current = y;
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+  const items = [
+    { id: 'home',   label: 'Index' },
+    { id: 'work',   label: 'Work' },
+    { id: 'about',  label: 'About' },
+    { id: 'resume', label: 'Resume' },
+  ];
+  return (
+    <nav className={`top ${compact ? 'compact' : ''} ${hidden ? 'hidden' : ''}`}>
+      <a className="nav-logo" href="#" onClick={e => { e.preventDefault(); setPage('home'); }}>
+        Raz<span className="accent">.</span>
+      </a>
+      <div className="nav-right">
+        <ul className="nav-links">
+          {items.map(it => (
+            <li key={it.id}>
+              <a href="#" className={page === it.id ? 'active' : ''}
+                 onClick={e => { e.preventDefault(); setPage(it.id); }}>{it.label}</a>
+            </li>
+          ))}
+        </ul>
+        <div className="nav-actions">
+          <span className="avail"><span className="avail-dot"></span>Available</span>
+          <button className="icon-btn" onClick={onCmdK} title="Search (⌘K)" aria-label="Open command palette">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="11" cy="11" r="7"/><path d="M21 21l-4.5-4.5"/>
+            </svg>
+          </button>
+          <button className="icon-btn" onClick={toggleTheme} title={`${theme === 'dark' ? 'Light' : 'Dark'} mode`} aria-label="Toggle theme">
+            {theme === 'dark' ? (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+            ) : (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            )}
+          </button>
+        </div>
+      </div>
+    </nav>
+  );
+}
+
+/* ─── Hero ─── */
+function Hero({ align }) {
+  const [up, setUp] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setUp(true), 60);
+    return () => clearTimeout(t);
+  }, []);
+  return (
+    <section className="hero" data-align={align}>
+      <div className={`hero-eyebrow ${up ? 'up' : ''}`}>
+        <span className="avail-dot" style={{display:'inline-block'}}></span>
+        <span>Product designer · Tel Aviv · Open to work</span>
+      </div>
+      <h1 className={`hero-title ${up ? 'up' : ''}`}>
+        <span className="word"><span className="word-inner">Designing</span></span>{' '}
+        <span className="word"><span className="word-inner">software</span></span>{' '}
+        <span className="word"><span className="word-inner">that's</span></span>
+        <br/>
+        <span className="word"><span className="word-inner accent">honest</span></span>{' '}
+        <span className="word"><span className="word-inner">with</span></span>{' '}
+        <span className="word"><span className="word-inner"><em>itself.</em></span></span>
+      </h1>
+      <div className={`hero-bottom ${up ? 'up' : ''}`}>
+        <p className="hero-desc">
+          I'm Raz — a product designer working on B2B SaaS, knowledge management, and
+          applied-AI surfaces. Six years in. Currently designing the help-center stack
+          and design system at Quill.
+        </p>
+        <div className="hero-meta">
+          <div><b>Currently</b></div>
+          <div>Senior at Quill</div>
+          <div style={{marginTop:'.4rem'}}><b>Based</b></div>
+          <div>Tel Aviv · Remote-friendly</div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── Work tile ─── */
+function Tile({ p, idx, onOpen, style }) {
+  return (
+    <div className={`tile ${p.tile === 'wide' ? 'wide' : ''} ${p.tile === 'tall' ? 'tall' : ''} reveal`}
+         style={{transitionDelay: `${idx * 80}ms`}}
+         onClick={() => onOpen(p.id)} data-hover>
+      <div className="tile-img"
+           style={{ background: `linear-gradient(135deg, ${p.swatch.from} 0%, ${p.swatch.to} 100%)` }}>
+        <div className="tile-img-mark">{p.n}</div>
+        <div className="tile-img-bg" style={{ color: p.swatch.mark }}>{p.n}</div>
+        <div className="tile-overlay"></div>
+        <div className="tile-label">View case study →</div>
+        <div className="tile-arrow-corner">→</div>
+      </div>
+      {style !== 'index' && style !== 'fullbleed' && (
+        <div className="tile-meta">
+          <span className="tile-name">{p.title}</span>
+          <span className="tile-tags">{p.kind} · {p.year}</span>
+        </div>
+      )}
+      {style === 'fullbleed' && (
+        <>
+          <span className="tile-num">{p.n}</span>
+          <span className="tile-name">{p.title}</span>
+          <span className="tile-tags">{p.kind}</span>
+          <span className="tile-arrow">→</span>
+        </>
+      )}
+      {style === 'index' && (
+        <>
+          <span className="tile-num">{p.n}</span>
+          <span className="tile-name">{p.title}</span>
+          <span className="tile-tags">{p.kind}</span>
+          <span className="tile-year">{p.year}</span>
+          <span className="tile-arrow">→</span>
+        </>
+      )}
+    </div>
+  );
+}
+
+/* ─── Home page ─── */
+function Home({ onOpen, tweaks, openContact }) {
+  return (
+    <div className="page active">
+      <Hero align={tweaks.heroAlign} />
+
+      <section className="section" id="work">
+        <div className="section-head">
+          <h2>Selected Work</h2>
+          <span className="right">04 · 2022 — 2025</span>
+        </div>
+        <div className={`work-grid ${tweaks.tileStyle}`}>
+          {window.PROJECTS.map((p, i) => (
+            <Tile key={p.id} p={p} idx={i} onOpen={onOpen} style={tweaks.tileStyle} />
+          ))}
+        </div>
+      </section>
+
+      <section className="about" id="about">
+        <div className="about-photo-col">
+          <div className="about-photo clip-reveal">
+            <div className="inner">
+              <div className="mono">RS</div>
+              <div className="note">Photo placeholder</div>
+            </div>
+          </div>
+        </div>
+        <div className="about-text">
+          <div className="about-eyebrow clip-reveal">About</div>
+          <h2 className="about-headline clip-reveal" style={{transitionDelay:'.1s'}}>
+            I design products that <em>respect the people using them.</em>
+          </h2>
+          <p className="clip-reveal" style={{transitionDelay:'.15s'}}>
+            Six years in B2B SaaS. I'm at my best when a problem looks unfixable from
+            the outside — when the real shape of it is hiding under three layers of
+            "we've always done it this way."
+          </p>
+          <p className="clip-reveal" style={{transitionDelay:'.2s'}}>
+            Lately that's meant a lot of work on knowledge tools and applied-AI
+            surfaces — places where the product has to be honest about what it knows,
+            what it's guessing, and what it'd like you to teach it.
+          </p>
+          <p className="clip-reveal" style={{transitionDelay:'.25s'}}>
+            I work end to end. Research, structure, interaction, visual, and the
+            unglamorous follow-through that makes work actually ship.
+          </p>
+          <div className="cap-list clip-reveal" style={{transitionDelay:'.3s'}}>
+            {window.RESUME.capabilities.slice(0, 8).map(c => (
+              <span key={c} className="cap-pill">{c}</span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="contact" id="contact">
+        <div className="contact-eyebrow">Open to work · Q3 2025</div>
+        <h2 className="contact-headline">
+          Let's make<br/>something <em>good.</em>
+        </h2>
+        <a className="contact-btn" href="mailto:hello@razsilberman.com">
+          hello@razsilberman.com
+          <span>→</span>
+        </a>
+        <ul className="contact-links">
+          <li><a href="#">Read.cv</a></li>
+          <li><a href="#">LinkedIn</a></li>
+          <li><a href="#">Are.na</a></li>
+          <li><a href="#">Twitter</a></li>
+        </ul>
+      </section>
+
+      <footer>
+        <span>© 2025 Raz Silberman</span>
+        <span>Set in Afacad Flux + Afacad</span>
+      </footer>
+    </div>
+  );
+}
+
+/* ─── Work index page (filterable) ─── */
+function WorkIndex({ onOpen }) {
+  const [filter, setFilter] = useState('all');
+  const [sort, setSort]     = useState('recent');
+  const kinds = useMemo(() => {
+    const set = new Set(window.PROJECTS.map(p => p.kind));
+    return ['all', ...Array.from(set)];
+  }, []);
+  const items = useMemo(() => {
+    let list = window.PROJECTS.filter(p => filter === 'all' || p.kind === filter);
+    if (sort === 'recent') list = [...list].sort((a, b) => b.year.localeCompare(a.year));
+    if (sort === 'name')   list = [...list].sort((a, b) => a.title.localeCompare(b.title));
+    return list;
+  }, [filter, sort]);
+  return (
+    <div className="page active">
+      <section className="section" style={{paddingTop:'9rem'}}>
+        <div className="section-head" style={{borderTop:'none', paddingTop:0}}>
+          <h2>All Work</h2>
+          <span className="right">{window.PROJECTS.length} projects · 2022 — 2025</span>
+        </div>
+        <div className="filters">
+          {kinds.map(k => (
+            <button key={k} className={`filter-chip ${filter === k ? 'active' : ''}`}
+                    onClick={() => setFilter(k)}>{k === 'all' ? 'All' : k}</button>
+          ))}
+          <span className="filter-spacer"></span>
+          <span className="filter-sort">Sort:</span>
+          <button className={`filter-chip ${sort === 'recent' ? 'active' : ''}`} onClick={() => setSort('recent')}>Recent</button>
+          <button className={`filter-chip ${sort === 'name' ? 'active' : ''}`} onClick={() => setSort('name')}>A–Z</button>
+        </div>
+        <div className="work-grid index">
+          {items.map((p, i) => (
+            <Tile key={p.id} p={p} idx={i} onOpen={onOpen} style="index" />
+          ))}
+        </div>
+      </section>
+      <footer>
+        <span>© 2025 Raz Silberman</span>
+        <span>{items.length} of {window.PROJECTS.length} shown</span>
+      </footer>
+    </div>
+  );
+}
+
+/* ─── About page (just home about + extras) ─── */
+function About({ onOpen }) {
+  return (
+    <div className="page active">
+      <section className="about" style={{paddingTop:'9rem', borderTop:'none'}}>
+        <div className="about-photo-col">
+          <div className="about-photo">
+            <div className="inner">
+              <div className="mono">RS</div>
+              <div className="note">Photo placeholder</div>
+            </div>
+          </div>
+        </div>
+        <div className="about-text">
+          <div className="about-eyebrow">About</div>
+          <h2 className="about-headline">
+            Six years in. Still <em>genuinely curious</em> about the work.
+          </h2>
+          <p>
+            I'm Raz. I design B2B SaaS — knowledge tools, design systems, and the kind of
+            product surfaces that AI is starting to live inside. Currently a senior at
+            Quill, where I lead the help center product and the company's design system.
+          </p>
+          <p>
+            Before that I was at Northbeam working on first-run experiences for
+            two-audience platforms, and at Studio Faun in Berlin doing client work
+            across fintech, climate, and healthcare.
+          </p>
+          <p>
+            I studied visual communication at Bezalel. I think a lot about the
+            difference between a product that looks finished and one that <em>is</em>
+            finished. The second is harder. Both are worth doing.
+          </p>
+          <p>
+            Outside of work: long walks, slow cooking, and a stubborn analog film habit
+            that has cost me more than I'd like to admit.
+          </p>
+          <div className="cap-list">
+            {window.RESUME.capabilities.map(c => (
+              <span key={c} className="cap-pill">{c}</span>
+            ))}
+          </div>
+        </div>
+      </section>
+      <footer>
+        <span>© 2025 Raz Silberman</span>
+        <span>Tel Aviv · Remote-friendly</span>
+      </footer>
+    </div>
+  );
+}
+
+/* ─── Resume page ─── */
+function Resume() {
+  const r = window.RESUME;
+  return (
+    <div className="page active">
+      <section className="resume">
+        <div className="resume-head">
+          <div>
+            <div className="role">Resume · CV · v2025.3</div>
+            <h1>{r.name}</h1>
+            <p>{r.blurb}</p>
+          </div>
+          <ul className="resume-contact">
+            {r.contact.map(c => (
+              <li key={c.k}><span className="k">{c.k}</span>{c.v}</li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="resume-block">
+          <h2>Experience</h2>
+          {r.experience.map(e => (
+            <div key={e.org} className="resume-row">
+              <div className="when">
+                {e.when}
+                <span className="where">{e.where}</span>
+              </div>
+              <div>
+                <div className="role-name">{e.role}</div>
+                <div className="org">{e.org}</div>
+                <ul>{e.notes.map((n, i) => <li key={i}>{n}</li>)}</ul>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="resume-block">
+          <h2>Education</h2>
+          {r.education.map(e => (
+            <div key={e.org} className="resume-row">
+              <div className="when">{e.when}</div>
+              <div>
+                <div className="role-name">{e.role}</div>
+                <div className="org">{e.org}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="resume-block">
+          <h2>Speaking</h2>
+          {r.speaking.map(s => (
+            <div key={s.role} className="resume-row">
+              <div className="when">{s.when}</div>
+              <div>
+                <div className="role-name">{s.role}</div>
+                <div className="org">{s.org}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="resume-block">
+          <h2>Capabilities</h2>
+          <div className="cap-grid">
+            {r.capabilities.map(c => <span key={c} className="cap-pill">{c}</span>)}
+          </div>
+        </div>
+      </section>
+      <footer>
+        <span>© 2025 Raz Silberman</span>
+        <a href="#" onClick={e => e.preventDefault()}>Download PDF →</a>
+      </footer>
+    </div>
+  );
+}
+
+/* ─── Project / case study page ─── */
+function Project({ projectId, onBack, onOpen }) {
+  const p = window.PROJECTS.find(x => x.id === projectId) || window.PROJECTS[0];
+  const next = window.PROJECTS[(window.PROJECTS.indexOf(p) + 1) % window.PROJECTS.length];
+  const [activeSection, setActiveSection] = useState(p.sections[0].id);
+  useEffect(() => {
+    const onScroll = () => {
+      let cur = p.sections[0].id;
+      for (const s of p.sections) {
+        const el = document.getElementById('s-' + s.id);
+        if (el && window.scrollY >= el.offsetTop - 220) cur = s.id;
+      }
+      setActiveSection(cur);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [p]);
+  return (
+    <div className="page active">
+      <a className="back-btn" href="#" onClick={e => { e.preventDefault(); onBack(); }}>
+        <span>←</span> All work
+      </a>
+
+      <section className="proj-hero">
+        <div className="proj-hero-bg"
+             style={{ background: `linear-gradient(160deg, ${p.swatch.from} 0%, ${p.swatch.to} 100%)` }} />
+        <div className="proj-hero-glow" />
+        <div className="proj-hero-inner">
+          <div>
+            <div className="proj-eyebrow">{p.kind} · {p.year}</div>
+            <h1 className="proj-hero-title">{p.title}<br/><em>{p.subtitle}</em></h1>
+            <p className="proj-summary">{p.summary}</p>
+          </div>
+          <div className="proj-meta">
+            <div className="row"><div className="k">Role</div><div className="v">{p.role}</div></div>
+            <div className="row"><div className="k">Timeline</div><div className="v">{p.timeline}</div></div>
+            <div className="row"><div className="k">Platform</div><div className="v">{p.platform}</div></div>
+            <div className="row"><div className="k">Team</div><div className="v">{p.team}</div></div>
+          </div>
+        </div>
+      </section>
+
+      <div className="proj-gallery">
+        {p.gallery.map((g, i) => (
+          <div key={i} className={`g-cell ${g.kind}`} style={{background:g.tone}}>
+            <div className="g-fill">— {g.label}</div>
+          </div>
+        ))}
+      </div>
+
+      <div className="proj-content">
+        <aside className="proj-sidebar">
+          <div className="sidebar-label">Contents</div>
+          <ul className="sidebar-nav">
+            {p.sections.map(s => (
+              <li key={s.id}>
+                <a href={`#s-${s.id}`} className={activeSection === s.id ? 'active' : ''}>{s.title}</a>
+              </li>
+            ))}
+          </ul>
+        </aside>
+        <div>
+          {p.sections.map(s => (
+            <div key={s.id} id={`s-${s.id}`} className="proj-section">
+              <h2 className="proj-section-title">{s.title}</h2>
+              {s.kind === 'outcomes' ? (
+                <div className="outcome-grid">
+                  {s.items.map(it => (
+                    <div key={it.label} className="outcome-cell">
+                      <div className="outcome-num">{it.num}</div>
+                      <div className="outcome-label">{it.label}</div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                s.body.map((para, i) => <p key={i}>{para}</p>)
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="next-proj" onClick={() => onOpen(next.id)} data-hover>
+        <div>
+          <div className="next-label">Next project</div>
+          <div className="next-title">{next.title}</div>
+        </div>
+        <div className="next-arrow">→</div>
+      </div>
+      <footer>
+        <span>© 2025 Raz Silberman</span>
+        <a href="#" onClick={e => { e.preventDefault(); onBack(); }}>← Back to work</a>
+      </footer>
+    </div>
+  );
+}
+
+/* ─── Cmd-K palette ─── */
+function CmdK({ open, onClose, setPage, openProject, toggleTheme }) {
+  const [q, setQ] = useState('');
+  const [sel, setSel] = useState(0);
+  const inputRef = useRef(null);
+  useEffect(() => {
+    if (open) { setQ(''); setSel(0); setTimeout(() => inputRef.current?.focus(), 50); }
+  }, [open]);
+  const all = useMemo(() => [
+    { group: 'Pages', label: 'Home',   sub: '↵', action: () => setPage('home') },
+    { group: 'Pages', label: 'Work',   sub: '↵', action: () => setPage('work') },
+    { group: 'Pages', label: 'About',  sub: '↵', action: () => setPage('about') },
+    { group: 'Pages', label: 'Resume', sub: '↵', action: () => setPage('resume') },
+    ...window.PROJECTS.map(p => ({
+      group: 'Projects', label: p.title, sub: p.kind,
+      action: () => openProject(p.id),
+    })),
+    { group: 'Actions', label: 'Toggle theme', sub: '⇧⌘L', action: toggleTheme },
+    { group: 'Actions', label: 'Email Raz',    sub: '↵',
+      action: () => window.location.href = 'mailto:hello@razsilberman.com' },
+  ], [setPage, openProject, toggleTheme]);
+  const filtered = useMemo(() => {
+    if (!q) return all;
+    return all.filter(i => i.label.toLowerCase().includes(q.toLowerCase()));
+  }, [q, all]);
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e) => {
+      if (e.key === 'ArrowDown') { e.preventDefault(); setSel(s => Math.min(s + 1, filtered.length - 1)); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); setSel(s => Math.max(s - 1, 0)); }
+      else if (e.key === 'Enter')   {
+        e.preventDefault();
+        filtered[sel]?.action(); onClose();
+      } else if (e.key === 'Escape') { onClose(); }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [open, filtered, sel, onClose]);
+  // group items
+  const groups = useMemo(() => {
+    const map = {};
+    filtered.forEach((it, i) => {
+      (map[it.group] = map[it.group] || []).push({ ...it, _i: i });
+    });
+    return map;
+  }, [filtered]);
+  return (
+    <div className={`cmdk-overlay ${open ? 'open' : ''}`} onClick={onClose}>
+      <div className="cmdk" onClick={e => e.stopPropagation()}>
+        <div className="cmdk-input-row">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="11" cy="11" r="7"/><path d="M21 21l-4.5-4.5"/>
+          </svg>
+          <input ref={inputRef} className="cmdk-input"
+                 placeholder="Search pages, projects, actions…"
+                 value={q} onChange={e => { setQ(e.target.value); setSel(0); }} />
+          <span className="kbd">esc</span>
+        </div>
+        <div className="cmdk-list">
+          {Object.entries(groups).map(([g, items]) => (
+            <div key={g}>
+              <div className="cmdk-group">{g}</div>
+              {items.map(it => (
+                <div key={it.label} className={`cmdk-item ${it._i === sel ? 'sel' : ''}`}
+                     onMouseEnter={() => setSel(it._i)}
+                     onClick={() => { it.action(); onClose(); }}>
+                  <span className="ic">{g === 'Projects' ? '◆' : g === 'Actions' ? '◇' : '↗'}</span>
+                  <span className="lbl">{it.label}</span>
+                  <span className="sub">{it.sub}</span>
+                </div>
+              ))}
+            </div>
+          ))}
+          {filtered.length === 0 && (
+            <div className="cmdk-item"><span className="lbl" style={{color:'var(--muted)'}}>No results</span></div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Tweaks ─── */
+function PortfolioTweaks({ tweaks, setTweak }) {
+  return (
+    <TweaksPanel>
+      <TweakSection label="Theme" />
+      <TweakRadio  label="Mode" value={tweaks.theme}
+                   options={['dark', 'light']}
+                   onChange={v => setTweak('theme', v)} />
+      <TweakSelect label="Accent color" value={tweaks.accent}
+                   options={['sage', 'clay', 'blue', 'amber', 'mono', 'violet']}
+                   onChange={v => setTweak('accent', v)} />
+      <TweakSection label="Typography" />
+      <TweakSelect label="Display font" value={tweaks.displayFont}
+                   options={['afacad', 'serif', 'mono', 'sans']}
+                   onChange={v => setTweak('displayFont', v)} />
+      <TweakSection label="Layout" />
+      <TweakSelect label="Tile style" value={tweaks.tileStyle}
+                   options={['polaroid', 'fullbleed', 'index']}
+                   onChange={v => setTweak('tileStyle', v)} />
+      <TweakRadio  label="Hero alignment" value={tweaks.heroAlign}
+                   options={['top', 'center', 'bottom']}
+                   onChange={v => setTweak('heroAlign', v)} />
+      <TweakRadio  label="Density" value={tweaks.density}
+                   options={['loose', 'standard', 'dense']}
+                   onChange={v => setTweak('density', v)} />
+      <TweakSection label="Other" />
+      <TweakToggle label="Custom cursor" value={tweaks.cursorOn}
+                   onChange={v => setTweak('cursorOn', v)} />
+      <TweakSelect label="Cursor style" value={tweaks.cursorStyle}
+                   options={['blob', 'puddle', 'ripple']}
+                   onChange={v => setTweak('cursorStyle', v)} />
+      <TweakToggle label="Film grain" value={tweaks.grain}
+                   onChange={v => setTweak('grain', v)} />
+    </TweaksPanel>
+  );
+}
+
+/* ─── App ─── */
+function App() {
+  const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
+  const [loading, setLoading] = useState(true);
+  const [page, setPageRaw] = useState('home');
+  const [projectId, setProjectId] = useState(null);
+  const [wipe, setWipe] = useState(''); // '' | 'in' | 'out'
+  const [cmdkOpen, setCmdkOpen] = useState(false);
+  const [scrollPct, setScrollPct] = useState(0);
+
+  // apply tweaks to document
+  useEffect(() => {
+    const root = document.documentElement;
+    root.dataset.theme = tweaks.theme;
+    root.dataset.density = tweaks.density;
+    root.dataset.displayFont = tweaks.displayFont;
+    const acc = tweaks.theme === 'light' ? ACCENTS_LIGHT[tweaks.accent] : ACCENTS[tweaks.accent];
+    root.style.setProperty('--accent', acc);
+  }, [tweaks]);
+
+  const setPage = useCallback((id, opts = {}) => {
+    setWipe('in');
+    setTimeout(() => {
+      if (id === 'project') setProjectId(opts.id);
+      setPageRaw(id);
+      window.scrollTo(0, 0);
+      setWipe('out');
+      setTimeout(() => setWipe(''), 600);
+    }, 480);
+  }, []);
+
+  const openProject = useCallback((id) => setPage('project', { id }), [setPage]);
+
+  const toggleTheme = useCallback(() => {
+    setTweak('theme', tweaks.theme === 'dark' ? 'light' : 'dark');
+  }, [tweaks.theme, setTweak]);
+
+  // cmd+k
+  useEffect(() => {
+    const onKey = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault(); setCmdkOpen(o => !o);
+      }
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === 'l') {
+        e.preventDefault(); toggleTheme();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [toggleTheme]);
+
+  // scroll progress
+  useEffect(() => {
+    const onScroll = () => {
+      const doc = document.documentElement;
+      const max = doc.scrollHeight - doc.clientHeight;
+      setScrollPct(max > 0 ? (doc.scrollTop / max) * 100 : 0);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [page]);
+
+  // reveal observer
+  useEffect(() => {
+    const t = setTimeout(() => {
+      const els = document.querySelectorAll('.reveal:not(.visible), .clip-reveal:not(.visible)');
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+        });
+      }, { threshold: .1 });
+      els.forEach(el => {
+        const r = el.getBoundingClientRect();
+        if (r.top < window.innerHeight * .92) el.classList.add('visible');
+        else io.observe(el);
+      });
+      return () => io.disconnect();
+    }, 100);
+    return () => clearTimeout(t);
+  }, [page, projectId]);
+
+  return (
+    <>
+      <div className={`grain ${tweaks.grain ? '' : 'off'}`}></div>
+      <div className="scroll-bar" style={{ height: scrollPct + '%' }}></div>
+      <BlobCursor enabled={tweaks.cursorOn} style={tweaks.cursorStyle} />
+      {loading && <Loader onDone={() => setLoading(false)} />}
+      <div className={`wipe ${wipe}`}></div>
+
+      <Nav page={page} setPage={(id) => setPage(id)} onCmdK={() => setCmdkOpen(true)}
+           theme={tweaks.theme} toggleTheme={toggleTheme} />
+
+      {page === 'home'    && <Home   onOpen={openProject} tweaks={tweaks} />}
+      {page === 'work'    && <WorkIndex onOpen={openProject} />}
+      {page === 'about'   && <About  onOpen={openProject} />}
+      {page === 'resume'  && <Resume />}
+      {page === 'project' && <Project projectId={projectId}
+                                      onBack={() => setPage('work')}
+                                      onOpen={openProject} />}
+
+      <CmdK open={cmdkOpen} onClose={() => setCmdkOpen(false)}
+            setPage={(id) => setPage(id)} openProject={openProject}
+            toggleTheme={toggleTheme} />
+
+      <PortfolioTweaks tweaks={tweaks} setTweak={setTweak} />
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+
+</script>
+</body>
+</html>
