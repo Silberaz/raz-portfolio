@@ -1116,3 +1116,130 @@ footer a:hover { color: var(--accent); }
   .resume-contact { text-align: left; }
   .resume-row { grid-template-columns: 1fr; gap: .75rem; }
 }
+
+/* ─── Case study — extended section infrastructure ─── */
+
+/* Hero image (rendered between proj-hero and proj-gallery) */
+.proj-hero-image {
+  border-top: 1px solid var(--rim-soft);
+  border-bottom: 1px solid var(--rim-soft);
+  background: var(--surface);
+  display: block;
+}
+.proj-hero-image img {
+  display: block; width: 100%; height: auto; max-height: 78vh; object-fit: cover;
+}
+
+/* Gallery — real images replace the hatched placeholders */
+.g-cell.has-img { background: var(--surface); }
+.g-cell.has-img::before { display: none; }
+.g-cell .g-img {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; display: block;
+  transition: transform .6s var(--expo);
+}
+.g-cell.has-img:hover .g-img { transform: scale(1.02); }
+
+/* Bolded-label list — used for Problem, Goals, Research, Insights */
+.proj-list {
+  list-style: none; padding: 0; margin: .25rem 0 1.5rem;
+  max-width: 42rem;
+  display: flex; flex-direction: column; gap: 1rem;
+}
+.proj-list li {
+  position: relative; padding-left: 1.25rem;
+  font-size: 1.02rem; color: var(--ink-dim); line-height: 1.7;
+}
+.proj-list li::before {
+  content: ''; position: absolute; left: 0; top: .7em;
+  width: .6rem; height: 1px; background: var(--accent);
+}
+.proj-list li strong {
+  color: var(--ink); font-weight: 700; margin-right: .35rem;
+}
+
+/* Media — large stack OR small-thumb grid */
+.proj-media {
+  margin: 2rem 0 2.5rem;
+  display: flex; flex-direction: column; gap: 1.75rem;
+}
+.proj-media.thumbs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem;
+}
+.proj-media-item { margin: 0; display: flex; flex-direction: column; gap: .65rem; }
+.proj-media-item img {
+  display: block; width: 100%; height: auto;
+  background: var(--surface);
+  border: 1px solid var(--rim-soft); border-radius: 4px;
+}
+.proj-media-item.k-sq img    { aspect-ratio: 4 / 3;  object-fit: cover; }
+.proj-media-item.k-tall img  { aspect-ratio: 3 / 4;  object-fit: cover; }
+.proj-media.thumbs .proj-media-item img { aspect-ratio: 4 / 3; object-fit: cover; }
+.proj-caption {
+  font-family: var(--ff-mono); font-size: .68rem; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--muted);
+}
+
+/* Subsections — used inside Admin Experience */
+.proj-subsection {
+  margin: 2.5rem 0 1rem;
+  padding-top: 2rem;
+  border-top: 1px dashed var(--rim-soft);
+  scroll-margin-top: 6rem;
+}
+.proj-sub-title {
+  font-family: var(--ff-display); font-weight: 700;
+  font-size: 1.2rem; letter-spacing: -.01em; color: var(--ink);
+  margin-bottom: .9rem;
+}
+
+/* Before / After comparison */
+.proj-beforeafter {
+  margin: 2rem 0 1rem;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;
+}
+.proj-beforeafter figure { margin: 0; display: flex; flex-direction: column; gap: .65rem; }
+.proj-beforeafter img {
+  width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover;
+  background: var(--surface);
+  border: 1px solid var(--rim-soft); border-radius: 4px;
+}
+.proj-beforeafter figcaption {
+  font-family: var(--ff-mono); font-size: .68rem; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--ink-dim);
+  display: flex; align-items: center; gap: .65rem;
+}
+.ba-tag {
+  font-family: var(--ff-mono); font-size: .58rem; letter-spacing: .14em;
+  padding: .25rem .55rem; border-radius: 2px;
+  background: var(--rim-soft); color: var(--ink-dim);
+}
+.ba-tag.after { background: var(--accent-lo); color: var(--accent); }
+
+/* Placeholder sections (Outcome, Reflection) */
+.proj-section.is-placeholder .proj-section-title {
+  color: var(--muted);
+}
+.proj-placeholder {
+  max-width: 42rem; padding: 1.5rem 1.75rem;
+  border: 1px dashed var(--rim);
+  border-radius: 4px; background: var(--surface);
+}
+.proj-placeholder p {
+  color: var(--ink-dim); font-size: .98rem; line-height: 1.75; margin: 0;
+}
+.proj-placeholder p + p { margin-top: .8rem; }
+.proj-placeholder-tag {
+  font-family: var(--ff-mono); font-size: .6rem; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--muted); margin-bottom: .9rem;
+}
+
+/* Mobile overrides for the new bits */
+@media (max-width: 900px) {
+  .proj-hero-image img { max-height: 50vh; }
+  .proj-beforeafter { grid-template-columns: 1fr; }
+  .proj-media.thumbs { grid-template-columns: repeat(2, 1fr); }
+  .proj-subsection { padding-top: 1.5rem; margin-top: 2rem; }
+}

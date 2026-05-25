@@ -672,6 +672,86 @@ function Resume() {
   );
 }
 
+/* ─── Project page — section media (image grid + captions) ─── */
+function ProjectMedia({ items }) {
+  if (!items || !items.length) return null;
+  const allThumb = items.length > 1 && items.every(m => m.kind === 'sq');
+  return (
+    <div className={`proj-media ${allThumb ? 'thumbs' : 'stack'}`}>
+      {items.map((m, i) => (
+        <figure key={i} className={`proj-media-item k-${m.kind || 'wide'}`}>
+          <img src={m.src} alt={m.caption || ''} loading="lazy" />
+          {m.caption && <figcaption className="proj-caption">{m.caption}</figcaption>}
+        </figure>
+      ))}
+    </div>
+  );
+}
+
+/* ─── Project page — one section (handles every section variant) ─── */
+function ProjectSection({ s }) {
+  if (s.kind === 'outcomes') {
+    return (
+      <div id={`s-${s.id}`} className="proj-section">
+        <h2 className="proj-section-title">{s.title}</h2>
+        <div className="outcome-grid">
+          {s.items.map(it => (
+            <div key={it.label} className="outcome-cell">
+              <div className="outcome-num">{it.num}</div>
+              <div className="outcome-label">{it.label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+  return (
+    <div id={`s-${s.id}`} className={`proj-section ${s.placeholder ? 'is-placeholder' : ''}`}>
+      <h2 className="proj-section-title">{s.title}</h2>
+      {s.placeholder ? (
+        <div className="proj-placeholder">
+          <div className="proj-placeholder-tag">Placeholder · to fill in</div>
+          {s.body?.map((para, i) => <p key={i}>{para}</p>)}
+        </div>
+      ) : (
+        <>
+          {s.body?.map((para, i) => <p key={`b${i}`}>{para}</p>)}
+          {s.list && (
+            <ul className="proj-list">
+              {s.list.map((it, i) => (
+                <li key={i}><strong>{it.label}</strong> {it.text}</li>
+              ))}
+            </ul>
+          )}
+          {s.outro?.map((para, i) => <p key={`o${i}`}>{para}</p>)}
+          {s.media && <ProjectMedia items={s.media} />}
+          {s.subsections?.map((sub, i) => (
+            <div key={sub.id || i}
+                 id={sub.id ? `s-${sub.id}` : undefined}
+                 className="proj-subsection">
+              <h3 className="proj-sub-title">{sub.title}</h3>
+              {sub.body?.map((para, j) => <p key={j}>{para}</p>)}
+              {sub.media && <ProjectMedia items={sub.media} />}
+            </div>
+          ))}
+          {s.beforeAfter && (
+            <div className="proj-beforeafter">
+              <figure>
+                <img src={s.beforeAfter.before.src} alt={s.beforeAfter.before.label || 'before'} loading="lazy" />
+                <figcaption><span className="ba-tag">Before</span>{s.beforeAfter.before.label}</figcaption>
+              </figure>
+              <figure>
+                <img src={s.beforeAfter.after.src} alt={s.beforeAfter.after.label || 'after'} loading="lazy" />
+                <figcaption><span className="ba-tag after">After</span>{s.beforeAfter.after.label}</figcaption>
+              </figure>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
 /* ─── Project / case study page ─── */
 function Project({ projectId, onBack, onOpen }) {
   const p = window.PROJECTS.find(x => x.id === projectId) || window.PROJECTS[0];
@@ -701,7 +781,9 @@ function Project({ projectId, onBack, onOpen }) {
         <div className="proj-hero-glow" />
         <div className="proj-hero-inner">
           <div>
-            <div className="proj-eyebrow">{p.kind} · {p.year}</div>
+            <div className="proj-eyebrow">
+              {p.company ? `${p.company} · ` : ''}{p.kind} · {p.year}
+            </div>
             <h1 className="proj-hero-title">{p.title}<br/><em>{p.subtitle}</em></h1>
             <p className="proj-summary">{p.summary}</p>
           </div>
@@ -714,10 +796,21 @@ function Project({ projectId, onBack, onOpen }) {
         </div>
       </section>
 
+      {p.heroImage && (
+        <div className="proj-hero-image">
+          <img src={p.heroImage} alt={`${p.title} — hero`} loading="eager" />
+        </div>
+      )}
+
       <div className="proj-gallery">
         {p.gallery.map((g, i) => (
-          <div key={i} className={`g-cell ${g.kind}`} style={{background:g.tone}}>
-            <div className="g-fill">— {g.label}</div>
+          <div key={i} className={`g-cell ${g.kind} ${g.src ? 'has-img' : ''}`}
+               style={!g.src ? { background: g.tone } : undefined}>
+            {g.src ? (
+              <img className="g-img" src={g.src} alt={g.label || ''} loading="lazy" />
+            ) : (
+              <div className="g-fill">— {g.label}</div>
+            )}
           </div>
         ))}
       </div>
@@ -734,23 +827,7 @@ function Project({ projectId, onBack, onOpen }) {
           </ul>
         </aside>
         <div>
-          {p.sections.map(s => (
-            <div key={s.id} id={`s-${s.id}`} className="proj-section">
-              <h2 className="proj-section-title">{s.title}</h2>
-              {s.kind === 'outcomes' ? (
-                <div className="outcome-grid">
-                  {s.items.map(it => (
-                    <div key={it.label} className="outcome-cell">
-                      <div className="outcome-num">{it.num}</div>
-                      <div className="outcome-label">{it.label}</div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                s.body.map((para, i) => <p key={i}>{para}</p>)
-              )}
-            </div>
-          ))}
+          {p.sections.map(s => <ProjectSection key={s.id} s={s} />)}
         </div>
       </div>
 
