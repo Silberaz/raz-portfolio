@@ -234,6 +234,56 @@ button { font-family: inherit; }
   100% { transform: translate(-50%,-50%) scale(calc(var(--rs, 1) * 4.5));  opacity: 0; border-width: 1px; }
 }
 
+/* ─── CMYK jitter (click — perimeter leak around cursor) ─── */
+.cmyk-burst {
+  position: fixed; width: 64px; height: 64px;
+  pointer-events: none; z-index: 9998;
+  transform: translate(-50%, -50%);
+  /* No blend mode — the CMY blobs render as their actual colors on top of any backdrop.
+     Visible on cream AND dark without the color shift that difference/hard-light cause. */
+  -webkit-mask: url(#cmyk-cutout);
+          mask: url(#cmyk-cutout);
+}
+.cmyk-mask-blob {
+  animation: puddleMorph 3s ease-in-out infinite;
+  /* Run the cutout through the same gooey filter as the cursor so the mask matches
+     the cursor's actual gooey-rendered shape exactly — CMY only shows past it. */
+  filter: url(#gooey-puddle);
+}
+.cmyk-burst svg {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  overflow: visible;
+  will-change: transform, opacity;
+}
+.cmyk-burst svg path { stroke: none; }
+.cmyk-burst .c path { fill: #00FFFF; }
+.cmyk-burst .m path { fill: #FF00FF; }
+.cmyk-burst .y path { fill: #FFFF00; }
+.cmyk-burst .c { animation: cmykJitterC 380ms cubic-bezier(.2,.7,.2,1) forwards; }
+.cmyk-burst .m { animation: cmykJitterM 380ms cubic-bezier(.2,.7,.2,1) forwards; }
+.cmyk-burst .y { animation: cmykJitterY 380ms cubic-bezier(.2,.7,.2,1) forwards; }
+@keyframes cmykJitterC {
+  0%   { transform: translate(0,0);          opacity: 0; }
+  15%  { transform: translate(-2px,-1px);    opacity: 1; }
+  45%  { transform: translate(1.5px,.5px);   opacity: .95; }
+  75%  { transform: translate(-1.5px,1px);   opacity: .75; }
+  100% { transform: translate(-2px,.5px);    opacity: 0; }
+}
+@keyframes cmykJitterM {
+  0%   { transform: translate(0,0);          opacity: 0; }
+  15%  { transform: translate(2px,1px);      opacity: 1; }
+  45%  { transform: translate(-1px,-1.5px);  opacity: .95; }
+  75%  { transform: translate(1.5px,-.5px);  opacity: .75; }
+  100% { transform: translate(1.5px,-1px);   opacity: 0; }
+}
+@keyframes cmykJitterY {
+  0%   { transform: translate(0,0);          opacity: 0; }
+  15%  { transform: translate(-.5px,2px);    opacity: 1; }
+  45%  { transform: translate(1px,-1px);     opacity: .95; }
+  75%  { transform: translate(-1px,-1.5px);  opacity: .75; }
+  100% { transform: translate(-.5px,2px);    opacity: 0; }
+}
+
 .ripple-cursor {
   position: fixed; top: 0; left: 0; width: 18px; height: 18px;
   pointer-events: none; z-index: 9999;
@@ -415,6 +465,7 @@ nav.top.hidden { transform: translateY(-110%); }
   max-width: 18ch;
 }
 .hero-title .word { display: inline-block; overflow: hidden; padding: 0 .04em .12em 0; margin-right: -.04em; }
+.hero-title .word:has(em) { padding-right: .2em; margin-right: -.2em; }
 .hero-title .word-inner {
   display: inline-block;
   transform: translateY(115%); opacity: 0;

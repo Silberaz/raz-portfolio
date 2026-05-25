@@ -42,6 +42,21 @@ function CursorFilters() {
             values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 28 -14" result="g" />
           <feComposite in="SourceGraphic" in2="g" operator="atop" />
         </filter>
+        {/* Mask used by .cmyk-burst — punches the live cursor shape out of the burst.
+            The path runs the same puddleMorph animation, so the cutout stays in sync. */}
+        <mask id="cmyk-cutout" maskUnits="objectBoundingBox" maskContentUnits="objectBoundingBox"
+              x="0" y="0" width="1" height="1">
+          <rect width="1" height="1" fill="white" />
+          {/* The wrapper's transform is updated each tick so the cutout mirrors the cursor's
+              live rotate + elastic scale. The 0.96 keeps the cutout just inside the cursor's
+              gooey-rendered edge so no cream halo can show through. */}
+          <g className="cmyk-mask-wrap" transform="translate(0.5 0.5) scale(1) translate(-0.5 -0.5)">
+            <path className="cmyk-mask-blob"
+                  transform="scale(0.01)"
+                  d="M50,18 C72,12 90,28 88,52 C92,72 70,90 50,86 C30,90 12,74 12,52 C10,30 28,16 50,18 Z"
+                  fill="black" />
+          </g>
+        </mask>
         {/* Real water-distortion filter applied to the whole #root.
             Turbulence + Displacement = the UI literally warps under the cursor. */}
         <filter id="water-distort" x="0%" y="0%" width="100%" height="100%">
@@ -86,7 +101,33 @@ function BlobCursor({ enabled, style }) {
       (ringLayerRef.current || document.body).appendChild(r);
       setTimeout(() => r.remove(), 1800);
     };
+    const activeBursts = new Set();
+    const spawnCmyk = (x, y) => {
+      const burst = document.createElement('div');
+      burst.className = 'cmyk-burst';
+      const cursorEl = dotRef.current;
+      if (cursorEl) {
+        const r = cursorEl.getBoundingClientRect();
+        burst.style.left   = (r.left + r.width / 2)  + 'px';
+        burst.style.top    = (r.top  + r.height / 2) + 'px';
+        burst.style.width  = cursorEl.offsetWidth  + 'px';
+        burst.style.height = cursorEl.offsetHeight + 'px';
+      } else {
+        burst.style.left = x + 'px';
+        burst.style.top  = y + 'px';
+      }
+      const blob = 'M50,18 C72,12 90,28 88,52 C92,72 70,90 50,86 C30,90 12,74 12,52 C10,30 28,16 50,18 Z';
+      burst.innerHTML = `
+        <svg class="c" viewBox="0 0 100 100" aria-hidden="true"><path d="${blob}"/></svg>
+        <svg class="m" viewBox="0 0 100 100" aria-hidden="true"><path d="${blob}"/></svg>
+        <svg class="y" viewBox="0 0 100 100" aria-hidden="true"><path d="${blob}"/></svg>
+      `;
+      document.body.appendChild(burst);
+      activeBursts.add(burst);
+      setTimeout(() => { burst.remove(); activeBursts.delete(burst); }, 460);
+    };
     const onDown = (e) => {
+      spawnCmyk(e.clientX, e.clientY);
       if (style !== 'ripple') return;
       spawnRing(e.clientX, e.clientY, 1.6);
       setTimeout(() => spawnRing(e.clientX, e.clientY, 1.2), 120);
@@ -104,19 +145,36 @@ function BlobCursor({ enabled, style }) {
         dotRef.current.style.left = rx + 'px';
         dotRef.current.style.top  = ry + 'px';
         dotRef.current.style.setProperty('--vel', v.toFixed(2));
-        dotRef.current.style.setProperty('--ang', (Math.atan2(dy, dx) * 180 / Math.PI).toFixed(1) + 'deg');
+        const angDeg = Math.atan2(dy, dx) * 180 / Math.PI;
+        dotRef.current.style.setProperty('--ang', angDeg.toFixed(1) + 'deg');
         if (style === 'puddle') {
           // strong elastic stretch along direction of motion
           const sx = 1 + v * 0.06;
-          const sy = 1 - v * 0.038;
+          const sy = Math.max(0.45, 1 - v * 0.038);
           dotRef.current.style.setProperty('--sx', sx.toFixed(3));
-          dotRef.current.style.setProperty('--sy', Math.max(0.45, sy).toFixed(3));
+          dotRef.current.style.setProperty('--sy', sy.toFixed(3));
+          // Sync the CMYK mask cutout to the cursor's live transform so the cutout
+          // shape matches the rendered cursor (rotate + elastic scale + 0.96 inset).
+          const maskWrap = document.querySelector('.cmyk-mask-wrap');
+          if (maskWrap) {
+            maskWrap.setAttribute(
+              'transform',
+              `translate(0.5 0.5) rotate(${angDeg.toFixed(1)}) scale(${sx.toFixed(3)} ${sy.toFixed(3)}) translate(-0.5 -0.5)`
+            );
+          }
         }
 
         // ripple: emit water rings while moving
         if (style === 'ripple' && v > 1.2 && (!lastRing || ts - lastRing > 130)) {
           lastRing = ts;
           spawnRing(rx, ry, 0.9 + Math.min(0.6, v * 0.04));
+        }
+        // keep CMYK bursts glued to the cursor so the mask stays aligned
+        if (activeBursts.size) {
+          activeBursts.forEach(b => {
+            b.style.left = rx + 'px';
+            b.style.top  = ry + 'px';
+          });
         }
       }
       prx = rx; pry = ry;
@@ -291,13 +349,17 @@ function Hero({ align }) {
         <span>Product designer · Tel Aviv · Open to work</span>
       </div>
       <h1 className={`hero-title ${up ? 'up' : ''}`}>
-        <span className="word"><span className="word-inner">Designing</span></span>{' '}
-        <span className="word"><span className="word-inner">software</span></span>{' '}
-        <span className="word"><span className="word-inner">that's</span></span>
-        <br/>
-        <span className="word"><span className="word-inner accent">honest</span></span>{' '}
-        <span className="word"><span className="word-inner">with</span></span>{' '}
-        <span className="word"><span className="word-inner"><em>itself.</em></span></span>
+        <span className="word"><span className="word-inner">Think</span></span>{' '}
+        <span className="word"><span className="word-inner">of</span></span>{' '}
+        <span className="word"><span className="word-inner">what</span></span>{' '}
+        <span className="word"><span className="word-inner accent">inspires</span></span>{' '}
+        <span className="word"><span className="word-inner">you,</span></span>{' '}
+        <span className="word"><span className="word-inner">and</span></span>{' '}
+        <span className="word"><span className="word-inner"><em>imagine</em></span></span>{' '}
+        <span className="word"><span className="word-inner">that's</span></span>{' '}
+        <span className="word"><span className="word-inner">whats</span></span>{' '}
+        <span className="word"><span className="word-inner">written</span></span>{' '}
+        <span className="word"><span className="word-inner">here</span></span>
       </h1>
       <div className={`hero-bottom ${up ? 'up' : ''}`}>
         <p className="hero-desc">
