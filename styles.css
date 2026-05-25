@@ -778,6 +778,13 @@ footer a:hover { color: var(--accent); }
   min-height: 70vh; display: flex; flex-direction: column; justify-content: flex-end;
   padding: 2rem var(--pad-x) 4rem;
   position: relative; overflow: hidden; border-bottom: 1px solid var(--rim-soft);
+  /* The swatch background is always dark — locally swap to dark-theme tokens
+     so the title and supporting copy stay readable in light mode too. */
+  --ink:      #E8E4DC;
+  --ink-dim:  #98948C;
+  --muted:    #545058;
+  --rim-soft: rgba(232,228,220,.06);
+  color: var(--ink);
 }
 .proj-hero-bg { position: absolute; inset: 0; z-index: 0; }
 .proj-hero-glow {
