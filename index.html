@@ -1213,6 +1213,55 @@ footer a:hover { color: var(--accent); }
 }
 .proj-media-item.k-sq   .proj-media-placeholder { aspect-ratio: 4 / 3; }
 .proj-media-item.k-tall .proj-media-placeholder { aspect-ratio: 3 / 4; }
+.proj-media-item.k-half { width: calc(50% - 1.25rem); align-self: flex-end; }
+
+/* Parallax section — sticky stage with clipped scrolling right frame */
+.proj-section.is-parallax { position: relative; }
+.proj-parallax-stage {
+  position: sticky;
+  top: 5rem;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 2rem;
+}
+.proj-parallax-stage > .proj-section-head { margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--rim-soft); }
+.proj-parallax-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 2.5rem;
+  align-items: start;
+}
+.proj-parallax-text > p:first-of-type { margin-top: 0; }
+.proj-parallax-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 4px;
+}
+.proj-parallax-track {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  will-change: transform;
+  transition: transform .08s linear;
+}
+.proj-parallax-item { margin: 0; display: flex; flex-direction: column; gap: .65rem; flex: 0 0 auto; }
+.proj-parallax-item img,
+.proj-parallax-item video {
+  display: block; width: 100%;
+  aspect-ratio: 16 / 9; object-fit: cover;
+  background: var(--surface);
+  border: 1px solid var(--rim-soft);
+  border-radius: 4px;
+}
+.proj-parallax-item .proj-media-placeholder { aspect-ratio: 16 / 9; }
+@media (max-width: 720px) {
+  .proj-section.is-parallax { min-height: 0 !important; }
+  .proj-parallax-stage { position: static; padding-bottom: 0; }
+  .proj-parallax-row { grid-template-columns: 1fr; gap: 1.5rem; }
+  .proj-parallax-track { transform: none !important; }
+}
 .proj-caption {
   font-family: var(--ff-mono); font-size: .68rem; letter-spacing: .1em;
   text-transform: uppercase; color: var(--muted);
@@ -1440,6 +1489,51 @@ footer a:hover { color: var(--accent); }
   display: block; width: 100%; height: auto;
   background: var(--surface);
   border: 1px solid var(--rim-soft); border-radius: 4px;
+}
+.proj-side-gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-self: start;
+}
+.proj-side-gallery-frame { margin: 0; display: flex; flex-direction: column; gap: .65rem; }
+.proj-side-gallery-frame img {
+  display: block; width: 100%; height: auto;
+  background: var(--surface);
+  border: 1px solid var(--rim-soft); border-radius: 4px;
+}
+.proj-side-gallery-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 1rem; padding: 0 .25rem;
+}
+.proj-side-gallery-btn {
+  font-family: var(--ff-mono); font-size: 1rem;
+  padding: .35rem .9rem;
+  border: 1px solid var(--rim-soft);
+  background: transparent;
+  color: var(--ink-dim);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: color .2s, border-color .2s, background .2s;
+}
+.proj-side-gallery-btn:hover {
+  color: var(--ink);
+  border-color: var(--rim);
+  background: var(--surface-2);
+}
+.proj-side-gallery-dots { display: flex; gap: .5rem; align-items: center; }
+.proj-side-gallery-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  border: 1px solid var(--rim);
+  background: transparent;
+  padding: 0; cursor: pointer;
+  transition: background .2s, border-color .2s, transform .12s;
+}
+.proj-side-gallery-dot:hover:not(.active) { background: var(--rim); }
+.proj-side-gallery-dot.active {
+  background: var(--accent);
+  border-color: var(--accent);
 }
 @media (max-width: 760px) {
   .proj-split { grid-template-columns: 1fr; gap: 1.5rem; }
@@ -1889,7 +1983,7 @@ const PROJECTS = [
         ],
         list: [
           { label: 'Dev estimates came in too high.', text: 'Implementation projected three full-time engineering teams working for nine months. That timeline didn\'t fit any reasonable product roadmap.' },
-          { label: 'Usability testing flagged adoption risk.', text: 'The changes were too far removed from the current product. Existing users — who had built workflows around the old patterns over years — pushed back. The data suggested low adoption if we shipped it as-is.' },
+          { label: 'Usability testing flagged adoption risk.', text: 'Every individual change in the redesign came from requests users had made over the years — but the cumulative effect of shipping them all together was too far from what those same users could accept. They\'d built workflows around the old patterns, and the data suggested low adoption if we shipped it as one release.' },
           { label: 'Users needed features now.', text: 'The roadmap had specific features users were urgently waiting on. A nine-month redesign cycle meant putting those on hold.' },
           { label: 'Two products in parallel was untenable.', text: 'Not all users wanted to upgrade. Supporting both interfaces during a long migration would have meant effectively maintaining two different products.' },
           { label: 'Data migration was a non-starter.', text: 'Consolidating certain features would have created significant downstream problems migrating existing client data — a cost we couldn\'t justify imposing on customers who had years of content invested in the old structure.' },
@@ -1952,19 +2046,24 @@ const PROJECTS = [
           'A new right sidebar was added in editing mode, designed to surface contextual tools without cluttering the main workspace — history, analytics, permissions, and properties, each opening as a focused panel.',
           'This also set the stage for the AI Assistant, which sits in the same sidebar real estate and lets users ask questions of the content directly inside the article they\'re working on.',
         ],
+        parallax: true,
+        sideMedia: { placeholder: true, caption: 'Right sidebar — contextual panels' },
         media: [
-          { src: 'redesign/40.png', caption: 'Right sidebar — contextual panels', kind: 'wide' },
-          { src: 'redesign/new-design-sidebar.mov', caption: 'Sidebar prototype', kind: 'wide' },
+          { placeholder: true, caption: 'AI Assistant — in-article Q&A' },
+          { src: 'redesign/new-design-sidebar.mov', caption: 'Sidebar prototype' },
         ],
       },
       { id: 'scrapped', title: 'The Scrapped Design',
         body: [
           'The original ambitious redesign isn\'t lost — it\'s documented and preserved as future direction for the platform. Not shipped, but informing future work.',
         ],
-        media: [
-          { src: 'redesign/47.png', caption: 'Scrapped editor concept', kind: 'sq' },
-          { src: 'redesign/50.png', caption: 'Scrapped editor concept', kind: 'sq' },
-          { src: 'redesign/52.png', caption: 'Scrapped editor concept', kind: 'sq' },
+        sideGallery: [
+          { src: 'redesign/scrapped-1-collapsed.png',  caption: 'Sidebar collapsed' },
+          { src: 'redesign/scrapped-2-sidebar.png',    caption: 'Field details sidebar' },
+          { src: 'redesign/scrapped-3-history.png',    caption: 'History panel' },
+          { src: 'redesign/scrapped-4-analytics.png',  caption: 'Analytics panel' },
+          { src: 'redesign/scrapped-5-properties.png', caption: 'Properties panel' },
+          { src: 'redesign/scrapped-6-hidden.png',     caption: 'End user view' },
         ],
       },
       { id: 'outcome', title: 'Outcome & Key Takeaways',
@@ -3193,108 +3292,107 @@ function Resume() {
 /* ─── Article versioning flow diagram (User Flows section) ─── */
 function UserFlowDiagram() {
   return (
-    <svg className="uf-svg" viewBox="0 0 1100 1170" xmlns="http://www.w3.org/2000/svg"
+    <svg className="uf-svg" viewBox="0 0 1210 1170" xmlns="http://www.w3.org/2000/svg"
          role="img" aria-label="Article versioning flow: Draft to Active to Past">
       <defs>
-        <marker id="uf-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <marker id="uf-arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto">
           <path d="M0,0 L10,5 L0,10 z" className="uf-arrow-head" />
         </marker>
       </defs>
 
-      <rect x="410" y="14" width="280" height="44" rx="22" className="uf-start-oval" />
-      <text x="550" y="42" className="uf-start-label" textAnchor="middle">User creates a new article</text>
-      <path d="M 550 64 L 550 130" className="uf-arrow-path" markerEnd="url(#uf-arrow)" />
-
       <rect className="uf-lane-rect" x="40" y="120" width="1020" height="220" rx="10" />
-      <text className="uf-lane-title" x="60" y="190">“Future”</text>
-      <text className="uf-lane-title" x="60" y="222">version</text>
-      <text className="uf-lane-note" x="60" y="306">Can only be one “Draft” version</text>
-
-      <g transform="translate(450, 160)">
-        <rect className="uf-node" width="200" height="140" rx="2" />
-        <text x="100" y="62" className="uf-node-title" textAnchor="middle">“Draft”</text>
-        <circle cx="58" cy="106" r="5" className="uf-dot uf-off" />
-        <text x="72" y="111" className="uf-node-status">Offline</text>
-      </g>
-
-      <path d="M 550 300 L 550 364" className="uf-arrow-path" />
-      <rect x="410" y="364" width="280" height="62" rx="6" className="uf-flow-label-box" />
-      <text x="550" y="390" className="uf-flow-label-text" textAnchor="middle">User marks “Draft”</text>
-      <text x="550" y="406" className="uf-flow-label-text" textAnchor="middle">version as “Active”</text>
-      <path d="M 550 426 L 550 448" className="uf-arrow-path" markerEnd="url(#uf-arrow)" />
-
-      <g transform="translate(550, 500)">
-        <polygon points="0,-50 90,0 0,50 -90,0" className="uf-decision" />
-        <text x="0" y="-4" className="uf-decision-label" textAnchor="middle">Do you want</text>
-        <text x="0" y="18" className="uf-decision-label" textAnchor="middle">to publish?</text>
-      </g>
-
-      <text x="400" y="492" className="uf-helper" textAnchor="middle">Yes</text>
-      <text x="700" y="492" className="uf-helper" textAnchor="middle">No</text>
-
-      <path d="M 460 500 L 350 500 L 350 600" className="uf-arrow-path" fill="none" markerEnd="url(#uf-arrow)" />
-      <path d="M 640 500 L 750 500 L 750 600" className="uf-arrow-path" fill="none" markerEnd="url(#uf-arrow)" />
+      <text className="uf-lane-title" x="60" y="220">“Future” version</text>
+      <text className="uf-lane-note" x="60" y="248">there can be only one</text>
 
       <rect className="uf-lane-rect" x="40" y="570" width="1020" height="220" rx="10" />
-      <text className="uf-lane-title" x="60" y="640">“Active”</text>
-      <text className="uf-lane-title" x="60" y="672">version</text>
-      <text className="uf-lane-note" x="60" y="756">Can only be one “Active” version</text>
-
-      <g transform="translate(250, 600)">
-        <rect className="uf-node" width="200" height="140" rx="2" />
-        <text x="100" y="62" className="uf-node-title" textAnchor="middle">“Published”</text>
-        <circle cx="58" cy="106" r="5" className="uf-dot uf-on" />
-        <text x="72" y="111" className="uf-node-status">Online</text>
-      </g>
-
-      <g transform="translate(650, 600)">
-        <rect className="uf-node" width="200" height="140" rx="2" />
-        <text x="100" y="62" className="uf-node-title" textAnchor="middle">“Unpublished”</text>
-        <circle cx="58" cy="106" r="5" className="uf-dot uf-off" />
-        <text x="72" y="111" className="uf-node-status">Offline</text>
-      </g>
-
-      <text x="550" y="654" className="uf-helper" textAnchor="middle">User can toggle</text>
-      <path d="M 450 665 L 650 665" className="uf-arrow-path" />
-
-      <path d="M 350 740 L 350 814" className="uf-arrow-path" />
-      <rect x="210" y="814" width="280" height="62" rx="6" className="uf-flow-label-box" />
-      <text x="350" y="832" className="uf-flow-label-text" textAnchor="middle">A new “Draft” version</text>
-      <text x="350" y="848" className="uf-flow-label-text" textAnchor="middle">marked as “Active”,</text>
-      <text x="350" y="864" className="uf-flow-label-text" textAnchor="middle">old one pushed to “Archived”</text>
-      <path d="M 350 876 L 350 930" className="uf-arrow-path" markerEnd="url(#uf-arrow)" />
-
-      <path d="M 750 740 L 750 814" className="uf-arrow-path" />
-      <rect x="610" y="814" width="280" height="62" rx="6" className="uf-flow-label-box" />
-      <text x="750" y="832" className="uf-flow-label-text" textAnchor="middle">If the “Active” version</text>
-      <text x="750" y="848" className="uf-flow-label-text" textAnchor="middle">never was “Published”</text>
-      <text x="750" y="864" className="uf-flow-label-text" textAnchor="middle">it turns to “Hidden”</text>
-      <path d="M 750 876 L 750 930" className="uf-arrow-path" markerEnd="url(#uf-arrow)" />
+      <text className="uf-lane-title" x="60" y="670">“Active” version</text>
+      <text className="uf-lane-note" x="60" y="698">there can be only one</text>
 
       <rect className="uf-lane-rect" x="40" y="900" width="1020" height="220" rx="10" />
-      <text className="uf-lane-title" x="60" y="970">“Past”</text>
-      <text className="uf-lane-title" x="60" y="1002">versions</text>
-      <text className="uf-lane-note" x="60" y="1086">There can be numerous “Past” versions</text>
+      <text className="uf-lane-title" x="60" y="1000">“Past” versions</text>
+      <text className="uf-lane-note" x="60" y="1028">there can be numerous</text>
 
-      <g transform="translate(250, 930)">
-        <rect className="uf-node" width="200" height="140" rx="2" />
-        <text x="100" y="62" className="uf-node-title" textAnchor="middle">“Archived”</text>
-        <circle cx="58" cy="106" r="5" className="uf-dot uf-on" />
-        <text x="72" y="111" className="uf-node-status">Online</text>
+      <g transform="translate(100, 0)">
+        <rect x="410" y="14" width="280" height="44" rx="22" className="uf-start-oval" />
+        <text x="550" y="42" className="uf-start-label" textAnchor="middle">User creates a new article</text>
+        <path d="M 550 64 L 550 158" className="uf-arrow-path" markerEnd="url(#uf-arrow)" />
+
+        <g transform="translate(450, 160)">
+          <rect className="uf-node" width="200" height="140" rx="2" />
+          <text x="100" y="62" className="uf-node-title" textAnchor="middle">“Draft”</text>
+          <circle cx="58" cy="106" r="5" className="uf-dot uf-off" />
+          <text x="72" y="111" className="uf-node-status">Offline</text>
+        </g>
+
+        <path d="M 550 300 L 550 364" className="uf-arrow-path" />
+        <rect x="410" y="364" width="280" height="62" rx="6" className="uf-flow-label-box" />
+        <text x="550" y="390" className="uf-flow-label-text" textAnchor="middle">User marks “Draft”</text>
+        <text x="550" y="406" className="uf-flow-label-text" textAnchor="middle">version as “Active”</text>
+        <path d="M 550 426 L 550 448" className="uf-arrow-path" markerEnd="url(#uf-arrow)" />
+
+        <g transform="translate(550, 500)">
+          <polygon points="0,-50 90,0 0,50 -90,0" className="uf-decision" />
+          <text x="0" y="-4" className="uf-decision-label" textAnchor="middle">Do you want</text>
+          <text x="0" y="18" className="uf-decision-label" textAnchor="middle">to publish?</text>
+        </g>
+
+        <text x="400" y="492" className="uf-helper" textAnchor="middle">Yes</text>
+        <text x="700" y="492" className="uf-helper" textAnchor="middle">No</text>
+
+        <path d="M 460 500 L 350 500 L 350 598" className="uf-arrow-path" fill="none" markerEnd="url(#uf-arrow)" />
+        <path d="M 640 500 L 750 500 L 750 598" className="uf-arrow-path" fill="none" markerEnd="url(#uf-arrow)" />
+
+        <g transform="translate(250, 600)">
+          <rect className="uf-node" width="200" height="140" rx="2" />
+          <text x="100" y="62" className="uf-node-title" textAnchor="middle">“Published”</text>
+          <circle cx="58" cy="106" r="5" className="uf-dot uf-on" />
+          <text x="72" y="111" className="uf-node-status">Online</text>
+        </g>
+
+        <g transform="translate(650, 600)">
+          <rect className="uf-node" width="200" height="140" rx="2" />
+          <text x="100" y="62" className="uf-node-title" textAnchor="middle">“Unpublished”</text>
+          <circle cx="58" cy="106" r="5" className="uf-dot uf-off" />
+          <text x="72" y="111" className="uf-node-status">Offline</text>
+        </g>
+
+        <text x="550" y="654" className="uf-helper" textAnchor="middle">User can toggle</text>
+        <path d="M 452 665 L 648 665" className="uf-arrow-path" markerStart="url(#uf-arrow)" markerEnd="url(#uf-arrow)" />
+
+        <path d="M 350 740 L 350 814" className="uf-arrow-path" />
+        <rect x="210" y="814" width="280" height="62" rx="6" className="uf-flow-label-box" />
+        <text x="350" y="832" className="uf-flow-label-text" textAnchor="middle">A new “Draft” version</text>
+        <text x="350" y="848" className="uf-flow-label-text" textAnchor="middle">marked as “Active”,</text>
+        <text x="350" y="864" className="uf-flow-label-text" textAnchor="middle">old one pushed to “Archived”</text>
+        <path d="M 350 876 L 350 928" className="uf-arrow-path" markerEnd="url(#uf-arrow)" />
+
+        <path d="M 750 740 L 750 814" className="uf-arrow-path" />
+        <rect x="610" y="814" width="280" height="62" rx="6" className="uf-flow-label-box" />
+        <text x="750" y="832" className="uf-flow-label-text" textAnchor="middle">If the “Active” version</text>
+        <text x="750" y="848" className="uf-flow-label-text" textAnchor="middle">never was “Published”</text>
+        <text x="750" y="864" className="uf-flow-label-text" textAnchor="middle">it turns to “Hidden”</text>
+        <path d="M 750 876 L 750 928" className="uf-arrow-path" markerEnd="url(#uf-arrow)" />
+
+        <g transform="translate(250, 930)">
+          <rect className="uf-node" width="200" height="140" rx="2" />
+          <text x="100" y="62" className="uf-node-title" textAnchor="middle">“Archived”</text>
+          <circle cx="58" cy="106" r="5" className="uf-dot uf-on" />
+          <text x="72" y="111" className="uf-node-status">Online</text>
+        </g>
+
+        <g transform="translate(650, 930)">
+          <rect className="uf-node" width="200" height="140" rx="2" />
+          <text x="100" y="62" className="uf-node-title" textAnchor="middle">“Hidden”</text>
+          <circle cx="58" cy="106" r="5" className="uf-dot uf-off" />
+          <text x="72" y="111" className="uf-node-status">Offline</text>
+        </g>
+
+        <text x="550" y="984" className="uf-helper" textAnchor="middle">User can toggle</text>
+        <path d="M 452 995 L 648 995" className="uf-arrow-path" markerStart="url(#uf-arrow)" markerEnd="url(#uf-arrow)" />
+
+        <path d="M 850 1000 L 1080 1000 L 1080 230 L 650 230" className="uf-arrow-path" fill="none" markerEnd="url(#uf-arrow)" />
+        <text x="1098" y="615" className="uf-helper" transform="rotate(-90, 1098, 615)" textAnchor="middle">Creating new “Draft”</text>
       </g>
-
-      <g transform="translate(650, 930)">
-        <rect className="uf-node" width="200" height="140" rx="2" />
-        <text x="100" y="62" className="uf-node-title" textAnchor="middle">“Hidden”</text>
-        <circle cx="58" cy="106" r="5" className="uf-dot uf-off" />
-        <text x="72" y="111" className="uf-node-status">Offline</text>
-      </g>
-
-      <text x="550" y="984" className="uf-helper" textAnchor="middle">User can toggle</text>
-      <path d="M 450 995 L 650 995" className="uf-arrow-path" />
-
-      <path d="M 850 1000 L 1080 1000 L 1080 230 L 650 230" className="uf-arrow-path" fill="none" markerEnd="url(#uf-arrow)" />
-      <text x="1090" y="615" className="uf-helper" transform="rotate(-90, 1090, 615)" textAnchor="middle">Creating new “Draft”</text>
     </svg>
   );
 }
@@ -3475,6 +3573,44 @@ function GridDemo({ caption }) {
   );
 }
 
+/* ─── Side gallery — scrollable carousel for the right column of a split section ─── */
+function SideGallery({ items }) {
+  const [active, setActive] = useState(0);
+  const total = items.length;
+  if (!total) return null;
+  const m = items[active];
+  return (
+    <div className="proj-side-gallery">
+      <figure className="proj-side-gallery-frame">
+        <img src={m.src} alt={m.caption || ''} loading="lazy" />
+        {m.caption && <figcaption className="proj-caption">{m.caption}</figcaption>}
+      </figure>
+      <div className="proj-side-gallery-nav">
+        <button
+          className="proj-side-gallery-btn"
+          onClick={() => setActive((a) => (a - 1 + total) % total)}
+          aria-label="Previous image"
+        >←</button>
+        <div className="proj-side-gallery-dots">
+          {items.map((_, i) => (
+            <button
+              key={i}
+              className={`proj-side-gallery-dot ${i === active ? 'active' : ''}`}
+              onClick={() => setActive(i)}
+              aria-label={`Image ${i + 1} of ${total}`}
+            />
+          ))}
+        </div>
+        <button
+          className="proj-side-gallery-btn"
+          onClick={() => setActive((a) => (a + 1) % total)}
+          aria-label="Next image"
+        >→</button>
+      </div>
+    </div>
+  );
+}
+
 /* ─── Project page — section media (image grid + captions) ─── */
 function ProjectMedia({ items }) {
   if (!items || !items.length) return null;
@@ -3500,9 +3636,117 @@ function ProjectMedia({ items }) {
   );
 }
 
+/* ─── Parallax section — sticky stage, clipped scrolling right frame ─── */
+function ParallaxSection({ s, isSub }) {
+  const sectionRef = useRef(null);
+  const trackRef = useRef(null);
+  const frameRef = useRef(null);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    const track = trackRef.current;
+    const frame = frameRef.current;
+    if (!section || !track || !frame) return;
+    let raf = 0;
+
+    const getStage = () => section.firstElementChild;
+    const STICKY_OFFSET = 5 * 16; /* matches top: 5rem */
+
+    const recalc = () => {
+      const stage = getStage();
+      if (!stage) return;
+      const overflow = Math.max(0, track.scrollHeight - frame.clientHeight);
+      section.style.minHeight = `${stage.offsetHeight + overflow + STICKY_OFFSET}px`;
+    };
+
+    const onScroll = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        const stage = getStage();
+        if (!stage) return;
+        const rect = section.getBoundingClientRect();
+        const scrollable = section.offsetHeight - stage.offsetHeight - STICKY_OFFSET;
+        if (scrollable <= 0) { track.style.transform = 'translateY(0)'; return; }
+        const traveled = Math.max(0, Math.min(scrollable, STICKY_OFFSET - rect.top));
+        const progress = traveled / scrollable;
+        const maxOffset = Math.max(0, track.scrollHeight - frame.clientHeight);
+        track.style.transform = `translateY(${-progress * maxOffset}px)`;
+      });
+    };
+
+    recalc();
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', () => { recalc(); onScroll(); });
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  return (
+    <div id={`s-${s.id}`} ref={sectionRef} className="proj-section is-parallax">
+      <div className="proj-parallax-stage">
+        <header className="proj-section-head">
+          {isSub && <div className="proj-section-eyebrow">{s.groupLabel || s.group}</div>}
+          <h2 className={`proj-section-title ${isSub ? 'is-sub' : ''}`}>{s.title}</h2>
+        </header>
+        <div className="proj-parallax-row">
+          <div className="proj-parallax-text">
+            {s.body?.map((para, i) => <p key={`b${i}`}>{para}</p>)}
+            {s.list && (
+              <ul className="proj-list">
+                {s.list.map((it, i) => (
+                  <li key={i}><strong>{it.label}</strong> {it.text}</li>
+                ))}
+              </ul>
+            )}
+            {s.outro?.map((para, i) => <p key={`o${i}`}>{para}</p>)}
+          </div>
+          <div className="proj-parallax-frame" ref={frameRef}>
+          <div className="proj-parallax-track" ref={trackRef}>
+            {s.sideMedia && (
+              <figure className="proj-parallax-item">
+                {s.sideMedia.placeholder ? (
+                  <div className="proj-media-placeholder"><span>Image placeholder</span></div>
+                ) : s.sideMedia.diagram === 'user-flow' ? (
+                  <UserFlowDiagram />
+                ) : /\.(mp4|mov|webm|ogg)$/i.test(s.sideMedia.src || '') ? (
+                  <video src={s.sideMedia.src} autoPlay loop muted playsInline preload="metadata" />
+                ) : (
+                  <img src={s.sideMedia.src} alt={s.sideMedia.caption || ''} loading="lazy" />
+                )}
+                {s.sideMedia.caption && <figcaption className="proj-caption">{s.sideMedia.caption}</figcaption>}
+              </figure>
+            )}
+            {s.media?.map((m, i) => {
+              const mIsVideo = /\.(mp4|mov|webm|ogg)$/i.test(m.src || '');
+              return (
+                <figure key={i} className="proj-parallax-item">
+                  {m.placeholder ? (
+                    <div className="proj-media-placeholder"><span>Image placeholder</span></div>
+                  ) : mIsVideo ? (
+                    <video src={m.src} autoPlay loop muted playsInline preload="metadata" />
+                  ) : (
+                    <img src={m.src} alt={m.caption || ''} loading="lazy" />
+                  )}
+                  {m.caption && <figcaption className="proj-caption">{m.caption}</figcaption>}
+                </figure>
+              );
+            })}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ─── Project page — one section (handles every section variant) ─── */
 function ProjectSection({ s }) {
   const isSub = !!s.group;
+  if (s.parallax && !s.placeholder) return <ParallaxSection s={s} isSub={isSub} />;
   const titleBlock = (
     <header className="proj-section-head">
       {isSub && <div className="proj-section-eyebrow">{s.groupLabel || s.group}</div>}
@@ -3548,7 +3792,9 @@ function ProjectSection({ s }) {
                 {s.outro?.map((para, i) => <p key={`o${i}`}>{para}</p>)}
               </div>
               <figure className="proj-split-media proj-media-item k-wide">
-                {s.sideMedia.diagram === 'user-flow' ? (
+                {s.sideMedia.placeholder ? (
+                  <div className="proj-media-placeholder"><span>Image placeholder</span></div>
+                ) : s.sideMedia.diagram === 'user-flow' ? (
                   <UserFlowDiagram />
                 ) : /\.(mp4|mov|webm|ogg)$/i.test(s.sideMedia.src || '') ? (
                   <video src={s.sideMedia.src} autoPlay loop muted playsInline preload="metadata" />
@@ -3557,6 +3803,21 @@ function ProjectSection({ s }) {
                 )}
                 {s.sideMedia.caption && <figcaption className="proj-caption">{s.sideMedia.caption}</figcaption>}
               </figure>
+            </div>
+          ) : s.sideGallery ? (
+            <div className="proj-split">
+              <div className="proj-split-text">
+                {s.body?.map((para, i) => <p key={`b${i}`}>{para}</p>)}
+                {s.list && (
+                  <ul className="proj-list">
+                    {s.list.map((it, i) => (
+                      <li key={i}><strong>{it.label}</strong> {it.text}</li>
+                    ))}
+                  </ul>
+                )}
+                {s.outro?.map((para, i) => <p key={`o${i}`}>{para}</p>)}
+              </div>
+              <SideGallery items={s.sideGallery} />
             </div>
           ) : (
             <>

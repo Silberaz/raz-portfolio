@@ -675,128 +675,124 @@ function Resume() {
 /* ─── Article versioning flow diagram (User Flows section) ─── */
 function UserFlowDiagram() {
   return (
-    <svg className="uf-svg" viewBox="0 0 1100 1170" xmlns="http://www.w3.org/2000/svg"
+    <svg className="uf-svg" viewBox="0 0 1210 1170" xmlns="http://www.w3.org/2000/svg"
          role="img" aria-label="Article versioning flow: Draft to Active to Past">
       <defs>
-        <marker id="uf-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <marker id="uf-arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto">
           <path d="M0,0 L10,5 L0,10 z" className="uf-arrow-head" />
         </marker>
       </defs>
 
-      {/* Start indicator (oval per flowchart convention) */}
-      <rect x="410" y="14" width="280" height="44" rx="22" className="uf-start-oval" />
-      <text x="550" y="42" className="uf-start-label" textAnchor="middle">User creates a new article</text>
-      <path d="M 550 64 L 550 130" className="uf-arrow-path" markerEnd="url(#uf-arrow)" />
-
-      {/* === FUTURE LANE === */}
+      {/* === LANES === (fixed; labels anchor the left side, diagram is offset right of them) */}
       <rect className="uf-lane-rect" x="40" y="120" width="1020" height="220" rx="10" />
-      <text className="uf-lane-title" x="60" y="190">“Future”</text>
-      <text className="uf-lane-title" x="60" y="222">version</text>
-      <text className="uf-lane-note" x="60" y="306">Can only be one “Draft” version</text>
+      <text className="uf-lane-title" x="60" y="220">“Future” version</text>
+      <text className="uf-lane-note" x="60" y="248">there can be only one</text>
 
-      {/* Draft node */}
-      <g transform="translate(450, 160)">
-        <rect className="uf-node" width="200" height="140" rx="2" />
-        <text x="100" y="62" className="uf-node-title" textAnchor="middle">“Draft”</text>
-        <circle cx="58" cy="106" r="5" className="uf-dot uf-off" />
-        <text x="72" y="111" className="uf-node-status">Offline</text>
-      </g>
-
-      {/* Draft → label box → Decision */}
-      <path d="M 550 300 L 550 364" className="uf-arrow-path" />
-      <rect x="410" y="364" width="280" height="62" rx="6" className="uf-flow-label-box" />
-      <text x="550" y="390" className="uf-flow-label-text" textAnchor="middle">User marks “Draft”</text>
-      <text x="550" y="406" className="uf-flow-label-text" textAnchor="middle">version as “Active”</text>
-      <path d="M 550 426 L 550 448" className="uf-arrow-path" markerEnd="url(#uf-arrow)" />
-
-      {/* Decision diamond */}
-      <g transform="translate(550, 500)">
-        <polygon points="0,-50 90,0 0,50 -90,0" className="uf-decision" />
-        <text x="0" y="-4" className="uf-decision-label" textAnchor="middle">Do you want</text>
-        <text x="0" y="18" className="uf-decision-label" textAnchor="middle">to publish?</text>
-      </g>
-
-      {/* Yes / No labels */}
-      <text x="400" y="492" className="uf-helper" textAnchor="middle">Yes</text>
-      <text x="700" y="492" className="uf-helper" textAnchor="middle">No</text>
-
-      {/* Decision → Published (Yes, down-left) */}
-      <path d="M 460 500 L 350 500 L 350 600" className="uf-arrow-path" fill="none" markerEnd="url(#uf-arrow)" />
-      {/* Decision → Unpublished (No, down-right) */}
-      <path d="M 640 500 L 750 500 L 750 600" className="uf-arrow-path" fill="none" markerEnd="url(#uf-arrow)" />
-
-      {/* === ACTIVE LANE === */}
       <rect className="uf-lane-rect" x="40" y="570" width="1020" height="220" rx="10" />
-      <text className="uf-lane-title" x="60" y="640">“Active”</text>
-      <text className="uf-lane-title" x="60" y="672">version</text>
-      <text className="uf-lane-note" x="60" y="756">Can only be one “Active” version</text>
+      <text className="uf-lane-title" x="60" y="670">“Active” version</text>
+      <text className="uf-lane-note" x="60" y="698">there can be only one</text>
 
-      {/* Published */}
-      <g transform="translate(250, 600)">
-        <rect className="uf-node" width="200" height="140" rx="2" />
-        <text x="100" y="62" className="uf-node-title" textAnchor="middle">“Published”</text>
-        <circle cx="58" cy="106" r="5" className="uf-dot uf-on" />
-        <text x="72" y="111" className="uf-node-status">Online</text>
-      </g>
-
-      {/* Unpublished */}
-      <g transform="translate(650, 600)">
-        <rect className="uf-node" width="200" height="140" rx="2" />
-        <text x="100" y="62" className="uf-node-title" textAnchor="middle">“Unpublished”</text>
-        <circle cx="58" cy="106" r="5" className="uf-dot uf-off" />
-        <text x="72" y="111" className="uf-node-status">Offline</text>
-      </g>
-
-      {/* Toggle between Published and Unpublished */}
-      <text x="550" y="654" className="uf-helper" textAnchor="middle">User can toggle</text>
-      <path d="M 450 665 L 650 665" className="uf-arrow-path" />
-
-      {/* Published → Archived */}
-      {/* Published → label box → Archived */}
-      <path d="M 350 740 L 350 814" className="uf-arrow-path" />
-      <rect x="210" y="814" width="280" height="62" rx="6" className="uf-flow-label-box" />
-      <text x="350" y="832" className="uf-flow-label-text" textAnchor="middle">A new “Draft” version</text>
-      <text x="350" y="848" className="uf-flow-label-text" textAnchor="middle">marked as “Active”,</text>
-      <text x="350" y="864" className="uf-flow-label-text" textAnchor="middle">old one pushed to “Archived”</text>
-      <path d="M 350 876 L 350 930" className="uf-arrow-path" markerEnd="url(#uf-arrow)" />
-
-      {/* Unpublished → label box → Hidden */}
-      <path d="M 750 740 L 750 814" className="uf-arrow-path" />
-      <rect x="610" y="814" width="280" height="62" rx="6" className="uf-flow-label-box" />
-      <text x="750" y="832" className="uf-flow-label-text" textAnchor="middle">If the “Active” version</text>
-      <text x="750" y="848" className="uf-flow-label-text" textAnchor="middle">never was “Published”</text>
-      <text x="750" y="864" className="uf-flow-label-text" textAnchor="middle">it turns to “Hidden”</text>
-      <path d="M 750 876 L 750 930" className="uf-arrow-path" markerEnd="url(#uf-arrow)" />
-
-      {/* === PAST LANE === */}
       <rect className="uf-lane-rect" x="40" y="900" width="1020" height="220" rx="10" />
-      <text className="uf-lane-title" x="60" y="970">“Past”</text>
-      <text className="uf-lane-title" x="60" y="1002">versions</text>
-      <text className="uf-lane-note" x="60" y="1086">There can be numerous “Past” versions</text>
+      <text className="uf-lane-title" x="60" y="1000">“Past” versions</text>
+      <text className="uf-lane-note" x="60" y="1028">there can be numerous</text>
 
-      {/* Archived */}
-      <g transform="translate(250, 930)">
-        <rect className="uf-node" width="200" height="140" rx="2" />
-        <text x="100" y="62" className="uf-node-title" textAnchor="middle">“Archived”</text>
-        <circle cx="58" cy="106" r="5" className="uf-dot uf-on" />
-        <text x="72" y="111" className="uf-node-status">Online</text>
+      {/* === DIAGRAM === (offset 100px right so it clears the lane labels) */}
+      <g transform="translate(100, 0)">
+        {/* Start indicator (oval) */}
+        <rect x="410" y="14" width="280" height="44" rx="22" className="uf-start-oval" />
+        <text x="550" y="42" className="uf-start-label" textAnchor="middle">User creates a new article</text>
+        <path d="M 550 64 L 550 158" className="uf-arrow-path" markerEnd="url(#uf-arrow)" />
+
+        {/* Draft node */}
+        <g transform="translate(450, 160)">
+          <rect className="uf-node" width="200" height="140" rx="2" />
+          <text x="100" y="62" className="uf-node-title" textAnchor="middle">“Draft”</text>
+          <circle cx="58" cy="106" r="5" className="uf-dot uf-off" />
+          <text x="72" y="111" className="uf-node-status">Offline</text>
+        </g>
+
+        {/* Draft → label box → Decision */}
+        <path d="M 550 300 L 550 364" className="uf-arrow-path" />
+        <rect x="410" y="364" width="280" height="62" rx="6" className="uf-flow-label-box" />
+        <text x="550" y="390" className="uf-flow-label-text" textAnchor="middle">User marks “Draft”</text>
+        <text x="550" y="406" className="uf-flow-label-text" textAnchor="middle">version as “Active”</text>
+        <path d="M 550 426 L 550 448" className="uf-arrow-path" markerEnd="url(#uf-arrow)" />
+
+        {/* Decision diamond */}
+        <g transform="translate(550, 500)">
+          <polygon points="0,-50 90,0 0,50 -90,0" className="uf-decision" />
+          <text x="0" y="-4" className="uf-decision-label" textAnchor="middle">Do you want</text>
+          <text x="0" y="18" className="uf-decision-label" textAnchor="middle">to publish?</text>
+        </g>
+
+        {/* Yes / No labels */}
+        <text x="400" y="492" className="uf-helper" textAnchor="middle">Yes</text>
+        <text x="700" y="492" className="uf-helper" textAnchor="middle">No</text>
+
+        {/* Decision branches */}
+        <path d="M 460 500 L 350 500 L 350 598" className="uf-arrow-path" fill="none" markerEnd="url(#uf-arrow)" />
+        <path d="M 640 500 L 750 500 L 750 598" className="uf-arrow-path" fill="none" markerEnd="url(#uf-arrow)" />
+
+        {/* Published */}
+        <g transform="translate(250, 600)">
+          <rect className="uf-node" width="200" height="140" rx="2" />
+          <text x="100" y="62" className="uf-node-title" textAnchor="middle">“Published”</text>
+          <circle cx="58" cy="106" r="5" className="uf-dot uf-on" />
+          <text x="72" y="111" className="uf-node-status">Online</text>
+        </g>
+
+        {/* Unpublished */}
+        <g transform="translate(650, 600)">
+          <rect className="uf-node" width="200" height="140" rx="2" />
+          <text x="100" y="62" className="uf-node-title" textAnchor="middle">“Unpublished”</text>
+          <circle cx="58" cy="106" r="5" className="uf-dot uf-off" />
+          <text x="72" y="111" className="uf-node-status">Offline</text>
+        </g>
+
+        {/* Toggle Published ↔ Unpublished */}
+        <text x="550" y="654" className="uf-helper" textAnchor="middle">User can toggle</text>
+        <path d="M 452 665 L 648 665" className="uf-arrow-path" markerStart="url(#uf-arrow)" markerEnd="url(#uf-arrow)" />
+
+        {/* Published → label box → Archived */}
+        <path d="M 350 740 L 350 814" className="uf-arrow-path" />
+        <rect x="210" y="814" width="280" height="62" rx="6" className="uf-flow-label-box" />
+        <text x="350" y="832" className="uf-flow-label-text" textAnchor="middle">A new “Draft” version</text>
+        <text x="350" y="848" className="uf-flow-label-text" textAnchor="middle">marked as “Active”,</text>
+        <text x="350" y="864" className="uf-flow-label-text" textAnchor="middle">old one pushed to “Archived”</text>
+        <path d="M 350 876 L 350 928" className="uf-arrow-path" markerEnd="url(#uf-arrow)" />
+
+        {/* Unpublished → label box → Hidden */}
+        <path d="M 750 740 L 750 814" className="uf-arrow-path" />
+        <rect x="610" y="814" width="280" height="62" rx="6" className="uf-flow-label-box" />
+        <text x="750" y="832" className="uf-flow-label-text" textAnchor="middle">If the “Active” version</text>
+        <text x="750" y="848" className="uf-flow-label-text" textAnchor="middle">never was “Published”</text>
+        <text x="750" y="864" className="uf-flow-label-text" textAnchor="middle">it turns to “Hidden”</text>
+        <path d="M 750 876 L 750 928" className="uf-arrow-path" markerEnd="url(#uf-arrow)" />
+
+        {/* Archived */}
+        <g transform="translate(250, 930)">
+          <rect className="uf-node" width="200" height="140" rx="2" />
+          <text x="100" y="62" className="uf-node-title" textAnchor="middle">“Archived”</text>
+          <circle cx="58" cy="106" r="5" className="uf-dot uf-on" />
+          <text x="72" y="111" className="uf-node-status">Online</text>
+        </g>
+
+        {/* Hidden */}
+        <g transform="translate(650, 930)">
+          <rect className="uf-node" width="200" height="140" rx="2" />
+          <text x="100" y="62" className="uf-node-title" textAnchor="middle">“Hidden”</text>
+          <circle cx="58" cy="106" r="5" className="uf-dot uf-off" />
+          <text x="72" y="111" className="uf-node-status">Offline</text>
+        </g>
+
+        {/* Toggle Archived ↔ Hidden */}
+        <text x="550" y="984" className="uf-helper" textAnchor="middle">User can toggle</text>
+        <path d="M 452 995 L 648 995" className="uf-arrow-path" markerStart="url(#uf-arrow)" markerEnd="url(#uf-arrow)" />
+
+        {/* Return loop */}
+        <path d="M 850 1000 L 1080 1000 L 1080 230 L 650 230" className="uf-arrow-path" fill="none" markerEnd="url(#uf-arrow)" />
+        <text x="1098" y="615" className="uf-helper" transform="rotate(-90, 1098, 615)" textAnchor="middle">Creating new “Draft”</text>
       </g>
-
-      {/* Hidden */}
-      <g transform="translate(650, 930)">
-        <rect className="uf-node" width="200" height="140" rx="2" />
-        <text x="100" y="62" className="uf-node-title" textAnchor="middle">“Hidden”</text>
-        <circle cx="58" cy="106" r="5" className="uf-dot uf-off" />
-        <text x="72" y="111" className="uf-node-status">Offline</text>
-      </g>
-
-      {/* Toggle between Archived and Hidden */}
-      <text x="550" y="984" className="uf-helper" textAnchor="middle">User can toggle</text>
-      <path d="M 450 995 L 650 995" className="uf-arrow-path" />
-
-      {/* Return loop: Hidden → Draft (creating new Draft) */}
-      <path d="M 850 1000 L 1080 1000 L 1080 230 L 650 230" className="uf-arrow-path" fill="none" markerEnd="url(#uf-arrow)" />
-      <text x="1090" y="615" className="uf-helper" transform="rotate(-90, 1090, 615)" textAnchor="middle">Creating new “Draft”</text>
     </svg>
   );
 }
@@ -977,6 +973,44 @@ function GridDemo({ caption }) {
   );
 }
 
+/* ─── Side gallery — scrollable carousel for the right column of a split section ─── */
+function SideGallery({ items }) {
+  const [active, setActive] = useState(0);
+  const total = items.length;
+  if (!total) return null;
+  const m = items[active];
+  return (
+    <div className="proj-side-gallery">
+      <figure className="proj-side-gallery-frame">
+        <img src={m.src} alt={m.caption || ''} loading="lazy" />
+        {m.caption && <figcaption className="proj-caption">{m.caption}</figcaption>}
+      </figure>
+      <div className="proj-side-gallery-nav">
+        <button
+          className="proj-side-gallery-btn"
+          onClick={() => setActive((a) => (a - 1 + total) % total)}
+          aria-label="Previous image"
+        >←</button>
+        <div className="proj-side-gallery-dots">
+          {items.map((_, i) => (
+            <button
+              key={i}
+              className={`proj-side-gallery-dot ${i === active ? 'active' : ''}`}
+              onClick={() => setActive(i)}
+              aria-label={`Image ${i + 1} of ${total}`}
+            />
+          ))}
+        </div>
+        <button
+          className="proj-side-gallery-btn"
+          onClick={() => setActive((a) => (a + 1) % total)}
+          aria-label="Next image"
+        >→</button>
+      </div>
+    </div>
+  );
+}
+
 /* ─── Project page — section media (image grid + captions) ─── */
 function ProjectMedia({ items }) {
   if (!items || !items.length) return null;
@@ -1002,9 +1036,117 @@ function ProjectMedia({ items }) {
   );
 }
 
+/* ─── Parallax section — sticky stage, clipped scrolling right frame ─── */
+function ParallaxSection({ s, isSub }) {
+  const sectionRef = useRef(null);
+  const trackRef = useRef(null);
+  const frameRef = useRef(null);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    const track = trackRef.current;
+    const frame = frameRef.current;
+    if (!section || !track || !frame) return;
+    let raf = 0;
+
+    const getStage = () => section.firstElementChild;
+    const STICKY_OFFSET = 5 * 16; /* matches top: 5rem */
+
+    const recalc = () => {
+      const stage = getStage();
+      if (!stage) return;
+      const overflow = Math.max(0, track.scrollHeight - frame.clientHeight);
+      section.style.minHeight = `${stage.offsetHeight + overflow + STICKY_OFFSET}px`;
+    };
+
+    const onScroll = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        const stage = getStage();
+        if (!stage) return;
+        const rect = section.getBoundingClientRect();
+        const scrollable = section.offsetHeight - stage.offsetHeight - STICKY_OFFSET;
+        if (scrollable <= 0) { track.style.transform = 'translateY(0)'; return; }
+        const traveled = Math.max(0, Math.min(scrollable, STICKY_OFFSET - rect.top));
+        const progress = traveled / scrollable;
+        const maxOffset = Math.max(0, track.scrollHeight - frame.clientHeight);
+        track.style.transform = `translateY(${-progress * maxOffset}px)`;
+      });
+    };
+
+    recalc();
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', () => { recalc(); onScroll(); });
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  return (
+    <div id={`s-${s.id}`} ref={sectionRef} className="proj-section is-parallax">
+      <div className="proj-parallax-stage">
+        <header className="proj-section-head">
+          {isSub && <div className="proj-section-eyebrow">{s.groupLabel || s.group}</div>}
+          <h2 className={`proj-section-title ${isSub ? 'is-sub' : ''}`}>{s.title}</h2>
+        </header>
+        <div className="proj-parallax-row">
+          <div className="proj-parallax-text">
+            {s.body?.map((para, i) => <p key={`b${i}`}>{para}</p>)}
+            {s.list && (
+              <ul className="proj-list">
+                {s.list.map((it, i) => (
+                  <li key={i}><strong>{it.label}</strong> {it.text}</li>
+                ))}
+              </ul>
+            )}
+            {s.outro?.map((para, i) => <p key={`o${i}`}>{para}</p>)}
+          </div>
+          <div className="proj-parallax-frame" ref={frameRef}>
+          <div className="proj-parallax-track" ref={trackRef}>
+            {s.sideMedia && (
+              <figure className="proj-parallax-item">
+                {s.sideMedia.placeholder ? (
+                  <div className="proj-media-placeholder"><span>Image placeholder</span></div>
+                ) : s.sideMedia.diagram === 'user-flow' ? (
+                  <UserFlowDiagram />
+                ) : /\.(mp4|mov|webm|ogg)$/i.test(s.sideMedia.src || '') ? (
+                  <video src={s.sideMedia.src} autoPlay loop muted playsInline preload="metadata" />
+                ) : (
+                  <img src={s.sideMedia.src} alt={s.sideMedia.caption || ''} loading="lazy" />
+                )}
+                {s.sideMedia.caption && <figcaption className="proj-caption">{s.sideMedia.caption}</figcaption>}
+              </figure>
+            )}
+            {s.media?.map((m, i) => {
+              const mIsVideo = /\.(mp4|mov|webm|ogg)$/i.test(m.src || '');
+              return (
+                <figure key={i} className="proj-parallax-item">
+                  {m.placeholder ? (
+                    <div className="proj-media-placeholder"><span>Image placeholder</span></div>
+                  ) : mIsVideo ? (
+                    <video src={m.src} autoPlay loop muted playsInline preload="metadata" />
+                  ) : (
+                    <img src={m.src} alt={m.caption || ''} loading="lazy" />
+                  )}
+                  {m.caption && <figcaption className="proj-caption">{m.caption}</figcaption>}
+                </figure>
+              );
+            })}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ─── Project page — one section (handles every section variant) ─── */
 function ProjectSection({ s }) {
   const isSub = !!s.group;
+  if (s.parallax && !s.placeholder) return <ParallaxSection s={s} isSub={isSub} />;
   const titleBlock = (
     <header className="proj-section-head">
       {isSub && <div className="proj-section-eyebrow">{s.groupLabel || s.group}</div>}
@@ -1050,7 +1192,9 @@ function ProjectSection({ s }) {
                 {s.outro?.map((para, i) => <p key={`o${i}`}>{para}</p>)}
               </div>
               <figure className="proj-split-media proj-media-item k-wide">
-                {s.sideMedia.diagram === 'user-flow' ? (
+                {s.sideMedia.placeholder ? (
+                  <div className="proj-media-placeholder"><span>Image placeholder</span></div>
+                ) : s.sideMedia.diagram === 'user-flow' ? (
                   <UserFlowDiagram />
                 ) : /\.(mp4|mov|webm|ogg)$/i.test(s.sideMedia.src || '') ? (
                   <video src={s.sideMedia.src} autoPlay loop muted playsInline preload="metadata" />
@@ -1059,6 +1203,21 @@ function ProjectSection({ s }) {
                 )}
                 {s.sideMedia.caption && <figcaption className="proj-caption">{s.sideMedia.caption}</figcaption>}
               </figure>
+            </div>
+          ) : s.sideGallery ? (
+            <div className="proj-split">
+              <div className="proj-split-text">
+                {s.body?.map((para, i) => <p key={`b${i}`}>{para}</p>)}
+                {s.list && (
+                  <ul className="proj-list">
+                    {s.list.map((it, i) => (
+                      <li key={i}><strong>{it.label}</strong> {it.text}</li>
+                    ))}
+                  </ul>
+                )}
+                {s.outro?.map((para, i) => <p key={`o${i}`}>{para}</p>)}
+              </div>
+              <SideGallery items={s.sideGallery} />
             </div>
           ) : (
             <>
