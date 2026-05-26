@@ -1205,38 +1205,50 @@ footer a:hover { color: var(--accent); }
 .proj-media-item.k-tall .proj-media-placeholder { aspect-ratio: 3 / 4; }
 .proj-media-item.k-half { width: calc(50% - 1.25rem); align-self: flex-end; }
 
-/* Parallax section — sticky stage with clipped scrolling right frame */
+/* Parallax section — sticky full-width header + sticky left text, naturally scrolling right column */
 .proj-section.is-parallax { position: relative; }
-.proj-parallax-stage {
+.proj-parallax-header {
   position: sticky;
   top: 5rem;
-  display: flex;
-  flex-direction: column;
-  padding-bottom: 2rem;
+  z-index: 2;
+  background: var(--ground);
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--rim-soft);
 }
-.proj-parallax-stage > .proj-section-head { margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--rim-soft); }
+/* Extend the sticky header's background up to viewport top so nothing
+   from below can peek through the gap between page nav and header. */
+.proj-parallax-header::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  bottom: 100%;
+  height: 5rem;
+  background: var(--ground);
+  pointer-events: none;
+}
 .proj-parallax-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 2.5rem;
   align-items: start;
 }
-.proj-parallax-text > p:first-of-type { margin-top: 0; }
-.proj-parallax-frame {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  overflow: hidden;
-  border-radius: 4px;
+.proj-parallax-left {
+  min-width: 0;
+  /* height set inline by JS — controls when sticky text releases */
 }
-.proj-parallax-track {
+.proj-parallax-text {
+  position: sticky;
+  /* `top` set inline by JS — header height + 5rem offset */
+}
+.proj-parallax-text > p:first-of-type { margin-top: 0; }
+.proj-parallax-media {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  will-change: transform;
-  transition: transform .08s linear;
+  gap: 2rem;
+  min-width: 0;
 }
-.proj-parallax-item { margin: 0; display: flex; flex-direction: column; gap: .65rem; flex: 0 0 auto; }
+.proj-parallax-item { margin: 0; display: flex; flex-direction: column; gap: .65rem; }
 .proj-parallax-item img,
 .proj-parallax-item video {
   display: block; width: 100%;
@@ -1247,10 +1259,10 @@ footer a:hover { color: var(--accent); }
 }
 .proj-parallax-item .proj-media-placeholder { aspect-ratio: 16 / 9; }
 @media (max-width: 720px) {
-  .proj-section.is-parallax { min-height: 0 !important; }
-  .proj-parallax-stage { position: static; padding-bottom: 0; }
+  .proj-parallax-header { position: static; }
+  .proj-parallax-text { position: static; top: auto !important; }
+  .proj-parallax-left { height: auto !important; }
   .proj-parallax-row { grid-template-columns: 1fr; gap: 1.5rem; }
-  .proj-parallax-track { transform: none !important; }
 }
 .proj-caption {
   font-family: var(--ff-mono); font-size: .68rem; letter-spacing: .1em;

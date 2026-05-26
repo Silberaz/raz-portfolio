@@ -1036,64 +1036,55 @@ function ProjectMedia({ items }) {
   );
 }
 
-/* ─── Parallax section — sticky stage, clipped scrolling right frame ─── */
+/* ─── Parallax section — sticky full-width header + sticky text that releases when last item reaches top ─── */
 function ParallaxSection({ s, isSub }) {
-  const sectionRef = useRef(null);
-  const trackRef = useRef(null);
-  const frameRef = useRef(null);
+  const headerRef = useRef(null);
+  const textRef = useRef(null);
+  const mediaRef = useRef(null);
+  const leftRef = useRef(null);
 
   useEffect(() => {
-    const section = sectionRef.current;
-    const track = trackRef.current;
-    const frame = frameRef.current;
-    if (!section || !track || !frame) return;
-    let raf = 0;
+    const header = headerRef.current;
+    const text = textRef.current;
+    const media = mediaRef.current;
+    const left = leftRef.current;
+    if (!header || !text || !media || !left) return;
+    const STICKY_OFFSET = 5 * 16; /* matches header top: 5rem */
 
-    const getStage = () => section.firstElementChild;
-    const STICKY_OFFSET = 5 * 16; /* matches top: 5rem */
-
-    const recalc = () => {
-      const stage = getStage();
-      if (!stage) return;
-      const overflow = Math.max(0, track.scrollHeight - frame.clientHeight);
-      section.style.minHeight = `${stage.offsetHeight + overflow + STICKY_OFFSET}px`;
+    const update = () => {
+      const headerMB = parseFloat(getComputedStyle(header).marginBottom) || 0;
+      text.style.top = `${STICKY_OFFSET + header.offsetHeight + headerMB}px`;
+      const items = media.children;
+      if (!items.length) { left.style.height = ''; return; }
+      const lastItem = items[items.length - 1];
+      const rightColH = media.offsetHeight;
+      const lastItemH = lastItem.offsetHeight;
+      const textH = text.offsetHeight;
+      /* Left col height = textH + (rightColH - lastItemH)
+         Sticky text releases when left col's bottom reaches T + textH
+         → at that moment, last item top is exactly at T (first item's slot).
+         After release, text and items scroll up together as the section exits. */
+      left.style.height = `${textH + Math.max(0, rightColH - lastItemH)}px`;
     };
 
-    const onScroll = () => {
-      if (raf) return;
-      raf = requestAnimationFrame(() => {
-        raf = 0;
-        const stage = getStage();
-        if (!stage) return;
-        const rect = section.getBoundingClientRect();
-        const scrollable = section.offsetHeight - stage.offsetHeight - STICKY_OFFSET;
-        if (scrollable <= 0) { track.style.transform = 'translateY(0)'; return; }
-        const traveled = Math.max(0, Math.min(scrollable, STICKY_OFFSET - rect.top));
-        const progress = traveled / scrollable;
-        const maxOffset = Math.max(0, track.scrollHeight - frame.clientHeight);
-        track.style.transform = `translateY(${-progress * maxOffset}px)`;
-      });
-    };
-
-    recalc();
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', () => { recalc(); onScroll(); });
-    return () => {
-      window.removeEventListener('scroll', onScroll);
-      if (raf) cancelAnimationFrame(raf);
-    };
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(media);
+    ro.observe(text);
+    ro.observe(header);
+    window.addEventListener('resize', update);
+    return () => { ro.disconnect(); window.removeEventListener('resize', update); };
   }, []);
 
   return (
-    <div id={`s-${s.id}`} ref={sectionRef} className="proj-section is-parallax">
-      <div className="proj-parallax-stage">
-        <header className="proj-section-head">
-          {isSub && <div className="proj-section-eyebrow">{s.groupLabel || s.group}</div>}
-          <h2 className={`proj-section-title ${isSub ? 'is-sub' : ''}`}>{s.title}</h2>
-        </header>
-        <div className="proj-parallax-row">
-          <div className="proj-parallax-text">
+    <div id={`s-${s.id}`} className="proj-section is-parallax">
+      <header ref={headerRef} className="proj-parallax-header">
+        {isSub && <div className="proj-section-eyebrow">{s.groupLabel || s.group}</div>}
+        <h2 className={`proj-section-title ${isSub ? 'is-sub' : ''}`}>{s.title}</h2>
+      </header>
+      <div className="proj-parallax-row">
+        <div ref={leftRef} className="proj-parallax-left">
+          <div ref={textRef} className="proj-parallax-text">
             {s.body?.map((para, i) => <p key={`b${i}`}>{para}</p>)}
             {s.list && (
               <ul className="proj-list">
@@ -1104,39 +1095,37 @@ function ParallaxSection({ s, isSub }) {
             )}
             {s.outro?.map((para, i) => <p key={`o${i}`}>{para}</p>)}
           </div>
-          <div className="proj-parallax-frame" ref={frameRef}>
-          <div className="proj-parallax-track" ref={trackRef}>
-            {s.sideMedia && (
-              <figure className="proj-parallax-item">
-                {s.sideMedia.placeholder ? (
+        </div>
+        <div ref={mediaRef} className="proj-parallax-media">
+          {s.sideMedia && (
+            <figure className="proj-parallax-item">
+              {s.sideMedia.placeholder ? (
+                <div className="proj-media-placeholder"><span>Image placeholder</span></div>
+              ) : s.sideMedia.diagram === 'user-flow' ? (
+                <UserFlowDiagram />
+              ) : /\.(mp4|mov|webm|ogg)$/i.test(s.sideMedia.src || '') ? (
+                <video src={s.sideMedia.src} autoPlay loop muted playsInline preload="metadata" />
+              ) : (
+                <img src={s.sideMedia.src} alt={s.sideMedia.caption || ''} loading="lazy" />
+              )}
+              {s.sideMedia.caption && <figcaption className="proj-caption">{s.sideMedia.caption}</figcaption>}
+            </figure>
+          )}
+          {s.media?.map((m, i) => {
+            const mIsVideo = /\.(mp4|mov|webm|ogg)$/i.test(m.src || '');
+            return (
+              <figure key={i} className="proj-parallax-item">
+                {m.placeholder ? (
                   <div className="proj-media-placeholder"><span>Image placeholder</span></div>
-                ) : s.sideMedia.diagram === 'user-flow' ? (
-                  <UserFlowDiagram />
-                ) : /\.(mp4|mov|webm|ogg)$/i.test(s.sideMedia.src || '') ? (
-                  <video src={s.sideMedia.src} autoPlay loop muted playsInline preload="metadata" />
+                ) : mIsVideo ? (
+                  <video src={m.src} autoPlay loop muted playsInline preload="metadata" />
                 ) : (
-                  <img src={s.sideMedia.src} alt={s.sideMedia.caption || ''} loading="lazy" />
+                  <img src={m.src} alt={m.caption || ''} loading="lazy" />
                 )}
-                {s.sideMedia.caption && <figcaption className="proj-caption">{s.sideMedia.caption}</figcaption>}
+                {m.caption && <figcaption className="proj-caption">{m.caption}</figcaption>}
               </figure>
-            )}
-            {s.media?.map((m, i) => {
-              const mIsVideo = /\.(mp4|mov|webm|ogg)$/i.test(m.src || '');
-              return (
-                <figure key={i} className="proj-parallax-item">
-                  {m.placeholder ? (
-                    <div className="proj-media-placeholder"><span>Image placeholder</span></div>
-                  ) : mIsVideo ? (
-                    <video src={m.src} autoPlay loop muted playsInline preload="metadata" />
-                  ) : (
-                    <img src={m.src} alt={m.caption || ''} loading="lazy" />
-                  )}
-                  {m.caption && <figcaption className="proj-caption">{m.caption}</figcaption>}
-                </figure>
-              );
-            })}
-            </div>
-          </div>
+            );
+          })}
         </div>
       </div>
     </div>
