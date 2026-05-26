@@ -672,15 +672,329 @@ function Resume() {
   );
 }
 
+/* ─── Article versioning flow diagram (User Flows section) ─── */
+function UserFlowDiagram() {
+  return (
+    <svg className="uf-svg" viewBox="0 0 1100 1170" xmlns="http://www.w3.org/2000/svg"
+         role="img" aria-label="Article versioning flow: Draft to Active to Past">
+      <defs>
+        <marker id="uf-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M0,0 L10,5 L0,10 z" className="uf-arrow-head" />
+        </marker>
+      </defs>
+
+      {/* Start indicator (oval per flowchart convention) */}
+      <rect x="410" y="14" width="280" height="44" rx="22" className="uf-start-oval" />
+      <text x="550" y="42" className="uf-start-label" textAnchor="middle">User creates a new article</text>
+      <path d="M 550 64 L 550 130" className="uf-arrow-path" markerEnd="url(#uf-arrow)" />
+
+      {/* === FUTURE LANE === */}
+      <rect className="uf-lane-rect" x="40" y="120" width="1020" height="220" rx="10" />
+      <text className="uf-lane-title" x="60" y="190">“Future”</text>
+      <text className="uf-lane-title" x="60" y="222">version</text>
+      <text className="uf-lane-note" x="60" y="306">Can only be one “Draft” version</text>
+
+      {/* Draft node */}
+      <g transform="translate(450, 160)">
+        <rect className="uf-node" width="200" height="140" rx="2" />
+        <text x="100" y="62" className="uf-node-title" textAnchor="middle">“Draft”</text>
+        <circle cx="58" cy="106" r="5" className="uf-dot uf-off" />
+        <text x="72" y="111" className="uf-node-status">Offline</text>
+      </g>
+
+      {/* Draft → label box → Decision */}
+      <path d="M 550 300 L 550 364" className="uf-arrow-path" />
+      <rect x="410" y="364" width="280" height="62" rx="6" className="uf-flow-label-box" />
+      <text x="550" y="390" className="uf-flow-label-text" textAnchor="middle">User marks “Draft”</text>
+      <text x="550" y="406" className="uf-flow-label-text" textAnchor="middle">version as “Active”</text>
+      <path d="M 550 426 L 550 448" className="uf-arrow-path" markerEnd="url(#uf-arrow)" />
+
+      {/* Decision diamond */}
+      <g transform="translate(550, 500)">
+        <polygon points="0,-50 90,0 0,50 -90,0" className="uf-decision" />
+        <text x="0" y="-4" className="uf-decision-label" textAnchor="middle">Do you want</text>
+        <text x="0" y="18" className="uf-decision-label" textAnchor="middle">to publish?</text>
+      </g>
+
+      {/* Yes / No labels */}
+      <text x="400" y="492" className="uf-helper" textAnchor="middle">Yes</text>
+      <text x="700" y="492" className="uf-helper" textAnchor="middle">No</text>
+
+      {/* Decision → Published (Yes, down-left) */}
+      <path d="M 460 500 L 350 500 L 350 600" className="uf-arrow-path" fill="none" markerEnd="url(#uf-arrow)" />
+      {/* Decision → Unpublished (No, down-right) */}
+      <path d="M 640 500 L 750 500 L 750 600" className="uf-arrow-path" fill="none" markerEnd="url(#uf-arrow)" />
+
+      {/* === ACTIVE LANE === */}
+      <rect className="uf-lane-rect" x="40" y="570" width="1020" height="220" rx="10" />
+      <text className="uf-lane-title" x="60" y="640">“Active”</text>
+      <text className="uf-lane-title" x="60" y="672">version</text>
+      <text className="uf-lane-note" x="60" y="756">Can only be one “Active” version</text>
+
+      {/* Published */}
+      <g transform="translate(250, 600)">
+        <rect className="uf-node" width="200" height="140" rx="2" />
+        <text x="100" y="62" className="uf-node-title" textAnchor="middle">“Published”</text>
+        <circle cx="58" cy="106" r="5" className="uf-dot uf-on" />
+        <text x="72" y="111" className="uf-node-status">Online</text>
+      </g>
+
+      {/* Unpublished */}
+      <g transform="translate(650, 600)">
+        <rect className="uf-node" width="200" height="140" rx="2" />
+        <text x="100" y="62" className="uf-node-title" textAnchor="middle">“Unpublished”</text>
+        <circle cx="58" cy="106" r="5" className="uf-dot uf-off" />
+        <text x="72" y="111" className="uf-node-status">Offline</text>
+      </g>
+
+      {/* Toggle between Published and Unpublished */}
+      <text x="550" y="654" className="uf-helper" textAnchor="middle">User can toggle</text>
+      <path d="M 450 665 L 650 665" className="uf-arrow-path" />
+
+      {/* Published → Archived */}
+      {/* Published → label box → Archived */}
+      <path d="M 350 740 L 350 814" className="uf-arrow-path" />
+      <rect x="210" y="814" width="280" height="62" rx="6" className="uf-flow-label-box" />
+      <text x="350" y="832" className="uf-flow-label-text" textAnchor="middle">A new “Draft” version</text>
+      <text x="350" y="848" className="uf-flow-label-text" textAnchor="middle">marked as “Active”,</text>
+      <text x="350" y="864" className="uf-flow-label-text" textAnchor="middle">old one pushed to “Archived”</text>
+      <path d="M 350 876 L 350 930" className="uf-arrow-path" markerEnd="url(#uf-arrow)" />
+
+      {/* Unpublished → label box → Hidden */}
+      <path d="M 750 740 L 750 814" className="uf-arrow-path" />
+      <rect x="610" y="814" width="280" height="62" rx="6" className="uf-flow-label-box" />
+      <text x="750" y="832" className="uf-flow-label-text" textAnchor="middle">If the “Active” version</text>
+      <text x="750" y="848" className="uf-flow-label-text" textAnchor="middle">never was “Published”</text>
+      <text x="750" y="864" className="uf-flow-label-text" textAnchor="middle">it turns to “Hidden”</text>
+      <path d="M 750 876 L 750 930" className="uf-arrow-path" markerEnd="url(#uf-arrow)" />
+
+      {/* === PAST LANE === */}
+      <rect className="uf-lane-rect" x="40" y="900" width="1020" height="220" rx="10" />
+      <text className="uf-lane-title" x="60" y="970">“Past”</text>
+      <text className="uf-lane-title" x="60" y="1002">versions</text>
+      <text className="uf-lane-note" x="60" y="1086">There can be numerous “Past” versions</text>
+
+      {/* Archived */}
+      <g transform="translate(250, 930)">
+        <rect className="uf-node" width="200" height="140" rx="2" />
+        <text x="100" y="62" className="uf-node-title" textAnchor="middle">“Archived”</text>
+        <circle cx="58" cy="106" r="5" className="uf-dot uf-on" />
+        <text x="72" y="111" className="uf-node-status">Online</text>
+      </g>
+
+      {/* Hidden */}
+      <g transform="translate(650, 930)">
+        <rect className="uf-node" width="200" height="140" rx="2" />
+        <text x="100" y="62" className="uf-node-title" textAnchor="middle">“Hidden”</text>
+        <circle cx="58" cy="106" r="5" className="uf-dot uf-off" />
+        <text x="72" y="111" className="uf-node-status">Offline</text>
+      </g>
+
+      {/* Toggle between Archived and Hidden */}
+      <text x="550" y="984" className="uf-helper" textAnchor="middle">User can toggle</text>
+      <path d="M 450 995 L 650 995" className="uf-arrow-path" />
+
+      {/* Return loop: Hidden → Draft (creating new Draft) */}
+      <path d="M 850 1000 L 1080 1000 L 1080 230 L 650 230" className="uf-arrow-path" fill="none" markerEnd="url(#uf-arrow)" />
+      <text x="1090" y="615" className="uf-helper" transform="rotate(-90, 1090, 615)" textAnchor="middle">Creating new “Draft”</text>
+    </svg>
+  );
+}
+
+/* ─── Inline interactive grid demo (Responsive Grid System section) ─── */
+function GridDemo({ caption }) {
+  const rootRef = useRef(null);
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    const $ = (id) => root.querySelector('#' + id);
+    const VW = 800;
+    const BPS = [
+      { name: 'XS', min: 0,    max: 599,      columns: 4,  gx: 16, gy: 16, margin: 16 },
+      { name: 'SM', min: 600,  max: 1023,     columns: 8,  gx: 16, gy: 24, margin: 24 },
+      { name: 'MD', min: 1024, max: 1439,     columns: 12, gx: 24, gy: 24, margin: 32 },
+      { name: 'LG', min: 1440, max: 1919,     columns: 12, gx: 24, gy: 24, margin: 48 },
+      { name: 'XL', min: 1920, max: Infinity, columns: 12, gx: 32, gy: 32, margin: 64 },
+    ];
+    const state = { vp: 1280, left: 'off', right: 'off' };
+    const bpFor = (w) => { for (const b of BPS) if (w >= b.min && w <= b.max) return b; return BPS[0]; };
+    const rwReal = (vbp, st) => {
+      if (st === 'off') return 0;
+      if (vbp.name === 'XS' || vbp.name === 'SM') return -1;
+      if (vbp.name === 'MD') return 360;
+      return st === 'collapsed' ? 56 : 460;
+    };
+    const lwReal = (vbp, st) => {
+      if (st === 'off') return 0;
+      if (vbp.name === 'XS') return -1;
+      return 320;
+    };
+    function paint() {
+      const vbp = bpFor(state.vp);
+      const rw = rwReal(vbp, state.right);
+      const lw = lwReal(vbp, state.left);
+      const reduces = rw > 0;
+      const available = state.vp - (reduces ? rw : 0);
+      const gridReal = Math.min(available, 1920);
+      const extraEach = (available - gridReal) / 2;
+      const abp = bpFor(gridReal);
+      $('g-vp').textContent = state.vp + ' px';
+      $('g-eff').textContent = Math.round(gridReal) + ' px';
+      const sb = $('g-bp'); sb.textContent = abp.name; sb.className = 'bp-pill bp-' + abp.name;
+      $('g-cols').textContent = abp.columns;
+      $('g-gut').textContent = abp.gx + ' / ' + abp.gy;
+      $('g-mar').textContent = abp.margin;
+      const scale = VW / state.vp;
+      const gridVisual = gridReal * scale;
+      const padVisual = extraEach * scale;
+      const grid = $('g-container');
+      grid.style.left = padVisual + 'px';
+      grid.style.width = gridVisual + 'px';
+      const mPx = abp.margin * scale;
+      $('g-mleft').style.left = '0';
+      $('g-mleft').style.width = mPx + 'px';
+      $('g-mright').style.left = (gridVisual - mPx) + 'px';
+      $('g-mright').style.width = mPx + 'px';
+      const cols = $('g-colslot');
+      cols.innerHTML = '';
+      cols.style.left = mPx + 'px';
+      const innerW = Math.max(0, gridVisual - 2 * mPx);
+      cols.style.width = innerW + 'px';
+      const totalGut = (abp.columns - 1) * abp.gx * scale;
+      const colW = Math.max(0, (innerW - totalGut) / abp.columns);
+      for (let i = 0; i < abp.columns; i++) {
+        const c = document.createElement('div'); c.className = 'grid-col'; c.style.width = colW + 'px';
+        cols.appendChild(c);
+        if (i < abp.columns - 1) {
+          const g = document.createElement('div'); g.className = 'grid-gutter'; g.style.width = (abp.gx * scale) + 'px';
+          cols.appendChild(g);
+        }
+      }
+      const rp = $('g-right');
+      if (state.right !== 'off') { rp.style.display = 'block'; rp.style.width = (rw === -1 ? VW : rw * scale) + 'px'; }
+      else rp.style.display = 'none';
+      const lp = $('g-left');
+      if (state.left === 'on') {
+        lp.style.display = 'block';
+        lp.style.left = padVisual + 'px';
+        lp.style.width = (lw === -1 ? VW : lw * scale) + 'px';
+      } else lp.style.display = 'none';
+      const jump = $('g-bp-jump');
+      if (jump) jump.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.bp === abp.name));
+    }
+    const slider = $('g-vp-slider');
+    const out = $('g-vp-out');
+    const onSlide = () => { state.vp = parseInt(slider.value, 10); out.textContent = state.vp; paint(); };
+    slider.addEventListener('input', onSlide);
+    const cleanups = [() => slider.removeEventListener('input', onSlide)];
+    const bind = (id, key) => {
+      const wrap = $(id);
+      wrap.querySelectorAll('button').forEach(b => {
+        const h = () => {
+          wrap.querySelectorAll('button').forEach(x => x.classList.remove('active'));
+          b.classList.add('active');
+          state[key] = b.dataset.v;
+          paint();
+        };
+        b.addEventListener('click', h);
+        cleanups.push(() => b.removeEventListener('click', h));
+      });
+    };
+    bind('g-left-toggle', 'left');
+    bind('g-right-toggle', 'right');
+    $('g-bp-jump').querySelectorAll('button').forEach(b => {
+      const h = () => {
+        const v = parseInt(b.dataset.vp, 10);
+        state.vp = v;
+        slider.value = v;
+        out.textContent = v;
+        paint();
+      };
+      b.addEventListener('click', h);
+      cleanups.push(() => b.removeEventListener('click', h));
+    });
+    paint();
+    return () => cleanups.forEach(fn => fn());
+  }, []);
+  return (
+    <figure className="proj-media-item k-wide grid-demo-figure">
+      <div id="proj-grid-demo" ref={rootRef}>
+        <div className="card">
+          <div className="grid-stats">
+            <div className="grid-stat"><p className="grid-stat-label">Viewport</p><p className="grid-stat-val" id="g-vp">1280 px</p></div>
+            <div className="grid-stat"><p className="grid-stat-label">Effective</p><p className="grid-stat-val" id="g-eff">1280 px</p></div>
+            <div className="grid-stat"><p className="grid-stat-label">Breakpoint</p><p className="grid-stat-val"><span className="bp-pill bp-MD" id="g-bp">MD</span></p></div>
+            <div className="grid-stat"><p className="grid-stat-label">Columns</p><p className="grid-stat-val" id="g-cols">12</p></div>
+            <div className="grid-stat"><p className="grid-stat-label">Gutter</p><p className="grid-stat-val" id="g-gut">24 / 24</p></div>
+            <div className="grid-stat"><p className="grid-stat-label">Margin</p><p className="grid-stat-val" id="g-mar">32</p></div>
+          </div>
+          <div className="grid-stage">
+            <div className="grid-header"></div>
+            <div className="grid-body" id="g-body">
+              <div className="grid-container" id="g-container">
+                <div className="grid-margin" id="g-mleft"></div>
+                <div className="grid-cols" id="g-colslot"></div>
+                <div className="grid-margin" id="g-mright"></div>
+              </div>
+              <div className="grid-right-panel" id="g-right" style={{display:'none'}}></div>
+              <div className="grid-left-panel" id="g-left" style={{display:'none'}}></div>
+            </div>
+          </div>
+          <div className="controls-row">
+            <label htmlFor="g-vp-slider">Viewport</label>
+            <input type="range" id="g-vp-slider" min="360" max="2400" step="1" defaultValue="1280" />
+            <span style={{fontFamily:'ui-monospace, monospace', minWidth:'56px', textAlign:'right'}} id="g-vp-out">1280</span>
+          </div>
+          <div className="controls-row">
+            <label>Left panel</label>
+            <div className="pill-toggle" id="g-left-toggle">
+              <button data-v="off" className="active">Hidden</button>
+              <button data-v="on">Open (overlay)</button>
+            </div>
+          </div>
+          <div className="controls-row">
+            <label>Right panel</label>
+            <div className="pill-toggle" id="g-right-toggle">
+              <button data-v="off" className="active">Hidden</button>
+              <button data-v="on">Open</button>
+              <button data-v="collapsed">Collapsed (LG/XL)</button>
+            </div>
+          </div>
+          <div className="controls-row">
+            <label>Jump to</label>
+            <div className="bp-jump" id="g-bp-jump">
+              <button data-bp="XS" data-vp="360"  className="bp-pill bp-XS">XS</button>
+              <button data-bp="SM" data-vp="800"  className="bp-pill bp-SM">SM</button>
+              <button data-bp="MD" data-vp="1280" className="bp-pill bp-MD">MD</button>
+              <button data-bp="LG" data-vp="1600" className="bp-pill bp-LG">LG</button>
+              <button data-bp="XL" data-vp="2000" className="bp-pill bp-XL">XL</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      {caption && <figcaption className="proj-caption">{caption}</figcaption>}
+    </figure>
+  );
+}
+
 /* ─── Project page — section media (image grid + captions) ─── */
 function ProjectMedia({ items }) {
   if (!items || !items.length) return null;
   const allThumb = items.length > 1 && items.every(m => m.kind === 'sq');
+  const isVideo = (src) => /\.(mp4|mov|webm|ogg)$/i.test(src || '');
   return (
     <div className={`proj-media ${allThumb ? 'thumbs' : 'stack'}`}>
       {items.map((m, i) => (
-        <figure key={i} className={`proj-media-item k-${m.kind || 'wide'}`}>
-          <img src={m.src} alt={m.caption || ''} loading="lazy" />
+        <figure key={i} className={`proj-media-item k-${m.kind || 'wide'} ${isVideo(m.src) ? 'is-video' : ''} ${m.placeholder ? 'is-placeholder' : ''} ${m.diagram ? 'is-diagram' : ''}`}>
+          {m.diagram === 'user-flow' ? (
+            <UserFlowDiagram />
+          ) : m.placeholder ? (
+            <div className="proj-media-placeholder"><span>Image placeholder</span></div>
+          ) : isVideo(m.src) ? (
+            <video src={m.src} autoPlay loop muted playsInline preload="metadata" />
+          ) : (
+            <img src={m.src} alt={m.caption || ''} loading="lazy" />
+          )}
           {m.caption && <figcaption className="proj-caption">{m.caption}</figcaption>}
         </figure>
       ))}
@@ -690,10 +1004,17 @@ function ProjectMedia({ items }) {
 
 /* ─── Project page — one section (handles every section variant) ─── */
 function ProjectSection({ s }) {
+  const isSub = !!s.group;
+  const titleBlock = (
+    <header className="proj-section-head">
+      {isSub && <div className="proj-section-eyebrow">{s.groupLabel || s.group}</div>}
+      <h2 className={`proj-section-title ${isSub ? 'is-sub' : ''}`}>{s.title}</h2>
+    </header>
+  );
   if (s.kind === 'outcomes') {
     return (
-      <div id={`s-${s.id}`} className="proj-section">
-        <h2 className="proj-section-title">{s.title}</h2>
+      <div id={`s-${s.id}`} className={`proj-section ${isSub ? 'is-sub' : ''}`}>
+        {titleBlock}
         <div className="outcome-grid">
           {s.items.map(it => (
             <div key={it.label} className="outcome-cell">
@@ -706,8 +1027,8 @@ function ProjectSection({ s }) {
     );
   }
   return (
-    <div id={`s-${s.id}`} className={`proj-section ${s.placeholder ? 'is-placeholder' : ''}`}>
-      <h2 className="proj-section-title">{s.title}</h2>
+    <div id={`s-${s.id}`} className={`proj-section ${s.placeholder ? 'is-placeholder' : ''} ${isSub ? 'is-sub' : ''}`}>
+      {titleBlock}
       {s.placeholder ? (
         <div className="proj-placeholder">
           <div className="proj-placeholder-tag">Placeholder · to fill in</div>
@@ -715,15 +1036,69 @@ function ProjectSection({ s }) {
         </div>
       ) : (
         <>
-          {s.body?.map((para, i) => <p key={`b${i}`}>{para}</p>)}
-          {s.list && (
-            <ul className="proj-list">
-              {s.list.map((it, i) => (
-                <li key={i}><strong>{it.label}</strong> {it.text}</li>
-              ))}
-            </ul>
+          {s.sideMedia ? (
+            <div className="proj-split">
+              <div className="proj-split-text">
+                {s.body?.map((para, i) => <p key={`b${i}`}>{para}</p>)}
+                {s.list && (
+                  <ul className="proj-list">
+                    {s.list.map((it, i) => (
+                      <li key={i}><strong>{it.label}</strong> {it.text}</li>
+                    ))}
+                  </ul>
+                )}
+                {s.outro?.map((para, i) => <p key={`o${i}`}>{para}</p>)}
+              </div>
+              <figure className="proj-split-media proj-media-item k-wide">
+                {s.sideMedia.diagram === 'user-flow' ? (
+                  <UserFlowDiagram />
+                ) : /\.(mp4|mov|webm|ogg)$/i.test(s.sideMedia.src || '') ? (
+                  <video src={s.sideMedia.src} autoPlay loop muted playsInline preload="metadata" />
+                ) : (
+                  <img src={s.sideMedia.src} alt={s.sideMedia.caption || ''} loading="lazy" />
+                )}
+                {s.sideMedia.caption && <figcaption className="proj-caption">{s.sideMedia.caption}</figcaption>}
+              </figure>
+            </div>
+          ) : (
+            <>
+              {s.body?.map((para, i) => <p key={`b${i}`}>{para}</p>)}
+              {s.list && (
+                <ul className="proj-list">
+                  {s.list.map((it, i) => (
+                    <li key={i}><strong>{it.label}</strong> {it.text}</li>
+                  ))}
+                </ul>
+              )}
+              {s.outro?.map((para, i) => <p key={`o${i}`}>{para}</p>)}
+            </>
           )}
-          {s.outro?.map((para, i) => <p key={`o${i}`}>{para}</p>)}
+          {s.inlineDemo === 'grid' && <GridDemo caption={s.inlineDemoCaption} />}
+          {s.problemRows && (
+            <div className="problem-rows">
+              {s.problemRows.map((row, i) => {
+                const slots = row.images || Array.from({ length: row.count || 0 });
+                return (
+                  <div key={i} className="problem-row">
+                    <h3 className="problem-row-label">{row.label}</h3>
+                    <div className="problem-row-imgs" data-count={slots.length}>
+                      {slots.map((src, j) => (
+                        src ? (
+                          <figure key={j} className="problem-img">
+                            <img src={src} alt={`${row.label} — ${j + 1}`} loading="lazy" />
+                          </figure>
+                        ) : (
+                          <div key={j} className="problem-placeholder">
+                            <span>Image placeholder</span>
+                          </div>
+                        )
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
           {s.media && <ProjectMedia items={s.media} />}
           {s.subsections?.map((sub, i) => (
             <div key={sub.id || i}
@@ -819,11 +1194,22 @@ function Project({ projectId, onBack, onOpen }) {
         <aside className="proj-sidebar">
           <div className="sidebar-label">Contents</div>
           <ul className="sidebar-nav">
-            {p.sections.map(s => (
-              <li key={s.id}>
-                <a href={`#s-${s.id}`} className={activeSection === s.id ? 'active' : ''}>{s.title}</a>
-              </li>
-            ))}
+            {p.sections.map((s, i) => {
+              const prev = p.sections[i - 1];
+              const showGroupHeader = s.group && (!prev || prev.group !== s.group);
+              return (
+                <React.Fragment key={s.id}>
+                  {showGroupHeader && (
+                    <li className="sidebar-group-label" aria-hidden="true">
+                      {s.groupLabel || s.group}
+                    </li>
+                  )}
+                  <li className={s.group ? 'is-sub' : ''}>
+                    <a href={`#s-${s.id}`} className={activeSection === s.id ? 'active' : ''}>{s.title}</a>
+                  </li>
+                </React.Fragment>
+              );
+            })}
           </ul>
         </aside>
         <div>

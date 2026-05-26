@@ -2,3 +2,10 @@
 *.webp
 node_modules/
 .env
+
+# Source deck extracts and unprocessed screenshot folders (kept locally, not tracked)
+redesign/Raz silberman - Product design portfolio 2025/
+redesign/Raz silberman - Product design portfolio 2025.zip
+redesign/old design/
+help center/Raz silberman - Product design portfolio 2025.zip
+New Folder With Items/
