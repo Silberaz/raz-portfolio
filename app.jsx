@@ -2,8 +2,8 @@
 const { useState, useEffect, useRef, useCallback, useMemo } = React;
 
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
-  "accent": "blue",
-  "displayFont": "afacad",
+  "accent": "lumen",
+  "displayFont": "editorial",
   "theme": "light",
   "tileStyle": "polaroid",
   "heroAlign": "bottom",
@@ -14,6 +14,7 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
 }/*EDITMODE-END*/;
 
 const ACCENTS = {
+  lumen:   '#F4D06F', /* butter — Lumen dark-mode accent (default) */
   sage:    'oklch(0.74 0.05 145)',
   clay:    'oklch(0.72 0.08 45)',
   blue:    'oklch(0.72 0.08 240)',
@@ -22,6 +23,7 @@ const ACCENTS = {
   violet:  '#6B5FFF',
 };
 const ACCENTS_LIGHT = {
+  lumen:   '#D62839', /* coral — Lumen light-mode accent (default) */
   sage:    'oklch(0.45 0.06 145)',
   clay:    'oklch(0.50 0.10 45)',
   blue:    'oklch(0.45 0.09 240)',
@@ -492,7 +494,7 @@ function Home({ onOpen, tweaks, openContact }) {
 
       <footer>
         <span>© 2025 Raz Silberman</span>
-        <span>Set in Afacad Flux + Afacad</span>
+        <span>Set in Fraunces + Inter</span>
       </footer>
     </div>
   );
@@ -1471,11 +1473,11 @@ function PortfolioTweaks({ tweaks, setTweak }) {
                    options={['dark', 'light']}
                    onChange={v => setTweak('theme', v)} />
       <TweakSelect label="Accent color" value={tweaks.accent}
-                   options={['sage', 'clay', 'blue', 'amber', 'mono', 'violet']}
+                   options={['lumen', 'sage', 'clay', 'blue', 'amber', 'mono', 'violet']}
                    onChange={v => setTweak('accent', v)} />
       <TweakSection label="Typography" />
       <TweakSelect label="Display font" value={tweaks.displayFont}
-                   options={['afacad', 'serif', 'mono', 'sans']}
+                   options={['editorial', 'afacad', 'serif', 'mono', 'sans']}
                    onChange={v => setTweak('displayFont', v)} />
       <TweakSection label="Layout" />
       <TweakSelect label="Tile style" value={tweaks.tileStyle}

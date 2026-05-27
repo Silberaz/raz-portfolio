@@ -6,41 +6,47 @@
 <title>Raz Silberman — Product Designer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Afacad:wght@400;500;600;700&family=Afacad+Flux:wght@400;500;600;700;800;900&family=Inter+Tight:wght@500;700;900&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Afacad:wght@400;500;600;700&family=Afacad+Flux:wght@400;500;600;700;800;900&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,700;1,9..144,300;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@500;700;900&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 /* ─── Tokens ─── */
 :root {
-  /* Dark theme (default) */
-  --ground:    #0C0C0E;
-  --surface:   #131316;
-  --surface-2: #1A1A1F;
-  --rim:       #26262C;
-  --rim-soft:  rgba(232,228,220,.06);
-  --ink:       #E8E4DC;
-  --ink-dim:   #98948C;
-  --muted:     #545058;
-  --accent:    oklch(0.74 0.05 145);
+  /* Dark theme (default) — Lumen "Scarlet butter" */
+  --ground:    #020122;
+  --surface:   #0B0A33;
+  --surface-2: #0B0A33;
+  --rim:       #373F51;
+  --rim-soft:  rgba(172,252,217,.06);
+  --ink:       #ACFCD9;
+  --ink-dim:   #8FA8B5;
+  --muted:     #50586A;
+  --accent:    #F4D06F; /* butter — JS may override via tweaks.accent */
   --accent-lo: color-mix(in oklab, var(--accent) 14%, transparent);
   --accent-md: color-mix(in oklab, var(--accent) 30%, transparent);
 }
 [data-theme="light"] {
-  --ground:    #F5F1EA;
-  --surface:   #EFEAE0;
-  --surface-2: #E8E2D5;
-  --rim:       #D6CFC0;
-  --rim-soft:  rgba(20,18,14,.08);
-  --ink:       #1A1814;
-  --ink-dim:   #5C574E;
-  --muted:     #8A8478;
-  --accent:    oklch(0.55 0.06 145);
+  /* Light theme — Lumen "Midnight remix" */
+  --ground:    #FFFFFF;
+  --surface:   #F4F6FB;
+  --surface-2: #FFFFFF;
+  --rim:       #D8DCE8;
+  --rim-soft:  rgba(27,42,78,.08);
+  --ink:       #1B2A4E;
+  --ink-dim:   #46577D;
+  --muted:     #67718B;
+  --accent:    #D62839; /* coral */
   --accent-lo: color-mix(in oklab, var(--accent) 12%, transparent);
   --accent-md: color-mix(in oklab, var(--accent) 28%, transparent);
 }
 
 :root {
-  --ff-display: 'Afacad Flux', system-ui, sans-serif;
-  --ff-body:    'Afacad', system-ui, sans-serif;
+  /* Editorial typography — Fraunces serif display + Inter body.
+     --ff-display-weight is the variable refactored into all hardcoded
+     display weights; Fraunces wants 300, the old Afacad Flux wanted 900. */
+  --ff-display: 'Fraunces', Georgia, serif;
+  --ff-body:    'Inter', system-ui, -apple-system, sans-serif;
   --ff-mono:    'JetBrains Mono', ui-monospace, monospace;
+  --ff-display-weight: 300;
+  font-optical-sizing: auto;
   --expo: cubic-bezier(0.16, 1, 0.3, 1);
   --circ: cubic-bezier(0.85, 0, 0.15, 1);
   --pad-x: clamp(1.5rem, 4vw, 3rem);
@@ -339,7 +345,7 @@ button { font-family: inherit; }
 #loader.out { animation: slideUp .8s var(--circ) forwards; }
 @keyframes slideUp { to { transform: translateY(-100%); } }
 .loader-mark {
-  font-family: var(--ff-display); font-weight: 900;
+  font-family: var(--ff-display); font-weight: var(--ff-display-weight, 900);
   font-size: clamp(2.4rem, 7vw, 5rem); letter-spacing: -.03em;
   line-height: 1; color: var(--ink);
   display: flex; align-items: baseline; gap: .04em;
@@ -382,7 +388,7 @@ nav.top.compact {
 }
 nav.top.hidden { transform: translateY(-110%); }
 .nav-logo {
-  font-family: var(--ff-display); font-weight: 900; font-size: 1rem;
+  font-family: var(--ff-display); font-weight: var(--ff-display-weight, 900); font-size: 1rem;
   letter-spacing: -.02em; color: var(--ink);
   display: inline-flex; align-items: baseline; gap: .12em;
 }
@@ -469,7 +475,7 @@ nav.top.hidden { transform: translateY(-110%); }
 .hero-eyebrow.up > * { transform: translateY(0); opacity: 1; }
 
 .hero-title {
-  font-family: var(--ff-display); font-weight: 900;
+  font-family: var(--ff-display); font-weight: var(--ff-display-weight, 900);
   font-size: clamp(3.5rem, 9vw, 9.5rem);
   line-height: .92; letter-spacing: -.025em; color: var(--ink);
   max-width: 18ch;
@@ -483,7 +489,7 @@ nav.top.hidden { transform: translateY(-110%); }
 }
 .hero-title.up .word-inner { transform: translateY(0); opacity: 1; }
 .hero-title .accent { color: var(--accent); }
-.hero-title em { font-style: italic; font-weight: 900; color: var(--ink-dim); }
+.hero-title em { font-style: italic; font-weight: var(--ff-display-weight, 900); color: var(--ink-dim); }
 
 .hero-bottom {
   display: flex; align-items: flex-end; justify-content: space-between;
@@ -555,7 +561,7 @@ nav.top.hidden { transform: translateY(-110%); }
   font-family: var(--ff-mono); font-size: .7rem; color: var(--muted); letter-spacing: .08em;
 }
 .fullbleed .tile .tile-name {
-  font-family: var(--ff-display); font-weight: 900; font-size: clamp(1.5rem, 3vw, 2.5rem);
+  font-family: var(--ff-display); font-weight: var(--ff-display-weight, 900); font-size: clamp(1.5rem, 3vw, 2.5rem);
   letter-spacing: -.025em; color: var(--ink); transition: color .3s;
 }
 .fullbleed .tile:hover .tile-name { color: var(--accent); }
@@ -576,7 +582,7 @@ nav.top.hidden { transform: translateY(-110%); }
 .index .tile:hover { padding-left: .8rem; background: var(--surface); }
 .index .tile .tile-img { display: none; }
 .index .tile .tile-name {
-  font-family: var(--ff-display); font-weight: 900; font-size: 1.1rem;
+  font-family: var(--ff-display); font-weight: var(--ff-display-weight, 900); font-size: 1.1rem;
   letter-spacing: -.02em; color: var(--ink);
 }
 .index .tile .tile-num { color: var(--muted); }
@@ -588,13 +594,13 @@ nav.top.hidden { transform: translateY(-110%); }
 .tile-img-bg {
   position: absolute; inset: 0;
   display: flex; align-items: center; justify-content: center;
-  font-family: var(--ff-display); font-weight: 900; font-size: 6rem;
+  font-family: var(--ff-display); font-weight: var(--ff-display-weight, 900); font-size: 6rem;
   letter-spacing: -.04em; transition: opacity .6s ease;
 }
 .tile-img-mark {
   position: absolute; inset: 0;
   display: flex; align-items: center; justify-content: center;
-  font-family: var(--ff-display); font-weight: 900; font-size: 6rem;
+  font-family: var(--ff-display); font-weight: var(--ff-display-weight, 900); font-size: 6rem;
   color: var(--rim); letter-spacing: -.04em;
   transition: opacity .6s ease;
 }
@@ -627,7 +633,7 @@ nav.top.hidden { transform: translateY(-110%); }
 .tile:hover .tile-arrow-corner { opacity: 1; transform: scale(1); }
 
 .tile-name {
-  font-family: var(--ff-display); font-weight: 900;
+  font-family: var(--ff-display); font-weight: var(--ff-display-weight, 900);
   font-size: clamp(1.05rem, 2.2vw, 1.4rem);
   letter-spacing: -.02em; color: var(--ink);
   transition: color .25s;
@@ -678,7 +684,7 @@ nav.top.hidden { transform: translateY(-110%); }
   flex-direction: column; gap: .75rem;
 }
 .about-photo .mono {
-  font-family: var(--ff-display); font-weight: 900; font-size: 5rem;
+  font-family: var(--ff-display); font-weight: var(--ff-display-weight, 900); font-size: 5rem;
   color: var(--rim); letter-spacing: -.04em;
 }
 .about-photo .note {
@@ -694,7 +700,7 @@ nav.top.hidden { transform: translateY(-110%); }
   content: ''; width: 1.25rem; height: 1px; background: var(--accent);
 }
 .about-headline {
-  font-family: var(--ff-display); font-weight: 900;
+  font-family: var(--ff-display); font-weight: var(--ff-display-weight, 900);
   font-size: clamp(1.8rem, 3.5vw, 2.8rem);
   letter-spacing: -.025em; line-height: 1.04;
   color: var(--ink); margin-bottom: 1.75rem;
@@ -733,17 +739,17 @@ nav.top.hidden { transform: translateY(-110%); }
   text-transform: uppercase; color: var(--ink-dim); margin-bottom: 2rem;
 }
 .contact-headline {
-  font-family: var(--ff-display); font-weight: 900;
+  font-family: var(--ff-display); font-weight: var(--ff-display-weight, 900);
   font-size: clamp(2.6rem, 8vw, 8.5rem);
   letter-spacing: -.025em; line-height: .94; color: var(--ink);
   margin-bottom: 3rem;
 }
-.contact-headline em { font-style: italic; font-weight: 900; color: var(--accent); }
+.contact-headline em { font-style: italic; font-weight: var(--ff-display-weight, 900); color: var(--accent); }
 .contact-btn {
   display: inline-flex; align-items: center; gap: 1rem;
   background: var(--ink); color: var(--ground);
   padding: 1.1rem 2.4rem; border-radius: 100px;
-  font-family: var(--ff-display); font-weight: 900; font-size: .95rem;
+  font-family: var(--ff-display); font-weight: var(--ff-display-weight, 900); font-size: .95rem;
   letter-spacing: -.015em;
   transition: gap .3s var(--expo), transform .3s var(--expo);
 }
@@ -812,7 +818,7 @@ footer a:hover { color: var(--accent); }
   text-transform: uppercase; color: var(--accent); margin-bottom: 1.5rem;
 }
 .proj-hero-title {
-  font-family: var(--ff-display); font-weight: 900;
+  font-family: var(--ff-display); font-weight: var(--ff-display-weight, 900);
   font-size: clamp(2.6rem, 6vw, 6rem);
   line-height: .94; letter-spacing: -.025em; color: var(--ink);
 }
@@ -889,7 +895,7 @@ footer a:hover { color: var(--accent); }
   text-transform: uppercase; color: var(--muted); margin-bottom: .5rem;
 }
 .proj-section-title {
-  font-family: var(--ff-display); font-weight: 900;
+  font-family: var(--ff-display); font-weight: var(--ff-display-weight, 900);
   font-size: 1.6rem; letter-spacing: -.02em; color: var(--ink);
   margin: 0;
 }
@@ -908,7 +914,7 @@ footer a:hover { color: var(--accent); }
 }
 .outcome-cell { background: var(--surface); padding: 1.75rem; }
 .outcome-num {
-  font-family: var(--ff-display); font-weight: 900;
+  font-family: var(--ff-display); font-weight: var(--ff-display-weight, 900);
   font-size: clamp(2rem, 3.5vw, 2.6rem);
   letter-spacing: -.03em; color: var(--ink); line-height: 1; margin-bottom: .5rem;
 }
@@ -936,13 +942,13 @@ footer a:hover { color: var(--accent); }
   text-transform: uppercase; color: var(--muted); margin-bottom: .5rem;
 }
 .next-title {
-  font-family: var(--ff-display); font-weight: 900;
+  font-family: var(--ff-display); font-weight: var(--ff-display-weight, 900);
   font-size: clamp(1.8rem, 3.5vw, 3rem);
   letter-spacing: -.025em; color: var(--ink); transition: color .25s;
 }
 .next-proj:hover .next-title { color: var(--accent); }
 .next-arrow {
-  font-family: var(--ff-display); font-weight: 900; font-size: 2rem;
+  font-family: var(--ff-display); font-weight: var(--ff-display-weight, 900); font-size: 2rem;
   color: var(--muted); transition: transform .4s var(--expo), color .25s;
 }
 .next-proj:hover .next-arrow { transform: translateX(8px); color: var(--accent); }
@@ -955,7 +961,7 @@ footer a:hover { color: var(--accent); }
   margin-bottom: 3rem; align-items: end;
 }
 .resume-head h1 {
-  font-family: var(--ff-display); font-weight: 900;
+  font-family: var(--ff-display); font-weight: var(--ff-display-weight, 900);
   font-size: clamp(2.4rem, 5vw, 4rem);
   letter-spacing: -.025em; color: var(--ink); margin-bottom: .75rem;
 }
@@ -1000,7 +1006,7 @@ footer a:hover { color: var(--accent); }
   letter-spacing: .08em; text-transform: uppercase; margin-top: .35rem;
 }
 .resume-row .role-name {
-  font-family: var(--ff-display); font-weight: 900; font-size: 1.2rem;
+  font-family: var(--ff-display); font-weight: var(--ff-display-weight, 900); font-size: 1.2rem;
   letter-spacing: -.02em; color: var(--ink);
 }
 .resume-row .org { color: var(--ink-dim); margin-bottom: .85rem; font-size: .95rem; }
@@ -1027,7 +1033,7 @@ footer a:hover { color: var(--accent); }
   margin-bottom: 1.25rem;
 }
 .company-name {
-  font-family: var(--ff-display); font-weight: 900;
+  font-family: var(--ff-display); font-weight: var(--ff-display-weight, 900);
   font-size: clamp(2rem, 4vw, 3rem); letter-spacing: -.025em;
   color: var(--ink); display: inline-flex; align-items: baseline; gap: .5rem;
 }
@@ -1109,9 +1115,11 @@ footer a:hover { color: var(--accent); }
 [data-density="loose"]   .work-grid { gap: 2rem; }
 
 /* ─── Display font swap ─── */
-[data-display-font="serif"]  { --ff-display: 'Instrument Serif', 'Times New Roman', serif; }
-[data-display-font="mono"]   { --ff-display: 'JetBrains Mono', ui-monospace, monospace; }
-[data-display-font="sans"]   { --ff-display: 'Inter Tight', system-ui, sans-serif; }
+[data-display-font="editorial"] { --ff-display: 'Fraunces', Georgia, serif; --ff-display-weight: 300; }
+[data-display-font="afacad"]    { --ff-display: 'Afacad Flux', system-ui, sans-serif; --ff-display-weight: 900; }
+[data-display-font="serif"]     { --ff-display: 'Instrument Serif', 'Times New Roman', serif; --ff-display-weight: 400; }
+[data-display-font="mono"]      { --ff-display: 'JetBrains Mono', ui-monospace, monospace; --ff-display-weight: 700; }
+[data-display-font="sans"]      { --ff-display: 'Inter Tight', system-ui, sans-serif; --ff-display-weight: 900; }
 
 /* ─── Hero alignment helper ─── */
 .hero[data-align="center"] { text-align: left; }
@@ -1288,7 +1296,7 @@ footer a:hover { color: var(--accent); }
 }
 .uf-lane-title {
   font-family: var(--ff-display);
-  font-weight: 900; font-size: 32px;
+  font-weight: var(--ff-display-weight, 900); font-size: 32px;
   fill: var(--accent);
   letter-spacing: -.01em;
 }
@@ -1560,7 +1568,7 @@ footer a:hover { color: var(--accent); }
   border-bottom: 1px solid var(--rim-soft);
 }
 .problem-row-label {
-  font-family: var(--ff-display); font-weight: 900;
+  font-family: var(--ff-display); font-weight: var(--ff-display-weight, 900);
   font-size: 1.4rem; letter-spacing: -.02em;
   color: var(--ink); margin: 0;
 }
@@ -2631,8 +2639,8 @@ Object.assign(window, {
 const { useState, useEffect, useRef, useCallback, useMemo } = React;
 
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
-  "accent": "blue",
-  "displayFont": "afacad",
+  "accent": "lumen",
+  "displayFont": "editorial",
   "theme": "light",
   "tileStyle": "polaroid",
   "heroAlign": "bottom",
@@ -2643,6 +2651,7 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
 }/*EDITMODE-END*/;
 
 const ACCENTS = {
+  lumen:   '#F4D06F', /* butter — Lumen dark-mode accent (default) */
   sage:    'oklch(0.74 0.05 145)',
   clay:    'oklch(0.72 0.08 45)',
   blue:    'oklch(0.72 0.08 240)',
@@ -2651,6 +2660,7 @@ const ACCENTS = {
   violet:  '#6B5FFF',
 };
 const ACCENTS_LIGHT = {
+  lumen:   '#D62839', /* coral — Lumen light-mode accent (default) */
   sage:    'oklch(0.45 0.06 145)',
   clay:    'oklch(0.50 0.10 45)',
   blue:    'oklch(0.45 0.09 240)',
@@ -3121,7 +3131,7 @@ function Home({ onOpen, tweaks, openContact }) {
 
       <footer>
         <span>© 2025 Raz Silberman</span>
-        <span>Set in Afacad Flux + Afacad</span>
+        <span>Set in Fraunces + Inter</span>
       </footer>
     </div>
   );
@@ -4083,11 +4093,11 @@ function PortfolioTweaks({ tweaks, setTweak }) {
                    options={['dark', 'light']}
                    onChange={v => setTweak('theme', v)} />
       <TweakSelect label="Accent color" value={tweaks.accent}
-                   options={['sage', 'clay', 'blue', 'amber', 'mono', 'violet']}
+                   options={['lumen', 'sage', 'clay', 'blue', 'amber', 'mono', 'violet']}
                    onChange={v => setTweak('accent', v)} />
       <TweakSection label="Typography" />
       <TweakSelect label="Display font" value={tweaks.displayFont}
-                   options={['afacad', 'serif', 'mono', 'sans']}
+                   options={['editorial', 'afacad', 'serif', 'mono', 'sans']}
                    onChange={v => setTweak('displayFont', v)} />
       <TweakSection label="Layout" />
       <TweakSelect label="Tile style" value={tweaks.tileStyle}
