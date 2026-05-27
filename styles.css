@@ -35,7 +35,7 @@
   --ff-display: 'Fraunces', Georgia, serif;
   --ff-body:    'Inter', system-ui, -apple-system, sans-serif;
   --ff-mono:    'JetBrains Mono', ui-monospace, monospace;
-  --ff-display-weight: 300;
+  --ff-display-weight: 700;
   font-optical-sizing: auto;
   --expo: cubic-bezier(0.16, 1, 0.3, 1);
   --circ: cubic-bezier(0.85, 0, 0.15, 1);
@@ -1105,7 +1105,7 @@ footer a:hover { color: var(--accent); }
 [data-density="loose"]   .work-grid { gap: 2rem; }
 
 /* ─── Display font swap ─── */
-[data-display-font="editorial"] { --ff-display: 'Fraunces', Georgia, serif; --ff-display-weight: 300; }
+[data-display-font="editorial"] { --ff-display: 'Fraunces', Georgia, serif; --ff-display-weight: 700; }
 [data-display-font="afacad"]    { --ff-display: 'Afacad Flux', system-ui, sans-serif; --ff-display-weight: 900; }
 [data-display-font="serif"]     { --ff-display: 'Instrument Serif', 'Times New Roman', serif; --ff-display-weight: 400; }
 [data-display-font="mono"]      { --ff-display: 'JetBrains Mono', ui-monospace, monospace; --ff-display-weight: 700; }

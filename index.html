@@ -6,7 +6,7 @@
 <title>Raz Silberman — Product Designer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Afacad:wght@400;500;600;700&family=Afacad+Flux:wght@400;500;600;700;800;900&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,700;1,9..144,300;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@500;700;900&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Afacad:wght@400;500;600;700&family=Afacad+Flux:wght@400;500;600;700;800;900&family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@500;700;900&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 /* ─── Tokens ─── */
 :root {
@@ -45,7 +45,7 @@
   --ff-display: 'Fraunces', Georgia, serif;
   --ff-body:    'Inter', system-ui, -apple-system, sans-serif;
   --ff-mono:    'JetBrains Mono', ui-monospace, monospace;
-  --ff-display-weight: 300;
+  --ff-display-weight: 700;
   font-optical-sizing: auto;
   --expo: cubic-bezier(0.16, 1, 0.3, 1);
   --circ: cubic-bezier(0.85, 0, 0.15, 1);
@@ -477,10 +477,10 @@ nav.top.hidden { transform: translateY(-110%); }
 .hero-title {
   font-family: var(--ff-display); font-weight: var(--ff-display-weight, 900);
   font-size: clamp(3.5rem, 9vw, 9.5rem);
-  line-height: .92; letter-spacing: -.025em; color: var(--ink);
+  line-height: 1.02; letter-spacing: -.025em; color: var(--ink);
   max-width: 18ch;
 }
-.hero-title .word { display: inline-block; overflow: hidden; padding: 0 .04em .12em 0; margin-right: -.04em; }
+.hero-title .word { display: inline-block; overflow: hidden; padding: 0 .04em .24em 0; margin-right: -.04em; }
 .hero-title .word:has(em) { padding-right: .2em; margin-right: -.2em; }
 .hero-title .word-inner {
   display: inline-block;
@@ -1115,7 +1115,7 @@ footer a:hover { color: var(--accent); }
 [data-density="loose"]   .work-grid { gap: 2rem; }
 
 /* ─── Display font swap ─── */
-[data-display-font="editorial"] { --ff-display: 'Fraunces', Georgia, serif; --ff-display-weight: 300; }
+[data-display-font="editorial"] { --ff-display: 'Fraunces', Georgia, serif; --ff-display-weight: 700; }
 [data-display-font="afacad"]    { --ff-display: 'Afacad Flux', system-ui, sans-serif; --ff-display-weight: 900; }
 [data-display-font="serif"]     { --ff-display: 'Instrument Serif', 'Times New Roman', serif; --ff-display-weight: 400; }
 [data-display-font="mono"]      { --ff-display: 'JetBrains Mono', ui-monospace, monospace; --ff-display-weight: 700; }
@@ -2992,13 +2992,13 @@ function Hero({ align }) {
         <span className="word"><span className="word-inner">of</span></span>{' '}
         <span className="word"><span className="word-inner">what</span></span>{' '}
         <span className="word"><span className="word-inner accent">inspires</span></span>{' '}
-        <span className="word"><span className="word-inner">you,</span></span>{' '}
+        <span className="word"><span className="word-inner">you</span></span>{' '}
         <span className="word"><span className="word-inner">and</span></span>{' '}
         <span className="word"><span className="word-inner"><em>imagine</em></span></span>{' '}
         <span className="word"><span className="word-inner">that's</span></span>{' '}
-        <span className="word"><span className="word-inner">whats</span></span>{' '}
-        <span className="word"><span className="word-inner">written</span></span>{' '}
-        <span className="word"><span className="word-inner">here</span></span>
+        <span className="word"><span className="word-inner">what</span></span>{' '}
+        <span className="word"><span className="word-inner">this</span></span>{' '}
+        <span className="word"><span className="word-inner">says</span></span>
       </h1>
       <div className={`hero-bottom ${up ? 'up' : ''}`}>
         <p className="hero-desc">
