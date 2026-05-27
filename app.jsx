@@ -1052,8 +1052,15 @@ function ParallaxSection({ s, isSub }) {
     const left = leftRef.current;
     if (!header || !text || !media || !left) return;
     const STICKY_OFFSET = 5 * 16; /* matches header top: 5rem */
+    const mq = window.matchMedia('(min-width: 960px)');
 
     const update = () => {
+      if (!mq.matches) {
+        /* Mobile: single-column stacked layout, no sticky behavior — clear inline styles. */
+        text.style.top = '';
+        left.style.height = '';
+        return;
+      }
       const headerMB = parseFloat(getComputedStyle(header).marginBottom) || 0;
       text.style.top = `${STICKY_OFFSET + header.offsetHeight + headerMB}px`;
       const items = media.children;
