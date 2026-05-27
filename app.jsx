@@ -3,7 +3,7 @@ const { useState, useEffect, useRef, useCallback, useMemo } = React;
 
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "accent": "bauhaus",
-  "displayFont": "editorial",
+  "displayFont": "sleeper",
   "theme": "light",
   "tileStyle": "polaroid",
   "heroAlign": "bottom",
@@ -494,7 +494,7 @@ function Home({ onOpen, tweaks, openContact }) {
 
       <footer>
         <span>© 2025 Raz Silberman</span>
-        <span>Set in Fraunces + Inter</span>
+        <span>Set in Geist + Instrument Serif</span>
       </footer>
     </div>
   );
@@ -1477,7 +1477,7 @@ function PortfolioTweaks({ tweaks, setTweak }) {
                    onChange={v => setTweak('accent', v)} />
       <TweakSection label="Typography" />
       <TweakSelect label="Display font" value={tweaks.displayFont}
-                   options={['editorial', 'afacad', 'serif', 'mono', 'sans']}
+                   options={['sleeper', 'editorial', 'afacad', 'serif', 'mono', 'sans']}
                    onChange={v => setTweak('displayFont', v)} />
       <TweakSection label="Layout" />
       <TweakSelect label="Tile style" value={tweaks.tileStyle}

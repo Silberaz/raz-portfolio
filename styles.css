@@ -29,13 +29,15 @@
 }
 
 :root {
-  /* Editorial typography — Fraunces serif display + Inter body.
-     --ff-display-weight is the variable refactored into all hardcoded
-     display weights; Fraunces wants 300, the old Afacad Flux wanted 900. */
-  --ff-display: 'Fraunces', Georgia, serif;
-  --ff-body:    'Inter', system-ui, -apple-system, sans-serif;
-  --ff-mono:    'JetBrains Mono', ui-monospace, monospace;
-  --ff-display-weight: 700;
+  /* Sleeper typography — Geist sans (display + body) + Geist Mono.
+     Instrument Serif takes over .hero-title and .contact-headline only
+     (the "moment" treatment), defined further down in the display-font
+     swap section. --ff-display-weight is the variable refactored into
+     all hardcoded display weights. */
+  --ff-display: 'Geist', system-ui, -apple-system, sans-serif;
+  --ff-body:    'Geist', system-ui, -apple-system, sans-serif;
+  --ff-mono:    'Geist Mono', ui-monospace, monospace;
+  --ff-display-weight: 800;
   font-optical-sizing: auto;
   --expo: cubic-bezier(0.16, 1, 0.3, 1);
   --circ: cubic-bezier(0.85, 0, 0.15, 1);
@@ -1105,11 +1107,30 @@ footer a:hover { color: var(--accent); }
 [data-density="loose"]   .work-grid { gap: 2rem; }
 
 /* ─── Display font swap ─── */
+[data-display-font="sleeper"]   { --ff-display: 'Geist', system-ui, sans-serif; --ff-display-weight: 800; }
 [data-display-font="editorial"] { --ff-display: 'Fraunces', Georgia, serif; --ff-display-weight: 700; }
 [data-display-font="afacad"]    { --ff-display: 'Afacad Flux', system-ui, sans-serif; --ff-display-weight: 900; }
 [data-display-font="serif"]     { --ff-display: 'Instrument Serif', 'Times New Roman', serif; --ff-display-weight: 400; }
 [data-display-font="mono"]      { --ff-display: 'JetBrains Mono', ui-monospace, monospace; --ff-display-weight: 700; }
 [data-display-font="sans"]      { --ff-display: 'Inter Tight', system-ui, sans-serif; --ff-display-weight: 900; }
+
+/* Sleeper signature: Instrument Serif at weight 400 takes over the hero
+   and contact "moments" only. Scoped so the tweaks-panel font picker
+   restores normal display behavior on .hero-title / .contact-headline
+   when another font is selected. */
+[data-display-font="sleeper"] .hero-title,
+[data-display-font="sleeper"] .contact-headline {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  line-height: 0.98;
+}
+[data-display-font="sleeper"] .hero-title em,
+[data-display-font="sleeper"] .contact-headline em {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+}
 
 /* ─── Hero alignment helper ─── */
 .hero[data-align="center"] { text-align: left; }
