@@ -876,7 +876,7 @@ function GridDemo({ caption }) {
         lp.style.width = (lw === -1 ? VW : lw * scale) + 'px';
       } else lp.style.display = 'none';
       const jump = $('g-bp-jump');
-      if (jump) jump.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.bp === abp.name));
+      if (jump) jump.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.bp === vbp.name));
     }
     const slider = $('g-vp-slider');
     const out = $('g-vp-out');
