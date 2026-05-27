@@ -10,30 +10,30 @@
 <style>
 /* ─── Tokens ─── */
 :root {
-  /* Dark theme (default) — Lumen "Scarlet butter" */
+  /* Dark theme (default) — Bauhaus "Museum screen" */
   --ground:    #020122;
   --surface:   #0B0A33;
   --surface-2: #0B0A33;
   --rim:       #373F51;
   --rim-soft:  rgba(172,252,217,.06);
-  --ink:       #ACFCD9;
-  --ink-dim:   #8FA8B5;
-  --muted:     #50586A;
-  --accent:    #F4D06F; /* butter — JS may override via tweaks.accent */
+  --ink:       #ACFCD9;            /* aquamarine — also doubles as teal voice */
+  --ink-dim:   #6B7FA5;
+  --muted:     #6B7FA5;
+  --accent:    #F4D06F;            /* butter — JS may override via tweaks.accent */
   --accent-lo: color-mix(in oklab, var(--accent) 14%, transparent);
   --accent-md: color-mix(in oklab, var(--accent) 30%, transparent);
 }
 [data-theme="light"] {
-  /* Light theme — Lumen "Midnight remix" */
-  --ground:    #FFFFFF;
-  --surface:   #F4F6FB;
+  /* Light theme — Bauhaus "Studio paper" */
+  --ground:    #F2EEE5;            /* warm ivory paper, not white */
+  --surface:   #E5DDC5;            /* kraft */
   --surface-2: #FFFFFF;
-  --rim:       #D8DCE8;
-  --rim-soft:  rgba(27,42,78,.08);
-  --ink:       #1B2A4E;
-  --ink-dim:   #46577D;
-  --muted:     #67718B;
-  --accent:    #D62839; /* coral */
+  --rim:       #D5C9AC;
+  --rim-soft:  rgba(11,21,56,.08);
+  --ink:       #0B1538;            /* deep ink */
+  --ink-dim:   #2E3C5C;
+  --muted:     #5A5340;
+  --accent:    #0F5A4A;            /* deep teal — eyebrows + links per spec */
   --accent-lo: color-mix(in oklab, var(--accent) 12%, transparent);
   --accent-md: color-mix(in oklab, var(--accent) 28%, transparent);
 }
@@ -2639,7 +2639,7 @@ Object.assign(window, {
 const { useState, useEffect, useRef, useCallback, useMemo } = React;
 
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
-  "accent": "lumen",
+  "accent": "bauhaus",
   "displayFont": "editorial",
   "theme": "light",
   "tileStyle": "polaroid",
@@ -2651,7 +2651,7 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
 }/*EDITMODE-END*/;
 
 const ACCENTS = {
-  lumen:   '#F4D06F', /* butter — Lumen dark-mode accent (default) */
+  bauhaus: '#F4D06F', /* butter — Bauhaus dark-mode accent (default) */
   sage:    'oklch(0.74 0.05 145)',
   clay:    'oklch(0.72 0.08 45)',
   blue:    'oklch(0.72 0.08 240)',
@@ -2660,7 +2660,7 @@ const ACCENTS = {
   violet:  '#6B5FFF',
 };
 const ACCENTS_LIGHT = {
-  lumen:   '#D62839', /* coral — Lumen light-mode accent (default) */
+  bauhaus: '#0F5A4A', /* deep teal — Bauhaus light-mode accent (default) */
   sage:    'oklch(0.45 0.06 145)',
   clay:    'oklch(0.50 0.10 45)',
   blue:    'oklch(0.45 0.09 240)',
@@ -4093,7 +4093,7 @@ function PortfolioTweaks({ tweaks, setTweak }) {
                    options={['dark', 'light']}
                    onChange={v => setTweak('theme', v)} />
       <TweakSelect label="Accent color" value={tweaks.accent}
-                   options={['lumen', 'sage', 'clay', 'blue', 'amber', 'mono', 'violet']}
+                   options={['bauhaus', 'sage', 'clay', 'blue', 'amber', 'mono', 'violet']}
                    onChange={v => setTweak('accent', v)} />
       <TweakSection label="Typography" />
       <TweakSelect label="Display font" value={tweaks.displayFont}

@@ -2,7 +2,7 @@
 const { useState, useEffect, useRef, useCallback, useMemo } = React;
 
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
-  "accent": "lumen",
+  "accent": "bauhaus",
   "displayFont": "editorial",
   "theme": "light",
   "tileStyle": "polaroid",
@@ -14,7 +14,7 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
 }/*EDITMODE-END*/;
 
 const ACCENTS = {
-  lumen:   '#F4D06F', /* butter — Lumen dark-mode accent (default) */
+  bauhaus: '#F4D06F', /* butter — Bauhaus dark-mode accent (default) */
   sage:    'oklch(0.74 0.05 145)',
   clay:    'oklch(0.72 0.08 45)',
   blue:    'oklch(0.72 0.08 240)',
@@ -23,7 +23,7 @@ const ACCENTS = {
   violet:  '#6B5FFF',
 };
 const ACCENTS_LIGHT = {
-  lumen:   '#D62839', /* coral — Lumen light-mode accent (default) */
+  bauhaus: '#0F5A4A', /* deep teal — Bauhaus light-mode accent (default) */
   sage:    'oklch(0.45 0.06 145)',
   clay:    'oklch(0.50 0.10 45)',
   blue:    'oklch(0.45 0.09 240)',
@@ -1473,7 +1473,7 @@ function PortfolioTweaks({ tweaks, setTweak }) {
                    options={['dark', 'light']}
                    onChange={v => setTweak('theme', v)} />
       <TweakSelect label="Accent color" value={tweaks.accent}
-                   options={['lumen', 'sage', 'clay', 'blue', 'amber', 'mono', 'violet']}
+                   options={['bauhaus', 'sage', 'clay', 'blue', 'amber', 'mono', 'violet']}
                    onChange={v => setTweak('accent', v)} />
       <TweakSection label="Typography" />
       <TweakSelect label="Display font" value={tweaks.displayFont}
