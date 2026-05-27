@@ -4,7 +4,7 @@ const { useState, useEffect, useRef, useCallback, useMemo } = React;
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "accent": "bauhaus",
   "displayFont": "sleeper",
-  "theme": "light",
+  "theme": "dark",
   "tileStyle": "polaroid",
   "heroAlign": "bottom",
   "density": "dense",
