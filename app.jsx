@@ -1563,21 +1563,33 @@ function App() {
     return () => window.removeEventListener('scroll', onScroll);
   }, [page]);
 
-  // reveal observer
+  // reveal observer (with scroll-based fallback — the IntersectionObserver
+  // was occasionally not firing for elements deeper in the page on the
+  // index route, leaving the About section invisible. The scroll handler
+  // belt-and-suspenders every reveal check on every scroll event.)
   useEffect(() => {
     const t = setTimeout(() => {
-      const els = document.querySelectorAll('.reveal:not(.visible), .clip-reveal:not(.visible)');
+      const SELECTOR = '.reveal:not(.visible), .clip-reveal:not(.visible)';
+      const revealInView = () => {
+        document.querySelectorAll(SELECTOR).forEach(el => {
+          const r = el.getBoundingClientRect();
+          if (r.top < window.innerHeight * .92 && r.bottom > 0) {
+            el.classList.add('visible');
+          }
+        });
+      };
+      revealInView();
       const io = new IntersectionObserver((entries) => {
         entries.forEach(e => {
           if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
         });
-      }, { threshold: .1 });
-      els.forEach(el => {
-        const r = el.getBoundingClientRect();
-        if (r.top < window.innerHeight * .92) el.classList.add('visible');
-        else io.observe(el);
-      });
-      return () => io.disconnect();
+      }, { threshold: 0, rootMargin: '0px 0px -8% 0px' });
+      document.querySelectorAll(SELECTOR).forEach(el => io.observe(el));
+      window.addEventListener('scroll', revealInView, { passive: true });
+      return () => {
+        io.disconnect();
+        window.removeEventListener('scroll', revealInView);
+      };
     }, 100);
     return () => clearTimeout(t);
   }, [page, projectId]);

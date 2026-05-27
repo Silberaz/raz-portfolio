@@ -1716,7 +1716,7 @@ const COMPANIES = [
     role: 'Senior → Lead Product Designer',
     when: '2023 — Present',
     accent: 'sage',
-    swatch: { from: '#1A1F1B', to: '#0C100D', mark: '#3E5142' },
+    swatch: { from: '#0F5A4A', to: '#082E25', mark: '#5BCAB8' },
     projectIds: ['help-center', 'design-system', 'product-redesign'],
   },
   {
@@ -1727,7 +1727,7 @@ const COMPANIES = [
     role: 'Product Designer',
     when: '2021 — 2023',
     accent: 'blue',
-    swatch: { from: '#181B1D', to: '#0B0D0E', mark: '#3E4448' },
+    swatch: { from: '#1A2C5C', to: '#0F1830', mark: '#6E8AC9' },
     projectIds: ['platform-redesign'],
   },
 ];
@@ -1749,7 +1749,7 @@ const PROJECTS = [
     tile: 'wide',
     summary: 'A customizable Help Center that gave business admins full control over their self-service site — no developers required. Replaced a legacy product that wasn\'t winning customers.',
     heroImage: 'help center/36.png',
-    swatch: { from: '#1A1F1B', to: '#0C100D', mark: '#3E5142' },
+    swatch: { from: '#0F5A4A', to: '#082E25', mark: '#5BCAB8' },
     sections: [
       { id: 'context', title: 'Context', body: [
         'KMS Lighthouse is an enterprise knowledge management platform used by companies like DHL, GE Healthcare, AIG, and Allianz to power their call centers, self-service portals, and internal knowledge bases.',
@@ -1906,7 +1906,7 @@ const PROJECTS = [
     kind: 'Design system',
     tile: 'tall',
     summary: 'Built the company\'s first proper design system from the inside out — tokens, primitives, patterns, governance — and migrated four shipped products onto it without freezing a single feature team.',
-    swatch: { from: '#1F1A14', to: '#13100C', mark: '#5A4A33' },
+    swatch: { from: '#553A0E', to: '#2B1D05', mark: '#F4D06F' },
     sections: [
       { id: 'context', title: 'Context', body: [
         'Six product teams, three platforms, and exactly one shared component: the company logo. Buttons came in 14 visually distinct flavors. Spacing followed nobody\'s scale.',
@@ -1952,7 +1952,7 @@ const PROJECTS = [
     tile: 'sq',
     summary: 'A full redesign of the KMS Lighthouse platform that pivoted mid-project — and got better because of it.',
     heroImage: 'redesign/35.png',
-    swatch: { from: '#1B1820', to: '#0E0C13', mark: '#4A4458' },
+    swatch: { from: '#3F1F4D', to: '#231030', mark: '#C28FE0' },
     sections: [
       { id: 'context', title: 'Context', body: [
         'KMS Lighthouse is an enterprise knowledge management platform used by companies like DHL, GE Healthcare, AIG, and Allianz to power their call centers, self-service portals, and internal knowledge bases. It\'s the core product the company is built on.',
@@ -2158,7 +2158,7 @@ const PROJECTS = [
     kind: 'B2B2C SaaS',
     tile: 'sq',
     summary: 'Designed the first-run experience for a platform with two audiences — the admin who configures it and the end user who lives in it — and found a way to serve both without forking the product.',
-    swatch: { from: '#181B1D', to: '#0B0D0E', mark: '#3E4448' },
+    swatch: { from: '#1A2C5C', to: '#0F1830', mark: '#6E8AC9' },
     sections: [
       { id: 'context', title: 'Context', body: [
         'A platform sold to companies but used by their employees. Admins set it up once a quarter. End users open it every day. Both groups had been getting the same tour.',
@@ -4217,21 +4217,40 @@ function App() {
     return () => window.removeEventListener('scroll', onScroll);
   }, [page]);
 
-  // reveal observer
+  // reveal observer (with scroll-based fallback — the IntersectionObserver
+  // was occasionally not firing for elements deeper in the page on the
+  // index route, leaving the About section invisible. The scroll handler
+  // belt-and-suspenders every reveal check on every scroll event.)
   useEffect(() => {
     const t = setTimeout(() => {
-      const els = document.querySelectorAll('.reveal:not(.visible), .clip-reveal:not(.visible)');
+      const SELECTOR = '.reveal:not(.visible), .clip-reveal:not(.visible)';
+      const revealInView = () => {
+        document.querySelectorAll(SELECTOR).forEach(el => {
+          const r = el.getBoundingClientRect();
+          // Reveal any element whose top is within viewport (with a small
+          // 8% buffer at the bottom so reveals trigger just before fully
+          // entering view).
+          if (r.top < window.innerHeight * .92 && r.bottom > 0) {
+            el.classList.add('visible');
+          }
+        });
+      };
+      // Initial pass — any element already in view becomes visible.
+      revealInView();
+      // Primary path: IntersectionObserver for smooth-as-you-scroll reveals.
       const io = new IntersectionObserver((entries) => {
         entries.forEach(e => {
           if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
         });
-      }, { threshold: .1 });
-      els.forEach(el => {
-        const r = el.getBoundingClientRect();
-        if (r.top < window.innerHeight * .92) el.classList.add('visible');
-        else io.observe(el);
-      });
-      return () => io.disconnect();
+      }, { threshold: 0, rootMargin: '0px 0px -8% 0px' });
+      document.querySelectorAll(SELECTOR).forEach(el => io.observe(el));
+      // Fallback path: scroll listener catches anything the observer misses.
+      window.addEventListener('scroll', revealInView, { passive: true });
+      // Cleanup
+      return () => {
+        io.disconnect();
+        window.removeEventListener('scroll', revealInView);
+      };
     }, 100);
     return () => clearTimeout(t);
   }, [page, projectId]);
