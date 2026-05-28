@@ -10,32 +10,128 @@
 <style>
 /* ─── Tokens ─── */
 :root {
-  /* Dark theme (default) — Bauhaus "Museum screen" */
-  --ground:    #020122;
-  --surface:   #0B0A33;
-  --surface-2: #0B0A33;
-  --rim:       #373F51;
-  --rim-soft:  rgba(172,252,217,.06);
-  --ink:       #ACFCD9;            /* aquamarine — also doubles as teal voice */
-  --ink-dim:   #6B7FA5;
-  --muted:     #6B7FA5;
-  --accent:    #F4D06F;            /* butter — JS may override via tweaks.accent */
-  --accent-lo: color-mix(in oklab, var(--accent) 14%, transparent);
-  --accent-md: color-mix(in oklab, var(--accent) 30%, transparent);
+  /* Dark theme (default) — Signal "Signal lost"
+     Near-black CRT screen with the SMPTE color bars glowing in the dark.
+     Token roles per color palettes/signal-design-tokens.md:
+       --accent = tomato (primary CTA / brand pop)
+       --accent-sky = sky (links, eyebrows)
+       --accent-moment = butter (badges, moments)
+       --bar-sage/-orchid/-indigo = extended bars (tags, data viz, reveals) */
+  --ground:    #14131A;            /* CRT black — faint purple-warmth, not pure */
+  --surface:   #211F2A;
+  --surface-2: #211F2A;
+  --rim:       #2E2C38;
+  --rim-soft:  rgba(236,233,240,.06);
+  --ink:       #ECE9F0;            /* broadcast white */
+  --ink-dim:   #B2AEBC;
+  --muted:     #8C8898;
+
+  /* Primary (tomato) — brightened for dark-text AA */
+  --accent:        #F25450;
+  --accent-hover:  #FF7568;        /* hover LIGHTER (dark-mode exception) */
+  --accent-active: #FFA698;
+  --accent-bg:     #480000;
+  --accent-bg-strong: #820000;
+  --accent-text-on: #14131A;       /* dark text on bright tomato CTAs */
+  --accent-lo:     color-mix(in oklab, var(--accent) 14%, transparent);
+  --accent-md:     color-mix(in oklab, var(--accent) 30%, transparent);
+
+  /* Accent (sky) — links + eyebrows */
+  --accent-sky:         #5BC4E8;
+  --accent-sky-hover:   #96D9F3;   /* hover LIGHTER on dark */
+  --accent-sky-surface: #5BC4E8;
+  --accent-sky-bg:      #002032;
+
+  /* Moment (butter) — badges, joy-moment */
+  --accent-moment:         #F2D74E;
+  --accent-moment-bg:      #281800;
+  --accent-moment-text-on: #F2D74E;
+
+  /* Extended bars — sage/orchid/indigo (tags, data viz, the reveal set) */
+  --bar-sage:           #6FB264;
+  --bar-sage-surface:   #6FB264;
+  --bar-orchid:         #B05BA8;
+  --bar-orchid-surface: #B05BA8;
+  --bar-indigo:         #7A92E0;   /* lightened for dark-text legibility */
+  --bar-indigo-surface: #3A52A0;
+
+  /* Focus ring — sky (most visible on CRT black) */
+  --focus-ring: #5BC4E8;
 }
 [data-theme="light"] {
-  /* Light theme — Bauhaus "Studio paper" */
-  --ground:    #F2EEE5;            /* warm ivory paper, not white */
-  --surface:   #E5DDC5;            /* kraft */
+  /* Light theme — Signal "On air"
+     Warm broadcast white with the bars deepened to AA-compliant text colors.
+     The bright bars stay for surfaces/badges. */
+  --ground:    #F4F2EC;            /* warm broadcast white — not pure */
+  --surface:   #E8E5DA;
   --surface-2: #FFFFFF;
-  --rim:       #D5C9AC;
-  --rim-soft:  rgba(11,21,56,.08);
-  --ink:       #0B1538;            /* deep ink */
-  --ink-dim:   #2E3C5C;
-  --muted:     #5A5340;
-  --accent:    #0F5A4A;            /* deep teal — eyebrows + links per spec */
-  --accent-lo: color-mix(in oklab, var(--accent) 12%, transparent);
-  --accent-md: color-mix(in oklab, var(--accent) 28%, transparent);
+  --rim:       #D5CFC0;
+  --rim-soft:  rgba(20,19,26,.08);
+  --ink:       #14131A;            /* CRT black — same hue as dark mode bg */
+  --ink-dim:   #3D3B45;
+  --muted:     #5C5A50;
+
+  /* Primary (tomato) — deepened for white-text AA */
+  --accent:        #C42018;
+  --accent-hover:  #A01410;        /* hover darker (light-mode standard) */
+  --accent-active: #7E0C0A;
+  --accent-bg:     #FFEBE6;
+  --accent-bg-strong: #FFCDC2;
+  --accent-text-on: #FFFFFF;       /* white text on deep tomato CTAs */
+  --accent-lo:     color-mix(in oklab, var(--accent) 12%, transparent);
+  --accent-md:     color-mix(in oklab, var(--accent) 28%, transparent);
+
+  /* Accent (sky) — deepened for in-body text use */
+  --accent-sky:         #136B92;
+  --accent-sky-hover:   #004660;
+  --accent-sky-surface: #5BC4E8;   /* bright sky — for surfaces / badges */
+  --accent-sky-bg:      #E6F9FF;
+
+  /* Moment (butter) — background only in light mode */
+  --accent-moment:         #F2D74E;
+  --accent-moment-bg:      #FAF6DF;
+  --accent-moment-text-on: #503A00;
+
+  /* Extended bars — deepened for light-mode text use */
+  --bar-sage:           #356E30;
+  --bar-sage-surface:   #6FB264;
+  --bar-orchid:         #8B3A84;
+  --bar-orchid-surface: #B05BA8;
+  --bar-indigo:         #2A3F85;
+  --bar-indigo-surface: #3A52A0;
+
+  /* Focus ring — tomato primary */
+  --focus-ring: #C42018;
+}
+
+/* ─── Signal 9-stop OKLCH ramps (mode-independent) ─────────────────────
+   Materialized from signal-design-tokens.md so components needing a
+   specific ramp stop don't pick an off-system color. */
+:root {
+  --tomato-50:  #FFEBE6; --tomato-100: #FFCDC2; --tomato-200: #FFA698;
+  --tomato-300: #FF7568; --tomato-400: #F54840; --tomato-500: #D11C1F;
+  --tomato-600: #AC0000; --tomato-700: #820000; --tomato-800: #480000;
+
+  --sky-50:  #E6F9FF; --sky-100: #C2ECFD; --sky-200: #96D9F3;
+  --sky-300: #60BCDC; --sky-400: #2D9DC0; --sky-500: #007EA0;
+  --sky-600: #006382; --sky-700: #004660; --sky-800: #002032;
+
+  --butter-50:  #FAF6DF; --butter-100: #F1E6B1; --butter-200: #E0CF7A;
+  --butter-300: #C6AE33; --butter-400: #A98E00; --butter-500: #8A7000;
+  --butter-600: #6F5600; --butter-700: #503A00; --butter-800: #281800;
+  --butter-base: #F2D74E;
+
+  --sage-50:  #ECFAEA; --sage-100: #D0EFCB; --sage-200: #AEDDA5;
+  --sage-300: #84C07A; --sage-400: #60A255; --sage-500: #428337;
+  --sage-600: #2A6820; --sage-700: #134A08; --sage-800: #002300;
+
+  --orchid-50:  #FFEEFF; --orchid-100: #FFD5F9; --orchid-200: #F5B5ED;
+  --orchid-300: #DE8ED5; --orchid-400: #C16AB8; --orchid-500: #A04C99;
+  --orchid-600: #82347B; --orchid-700: #5F1C5B; --orchid-800: #31022E;
+
+  --indigo-50:  #EEF5FF; --indigo-100: #D4E4FF; --indigo-200: #B4CCFF;
+  --indigo-300: #8FABF8; --indigo-400: #6E8BDE; --indigo-500: #516CBD;
+  --indigo-600: #3B529C; --indigo-700: #253776; --indigo-800: #0B1541;
 }
 
 :root {
@@ -87,6 +183,80 @@ body {
 a { color: inherit; text-decoration: none; }
 button { font-family: inherit; }
 ::selection { background: var(--accent-md); color: var(--ink); }
+
+/* WCAG focus ring — keyboard-only via :focus-visible.
+   --focus-ring is sky in dark, tomato in light per signal-design-tokens.md */
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+:focus:not(:focus-visible) { outline: none; }
+
+/* ─── Signal component wiring ──────────────────────────────────────────
+   Three-bar identity:
+     Tomato → --accent (already used site-wide for brand pop / hero em / CTAs)
+     Sky    → eyebrows + body links (most-trafficked accent role)
+     Butter → badges (joy moment, dark-text-on-butter passes AAA both modes)
+   Sage/Orchid/Indigo cycle across cap-pills as the "reveal set". */
+
+/* Sky — all eyebrow-style mono uppercase labels */
+.hero-eyebrow,
+.about-eyebrow,
+.contact-eyebrow,
+.proj-eyebrow,
+.proj-section-eyebrow,
+.tile-tags,
+.company-tag {
+  color: var(--accent-sky);
+}
+.tile-img-mark { color: var(--accent-sky); }
+
+/* Sky — body links (underlined per doc) */
+.proj-section a,
+.about p a,
+.contact-links a {
+  color: var(--accent-sky);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+.proj-section a:hover,
+.about p a:hover,
+.contact-links a:hover { color: var(--accent-sky-hover); }
+
+/* Butter — moment tags (before/after, placeholder) */
+.ba-tag {
+  background: color-mix(in oklab, var(--accent-moment) 18%, transparent);
+  color: var(--accent-moment-text-on);
+}
+.proj-placeholder-tag { color: var(--accent-moment-text-on); }
+
+/* Extended bars (sage / orchid / indigo) — cycle across cap-pills so the
+   reveal set appears together in the capabilities row. */
+.cap-pill { border-color: currentColor; }
+.cap-pill:nth-child(3n+1) { color: var(--bar-sage); }
+.cap-pill:nth-child(3n+2) { color: var(--bar-orchid); }
+.cap-pill:nth-child(3n+3) { color: var(--bar-indigo); }
+
+/* Six-bar reveal — the test card footer strip. The full bar set appears
+   together only in deliberate moments (footer / 404 / loading) per the doc.
+   Uses the raw bar role-table values so the reference reads. */
+footer { position: relative; }
+footer::before {
+  content: '';
+  position: absolute; left: 0; right: 0; top: -1px;
+  height: 4px;
+  background: linear-gradient(to right,
+    #E83A35 0 16.666%,
+    #5BC4E8 16.666% 33.333%,
+    #F2D74E 33.333% 50%,
+    #6FB264 50% 66.666%,
+    #B05BA8 66.666% 83.333%,
+    #3A52A0 83.333% 100%
+  );
+  pointer-events: none;
+}
 
 /* ─── Grain ─── */
 .grain {
@@ -2746,7 +2916,7 @@ Object.assign(window, {
 const { useState, useEffect, useRef, useCallback, useMemo } = React;
 
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
-  "accent": "bauhaus",
+  "accent": "signal",
   "displayFont": "sleeper",
   "theme": "dark",
   "tileStyle": "polaroid",
@@ -2758,7 +2928,7 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
 }/*EDITMODE-END*/;
 
 const ACCENTS = {
-  bauhaus: '#F4D06F', /* butter — Bauhaus dark-mode accent (default) */
+  signal:  '#F25450', /* tomato — Signal dark-mode primary (default) */
   sage:    'oklch(0.74 0.05 145)',
   clay:    'oklch(0.72 0.08 45)',
   blue:    'oklch(0.72 0.08 240)',
@@ -2767,7 +2937,7 @@ const ACCENTS = {
   violet:  '#6B5FFF',
 };
 const ACCENTS_LIGHT = {
-  bauhaus: '#0F5A4A', /* deep teal — Bauhaus light-mode accent (default) */
+  signal:  '#C42018', /* tomato (deepened) — Signal light-mode primary (default) */
   sage:    'oklch(0.45 0.06 145)',
   clay:    'oklch(0.50 0.10 45)',
   blue:    'oklch(0.45 0.09 240)',
@@ -4198,7 +4368,7 @@ function PortfolioTweaks({ tweaks, setTweak }) {
                    options={['dark', 'light']}
                    onChange={v => setTweak('theme', v)} />
       <TweakSelect label="Accent color" value={tweaks.accent}
-                   options={['bauhaus', 'sage', 'clay', 'blue', 'amber', 'mono', 'violet']}
+                   options={['signal', 'sage', 'clay', 'blue', 'amber', 'mono', 'violet']}
                    onChange={v => setTweak('accent', v)} />
       <TweakSection label="Typography" />
       <TweakSelect label="Display font" value={tweaks.displayFont}
