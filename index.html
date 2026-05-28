@@ -860,25 +860,13 @@ nav.top.hidden { transform: translateY(-110%); }
 .about-photo-col { position: static; }
 .about-photo {
   aspect-ratio: 3/4; max-height: 540px;
-  background: var(--surface); border: 1px solid var(--rim);
+  background: var(--accent-moment); border: 1px solid var(--rim);
   position: relative; overflow: hidden;
 }
-.about-photo::before {
-  content: ''; position: absolute; inset: 0;
-  background: linear-gradient(135deg, var(--accent-lo) 0%, transparent 60%);
-}
-.about-photo .inner {
+.about-photo img {
   width: 100%; height: 100%;
-  display: flex; align-items: center; justify-content: center;
-  flex-direction: column; gap: .75rem;
-}
-.about-photo .mono {
-  font-family: var(--ff-display); font-weight: var(--ff-display-weight, 900); font-size: 5rem;
-  color: var(--rim); letter-spacing: -.04em;
-}
-.about-photo .note {
-  font-family: var(--ff-mono); font-size: .65rem;
-  letter-spacing: .1em; text-transform: uppercase; color: var(--muted);
+  object-fit: cover; object-position: center;
+  display: block;
 }
 .about-eyebrow {
   font-family: var(--ff-mono); font-size: .68rem; letter-spacing: .14em;
@@ -3356,10 +3344,7 @@ function Home({ onOpen, tweaks, openContact }) {
       <section className="about" id="about">
         <div className="about-photo-col">
           <div className="about-photo clip-reveal">
-            <div className="inner">
-              <div className="mono">RS</div>
-              <div className="note">Photo placeholder</div>
-            </div>
+            <img src="about/me.png" alt="Raz — illustrated avatar" />
           </div>
         </div>
         <div className="about-text">
@@ -3460,10 +3445,7 @@ function About({ onOpen }) {
       <section className="about" style={{paddingTop:'9rem', borderTop:'none'}}>
         <div className="about-photo-col">
           <div className="about-photo">
-            <div className="inner">
-              <div className="mono">RS</div>
-              <div className="note">Photo placeholder</div>
-            </div>
+            <img src="about/me.png" alt="Raz — illustrated avatar" />
           </div>
         </div>
         <div className="about-text">
