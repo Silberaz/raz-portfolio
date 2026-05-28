@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>404 — No Signal · Raz Silberman</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* Signal palette — dark "Signal lost" tokens */
+  --crt-black:        #14131A;
+  --crt-surface:      #211F2A;
+  --broadcast-white:  #ECE9F0;
+  --text-muted:       #8C8898;
+
+  /* Test-card bars (softened, AA-tuned) */
+  --bar-white:   #ECE9F0;
+  --bar-butter:  #F2D74E;
+  --bar-sky:     #5BC4E8;
+  --bar-sage:    #6FB264;
+  --bar-orchid:  #B05BA8;
+  --bar-tomato:  #F25450;
+  --bar-indigo:  #3A52A0;
+
+  /* Inverse / PLUGE row */
+  --pluge-1: #3A52A0;
+  --pluge-2: #14131A;
+  --pluge-3: #B05BA8;
+  --pluge-4: #14131A;
+  --pluge-5: #5BC4E8;
+  --pluge-6: #14131A;
+  --pluge-7: #ECE9F0;
+
+  --ff-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --ff-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  background: var(--crt-black);
+  color: var(--broadcast-white);
+  font-family: var(--ff-body);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; }
+
+/* ─── Stage ─── */
+.stage {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  isolation: isolate;
+  /* Very subtle CRT curvature feel via radial vignette */
+  background:
+    radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.35) 100%),
+    var(--crt-black);
+}
+
+/* The TV screen itself — full bleed */
+.screen {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  animation: tv-flicker 6s steps(60) infinite;
+}
+
+/* The bar stack — fills the screen */
+.bars {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-rows: 1fr 0.18fr 0.12fr;
+  /* Composite-video edge bleed: bars stay distinct but boundaries
+     fringe into each other by a fraction of a pixel. Slight desaturation
+     softens the digital sharpness. */
+  filter: blur(0.45px) saturate(0.96);
+}
+
+/* Per-row sub-pixel jitter — staggered timings so rows feel un-synced.
+   Steps-based so it reads as digital, not smooth motion. */
+.row-main    { animation: jitter-a 1.7s steps(6) infinite; }
+.row-inverse { animation: jitter-b 2.3s steps(5) infinite -0.4s; }
+.row-pluge   { animation: jitter-c 1.3s steps(7) infinite -0.9s; }
+
+/* Row 1 — the seven SMPTE color bars */
+.row-main {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+.row-main > span { display: block; }
+.row-main > :nth-child(1) { background: var(--bar-white);  }
+.row-main > :nth-child(2) { background: var(--bar-butter); }
+.row-main > :nth-child(3) { background: var(--bar-sky);    }
+.row-main > :nth-child(4) { background: var(--bar-sage);   }
+.row-main > :nth-child(5) { background: var(--bar-orchid); }
+.row-main > :nth-child(6) { background: var(--bar-tomato); }
+.row-main > :nth-child(7) { background: var(--bar-indigo); }
+
+/* Row 2 — inverse castellation, classic SMPTE secondary */
+.row-inverse {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+.row-inverse > :nth-child(1) { background: var(--bar-indigo); }
+.row-inverse > :nth-child(2) { background: var(--crt-black);  }
+.row-inverse > :nth-child(3) { background: var(--bar-orchid); }
+.row-inverse > :nth-child(4) { background: var(--crt-black);  }
+.row-inverse > :nth-child(5) { background: var(--bar-sky);    }
+.row-inverse > :nth-child(6) { background: var(--crt-black);  }
+.row-inverse > :nth-child(7) { background: var(--bar-white);  }
+
+/* Row 3 — PLUGE / grayscale ramp */
+.row-pluge {
+  display: grid;
+  grid-template-columns:
+    1.2fr 0.9fr 0.9fr 1fr 0.5fr 0.5fr 0.5fr 0.5fr 0.5fr 0.5fr 0.7fr;
+}
+.row-pluge > :nth-child(1)  { background: #002032; }
+.row-pluge > :nth-child(2)  { background: var(--broadcast-white); }
+.row-pluge > :nth-child(3)  { background: #5F1C5B; }
+.row-pluge > :nth-child(4)  { background: var(--crt-black);  }
+.row-pluge > :nth-child(5)  { background: #1A1A22; }
+.row-pluge > :nth-child(6)  { background: #2A2A36; }
+.row-pluge > :nth-child(7)  { background: #3A3A4A; }
+.row-pluge > :nth-child(8)  { background: #545464; }
+.row-pluge > :nth-child(9)  { background: #74748A; }
+.row-pluge > :nth-child(10) { background: #9A9AB0; }
+.row-pluge > :nth-child(11) { background: var(--crt-black); }
+
+/* ─── Centerpiece label ─── */
+.label {
+  position: relative;
+  z-index: 5;
+  background: var(--crt-black);
+  color: var(--broadcast-white);
+  padding: clamp(1rem, 2vw, 1.4rem) clamp(2rem, 5vw, 3.6rem);
+  border: 2px solid var(--crt-black);
+  outline: 6px solid rgba(255,255,255,.04);
+  box-shadow:
+    0 0 0 1px rgba(236,233,240,.08),
+    0 30px 80px rgba(0,0,0,.6);
+  text-align: center;
+  letter-spacing: 0.18em;
+  font-family: var(--ff-mono);
+  user-select: none;
+  /* tiny ambient float so it doesn't feel pasted */
+  animation: label-drift 9s ease-in-out infinite;
+}
+.label__error {
+  display: block;
+  font-size: clamp(2.4rem, 7vw, 5.2rem);
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: 0.04em;
+  position: relative;
+}
+.label__signal {
+  display: block;
+  font-size: clamp(1rem, 2.2vw, 1.8rem);
+  font-weight: 500;
+  margin-top: .55em;
+  letter-spacing: 0.42em;
+  color: var(--broadcast-white);
+}
+.label__sub {
+  display: block;
+  margin-top: 1.1em;
+  font-size: clamp(.7rem, 1vw, .85rem);
+  letter-spacing: 0.3em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+/* Chromatic aberration on the big number — driven by ::before/::after layers */
+.label__error::before,
+.label__error::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+}
+.label__error::before { color: var(--bar-tomato); transform: translate(-2px, 0); mix-blend-mode: screen; }
+.label__error::after  { color: var(--bar-sky);    transform: translate( 2px, 0); mix-blend-mode: screen; }
+
+/* ─── Return CTA ─── */
+.actions {
+  position: absolute;
+  z-index: 6;
+  bottom: clamp(1.5rem, 5vh, 3.5rem);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  font-family: var(--ff-mono);
+  font-size: .78rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+.btn {
+  background: var(--crt-black);
+  color: var(--broadcast-white);
+  border: 1px solid rgba(236,233,240,.35);
+  padding: .85em 1.4em;
+  cursor: pointer;
+  letter-spacing: inherit;
+  font-size: inherit;
+  text-transform: inherit;
+  transition: background .2s var(--expo), border-color .2s var(--expo), transform .15s var(--expo);
+}
+.btn:hover {
+  background: var(--bar-tomato);
+  color: var(--crt-black);
+  border-color: var(--bar-tomato);
+}
+.btn:active { transform: scale(0.98); }
+.btn:focus-visible { outline: 2px solid var(--bar-sky); outline-offset: 3px; }
+
+/* ─── Channel badge (top corner) ─── */
+.channel {
+  position: absolute;
+  top: clamp(1rem, 3vh, 2rem);
+  left: clamp(1rem, 3vw, 2rem);
+  z-index: 6;
+  font-family: var(--ff-mono);
+  font-size: .72rem;
+  letter-spacing: 0.32em;
+  color: var(--broadcast-white);
+  background: rgba(20,19,26,.7);
+  border: 1px solid rgba(236,233,240,.2);
+  padding: .55em .9em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: .6em;
+}
+.channel__dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--bar-tomato);
+  animation: blink 1.4s steps(2) infinite;
+}
+.timestamp {
+  position: absolute;
+  top: clamp(1rem, 3vh, 2rem);
+  right: clamp(1rem, 3vw, 2rem);
+  z-index: 6;
+  font-family: var(--ff-mono);
+  font-size: .72rem;
+  letter-spacing: 0.32em;
+  color: var(--broadcast-white);
+  background: rgba(20,19,26,.7);
+  border: 1px solid rgba(236,233,240,.2);
+  padding: .55em .9em;
+  text-transform: uppercase;
+}
+
+/* ─── Scanlines (always on, very subtle) ─── */
+.scanlines {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(0,0,0,0) 0px,
+    rgba(0,0,0,0) 2px,
+    rgba(0,0,0,.18) 3px,
+    rgba(0,0,0,0) 4px
+  );
+  mix-blend-mode: multiply;
+  opacity: .55;
+}
+
+/* ─── Tracking-error band — slow vertical crawl of dim+bright lines ─── */
+.tracking {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0 80px,
+    rgba(255,255,255,.025) 80px 82px,
+    transparent 82px 160px,
+    rgba(0,0,0,.18) 160px 163px,
+    transparent 163px 320px
+  );
+  background-size: 100% 320px;
+  mix-blend-mode: overlay;
+  animation: tracking-drift 14s linear infinite;
+}
+
+/* ─── In-screen CRT static (denser, part of the TV) ─── */
+.grain {
+  position: absolute;
+  inset: -50%;
+  width: 200%; height: 200%;
+  z-index: 9;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: .08;
+  mix-blend-mode: screen;
+  animation: grain-shift .12s steps(2) infinite;
+}
+
+/* ─── Site grain — fixed overlay above EVERYTHING (matches index.html) ─── */
+.site-grain {
+  position: fixed;
+  inset: -200%;
+  width: 400%; height: 400%;
+  pointer-events: none;
+  z-index: 9990;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: .03;
+  mix-blend-mode: screen;
+  animation: site-grain .5s steps(2) infinite;
+}
+@keyframes site-grain {
+  0%   { transform: translate(0,0); }
+  25%  { transform: translate(-2%,-3%); }
+  50%  { transform: translate(3%,1%); }
+  75%  { transform: translate(-1%,2%); }
+  100% { transform: translate(2%,-1%); }
+}
+
+/* ─── Glitch slice layers (driven by JS via class toggles) ─── */
+.glitch-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  pointer-events: none;
+  opacity: 0;
+  background:
+    linear-gradient(transparent 0 50%, rgba(255,255,255,.04) 50% 51%, transparent 51% 100%);
+}
+
+/* Tear: brief horizontal displacement of a slice using clip-path */
+.screen.tear .bars {
+  animation: tear-slice .22s steps(3) 1;
+}
+
+/* Sync roll: whole screen jumps vertically once */
+.screen.roll {
+  animation: sync-roll .6s var(--expo) 1;
+}
+
+/* RGB split flash on the label */
+.screen.chroma .label__error::before,
+.screen.chroma .label__error::after { opacity: .8; }
+.screen.chroma .label__error::before { transform: translate(-5px, 1px); }
+.screen.chroma .label__error::after  { transform: translate( 5px,-1px); }
+
+/* Bright flash burst */
+.screen.flash::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  background: rgba(236,233,240,.14);
+  pointer-events: none;
+  animation: flash-burst .14s steps(2) 1;
+}
+
+/* ─── Keyframes ─── */
+@keyframes tv-flicker {
+  0%, 100%   { filter: brightness(1)    contrast(1); }
+  50%        { filter: brightness(1.02) contrast(1.02); }
+  92%        { filter: brightness(.97)  contrast(1.04); }
+  94%        { filter: brightness(1.04) contrast(.98); }
+}
+
+@keyframes grain-shift {
+  0%   { transform: translate(0,0); }
+  25%  { transform: translate(-2%,-3%); }
+  50%  { transform: translate(3%,1%); }
+  75%  { transform: translate(-1%,2%); }
+  100% { transform: translate(2%,-1%); }
+}
+
+@keyframes label-drift {
+  0%, 100% { transform: translate(0, 0); }
+  50%      { transform: translate(0, -2px); }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.25; }
+}
+
+@keyframes tear-slice {
+  0%   { transform: translateX(0); clip-path: inset(0 0 0 0); }
+  20%  { transform: translateX(-18px); clip-path: inset(38% 0 48% 0); }
+  40%  { transform: translateX(22px);  clip-path: inset(20% 0 65% 0); }
+  60%  { transform: translateX(-8px);  clip-path: inset(60% 0 28% 0); }
+  100% { transform: translateX(0);     clip-path: inset(0 0 0 0); }
+}
+
+@keyframes sync-roll {
+  0%   { transform: translateY(0); }
+  40%  { transform: translateY(38%); }
+  41%  { transform: translateY(-62%); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes flash-burst {
+  0%, 100% { opacity: 0; }
+  50%      { opacity: 1; }
+}
+
+/* Sub-pixel jitter keyframes — three variants with different rhythms.
+   Values are <1px; bars stay separated, edges just shiver. */
+@keyframes jitter-a {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  16%      { transform: translate3d(-0.4px, 0.2px, 0); }
+  33%      { transform: translate3d( 0.3px,-0.1px, 0); }
+  50%      { transform: translate3d(-0.2px, 0.3px, 0); }
+  66%      { transform: translate3d( 0.5px, 0.0px, 0); }
+  83%      { transform: translate3d(-0.1px,-0.2px, 0); }
+}
+@keyframes jitter-b {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  20%      { transform: translate3d( 0.4px, 0.1px, 0); }
+  40%      { transform: translate3d(-0.5px, 0.0px, 0); }
+  60%      { transform: translate3d( 0.2px,-0.2px, 0); }
+  80%      { transform: translate3d(-0.3px, 0.2px, 0); }
+}
+@keyframes jitter-c {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  14%      { transform: translate3d(-0.3px, 0.0px, 0); }
+  28%      { transform: translate3d( 0.5px, 0.1px, 0); }
+  43%      { transform: translate3d(-0.2px,-0.1px, 0); }
+  57%      { transform: translate3d( 0.4px, 0.2px, 0); }
+  71%      { transform: translate3d(-0.4px, 0.0px, 0); }
+  86%      { transform: translate3d( 0.1px,-0.2px, 0); }
+}
+
+/* Slow vertical drift of a horizontal "tracking error" band — sparingly
+   bright/dim lines that crawl up the screen like CRT interference. */
+@keyframes tracking-drift {
+  0%   { background-position: 0 0%; }
+  100% { background-position: 0 -200%; }
+}
+
+/* ─── Accessibility ─── */
+@media (prefers-reduced-motion: reduce) {
+  .screen, .grain, .site-grain, .label, .channel__dot,
+  .row-main, .row-inverse, .row-pluge, .tracking { animation: none !important; }
+  .screen.tear .bars,
+  .screen.roll,
+  .screen.flash::after { animation: none !important; }
+  .bars { filter: none; }
+  .scanlines { opacity: .25; }
+}
+
+/* ─── Small screens ─── */
+@media (max-width: 480px) {
+  .channel, .timestamp { font-size: .62rem; padding: .45em .7em; }
+  .label__signal { letter-spacing: 0.32em; }
+}
+</style>
+</head>
+<body>
+  <main class="stage" role="main">
+    <div class="screen" id="screen" aria-label="No signal test pattern">
+      <div class="bars" aria-hidden="true">
+        <div class="row-main">
+          <span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span>
+        </div>
+        <div class="row-inverse">
+          <span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span>
+        </div>
+        <div class="row-pluge">
+          <span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+
+      <div class="channel" aria-hidden="true">
+        <span class="channel__dot"></span>
+        <span>CH 04 · OFF AIR</span>
+      </div>
+      <div class="timestamp" id="timestamp" aria-hidden="true">--:--:--</div>
+
+      <div class="label" role="status" aria-live="polite">
+        <span class="label__error" data-text="404">404</span>
+        <span class="label__signal">NO SIGNAL</span>
+        <span class="label__sub">We'll be right back</span>
+      </div>
+
+      <div class="glitch-layer" aria-hidden="true"></div>
+      <div class="tracking" aria-hidden="true"></div>
+      <div class="scanlines" aria-hidden="true"></div>
+      <div class="grain" aria-hidden="true"></div>
+    </div>
+
+    <div class="actions">
+      <a class="btn" href="/">← Return to broadcast</a>
+      <button class="btn" type="button" id="adjust" aria-label="Adjust tracking">Adjust tracking</button>
+    </div>
+  </main>
+
+  <div class="site-grain" aria-hidden="true"></div>
+
+<script>
+  // ─── Live clock (period-correct) ───────────────────────────────────────────
+  const ts = document.getElementById('timestamp');
+  function tick() {
+    const d = new Date();
+    const pad = n => String(n).padStart(2, '0');
+    ts.textContent = `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  }
+  tick(); setInterval(tick, 1000);
+
+  // ─── Glitches: sparing, random, subtle ────────────────────────────────────
+  const screen = document.getElementById('screen');
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const glitches = [
+    { cls: 'tear',   dur: 240, weight: 5 },
+    { cls: 'chroma', dur: 180, weight: 4 },
+    { cls: 'flash',  dur: 160, weight: 2 },
+    { cls: 'roll',   dur: 620, weight: 1 }, // rarest
+  ];
+  const weightedPool = glitches.flatMap(g => Array(g.weight).fill(g));
+
+  function fireGlitch() {
+    if (reduced) return;
+    const g = weightedPool[Math.floor(Math.random() * weightedPool.length)];
+    screen.classList.add(g.cls);
+    setTimeout(() => screen.classList.remove(g.cls), g.dur);
+  }
+
+  function scheduleNext() {
+    // Sparing: 4.5–11s between glitches
+    const delay = 4500 + Math.random() * 6500;
+    setTimeout(() => {
+      fireGlitch();
+      // Occasional double-glitch burst (15% chance)
+      if (Math.random() < 0.15) {
+        setTimeout(fireGlitch, 140 + Math.random() * 180);
+      }
+      scheduleNext();
+    }, delay);
+  }
+  scheduleNext();
+
+  // Manual "Adjust tracking" — force a glitch
+  document.getElementById('adjust').addEventListener('click', () => {
+    fireGlitch();
+    setTimeout(fireGlitch, 120);
+  });
+</script>
+</body>
+</html>
