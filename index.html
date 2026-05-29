@@ -169,6 +169,13 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 html.cursor-on, html.cursor-on * { cursor: none !important; }
+/* Safety net: never hide the native cursor on touch-only devices,
+   even if `cursor-on` gets applied somehow. The custom cursor doesn't
+   mount on touch (see BlobCursor isTouch check) but this guarantees
+   the system cursor (e.g. on tablets with mouse attached later) stays. */
+@media (hover: none) {
+  html.cursor-on, html.cursor-on * { cursor: auto !important; }
+}
 body {
   background: var(--ground);
   color: var(--ink);
@@ -596,12 +603,20 @@ nav.top.hidden { transform: translateY(-110%); }
 }
 .nav-links a:hover, .nav-links a.active { color: var(--ink); }
 .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
-.nav-actions { display: flex; align-items: center; gap: 1rem; }
+/* nav-actions (avail pill + search + theme) live in the mobile menu on
+   small screens — hide here so the burger is the only nav-right control.
+   Desktop @media (min-width: 960px) flips this back to flex. */
+.nav-actions { display: none; align-items: center; gap: 1rem; }
 .icon-btn {
   appearance: none; background: transparent; border: 1px solid var(--rim);
   color: var(--ink-dim); width: 32px; height: 32px; border-radius: 50%;
   display: inline-flex; align-items: center; justify-content: center;
   transition: color .25s, border-color .25s, background .25s;
+}
+/* Touch devices: bump tap targets to 44px per Apple/Material guidance.
+   The visual icon stays 14px; only the hit area grows. */
+@media (hover: none) {
+  .icon-btn { width: 44px; height: 44px; }
 }
 .icon-btn:hover { color: var(--ink); border-color: var(--ink-dim); }
 .kbd {
@@ -623,6 +638,74 @@ nav.top.hidden { transform: translateY(-110%); }
   0%   { box-shadow: 0 0 0 0 var(--accent-md); }
   100% { box-shadow: 0 0 0 10px transparent; }
 }
+
+/* ─── Mobile menu (burger + full-screen overlay) ───
+   Burger is the only nav-right control visible <960px (alongside the logo).
+   The overlay renders outside nav.top so it can fade in over everything
+   without inheriting nav's translateY-when-hidden transform.
+   On desktop (≥960) the burger + overlay are display:none — the regular
+   nav-links / nav-actions row takes over via the desktop @media block. */
+.burger {
+  appearance: none; background: transparent; border: 0;
+  width: 44px; height: 44px; padding: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--ink);
+  cursor: pointer;
+  position: relative;
+  z-index: 9001; /* sits above the overlay so the same control closes it */
+}
+.burger span {
+  position: absolute; left: 12px; right: 12px; height: 1.5px;
+  background: currentColor; border-radius: 1px;
+  transition: transform .35s var(--expo), top .25s var(--expo) .05s, opacity .2s;
+}
+.burger span:nth-child(1) { top: 17px; }
+.burger span:nth-child(2) { top: 25px; }
+.burger.open span:nth-child(1) { top: 21px; transform: rotate(45deg); transition: top .25s var(--expo), transform .35s var(--expo) .1s; }
+.burger.open span:nth-child(2) { top: 21px; transform: rotate(-45deg); transition: top .25s var(--expo), transform .35s var(--expo) .1s; }
+
+.mobile-menu {
+  position: fixed; inset: 0; z-index: 9000;
+  background: var(--ground);
+  display: flex; flex-direction: column; justify-content: space-between;
+  padding: 6rem var(--pad-x) 2.5rem;
+  opacity: 0; pointer-events: none;
+  transform: translateY(-8px);
+  transition: opacity .35s var(--expo), transform .45s var(--expo);
+}
+.mobile-menu.open { opacity: 1; pointer-events: auto; transform: translateY(0); }
+.mobile-menu-links {
+  list-style: none; display: flex; flex-direction: column; gap: 1rem;
+  margin-top: 2rem;
+}
+.mobile-menu-links a {
+  font-family: var(--ff-display); font-weight: var(--ff-display-weight, 900);
+  font-size: clamp(2.4rem, 9vw, 3.5rem);
+  letter-spacing: -.025em; color: var(--ink-dim);
+  display: inline-block; padding: .35rem 0;
+  transition: color .25s, transform .35s var(--expo);
+}
+.mobile-menu-links a.active { color: var(--ink); }
+.mobile-menu-links a:active { color: var(--accent); transform: translateX(.5rem); }
+/* Stagger entrance — each link slides up + fades in after the overlay opens */
+.mobile-menu-links li {
+  opacity: 0; transform: translateY(12px);
+  transition: opacity .5s var(--expo), transform .55s var(--expo);
+}
+.mobile-menu.open .mobile-menu-links li { opacity: 1; transform: translateY(0); }
+.mobile-menu.open .mobile-menu-links li:nth-child(1) { transition-delay: .1s; }
+.mobile-menu.open .mobile-menu-links li:nth-child(2) { transition-delay: .15s; }
+.mobile-menu.open .mobile-menu-links li:nth-child(3) { transition-delay: .2s; }
+.mobile-menu.open .mobile-menu-links li:nth-child(4) { transition-delay: .25s; }
+
+.mobile-menu-foot {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-top: 1.5rem; border-top: 1px solid var(--rim-soft);
+  opacity: 0;
+  transition: opacity .4s var(--expo) .35s;
+}
+.mobile-menu.open .mobile-menu-foot { opacity: 1; }
+.mobile-menu-actions { display: flex; align-items: center; gap: .5rem; }
 
 /* ─── Page transitions ─── */
 .page { display: none; min-height: 100vh; }
@@ -742,7 +825,6 @@ nav.top.hidden { transform: translateY(-110%); }
   transition: padding .5s var(--expo);
 }
 .fullbleed .tile .tile-tags { display: none; }
-.fullbleed .tile:hover { padding-left: 1rem; }
 .fullbleed .tile:last-child { border-bottom: 1px solid var(--rim-soft); }
 .fullbleed .tile .tile-img { display: none; }
 .fullbleed .tile .tile-num {
@@ -752,10 +834,14 @@ nav.top.hidden { transform: translateY(-110%); }
   font-family: var(--ff-display); font-weight: var(--ff-display-weight, 900); font-size: clamp(1.5rem, 3vw, 2.5rem);
   letter-spacing: -.025em; color: var(--ink); transition: color .3s;
 }
-.fullbleed .tile:hover .tile-name { color: var(--accent); }
 .fullbleed .tile .tile-tags { font-family: var(--ff-mono); font-size: .7rem; color: var(--ink-dim); letter-spacing: .06em; }
 .fullbleed .tile .tile-arrow { justify-self: end; font-size: 1.4rem; color: var(--muted); transition: transform .4s var(--expo), color .3s; }
-.fullbleed .tile:hover .tile-arrow { transform: translateX(8px); color: var(--accent); }
+/* Fullbleed hover — guarded for touch (padding/transform shift looks jumpy on tap). */
+@media (hover: hover) {
+  .fullbleed .tile:hover { padding-left: 1rem; }
+  .fullbleed .tile:hover .tile-name { color: var(--accent); }
+  .fullbleed .tile:hover .tile-arrow { transform: translateX(8px); color: var(--accent); }
+}
 
 /* index list */
 .work-grid.index.index { grid-template-columns: 1fr; gap: 0; }
@@ -768,7 +854,6 @@ nav.top.hidden { transform: translateY(-110%); }
 }
 .index .tile .tile-tags, .index .tile .tile-year { display: none; }
 .index .tile:first-child { border-top: 1px solid var(--rim-soft); }
-.index .tile:hover { padding: 0 .8rem; background: var(--surface); }
 .index .tile .tile-img { display: none; }
 .index .tile .tile-name {
   font-family: var(--ff-display); font-weight: var(--ff-display-weight, 900); font-size: 1.1rem;
@@ -777,7 +862,11 @@ nav.top.hidden { transform: translateY(-110%); }
 .index .tile .tile-num { color: var(--muted); }
 .index .tile .tile-tags, .index .tile .tile-year { color: var(--ink-dim); font-size: .72rem; letter-spacing: .04em; }
 .index .tile .tile-arrow { justify-self: end; color: var(--muted); transition: transform .35s var(--expo), color .25s; }
-.index .tile:hover .tile-arrow { transform: translateX(6px); color: var(--accent); }
+/* Index hover — guarded for touch (padding+bg shift flashes on tap). */
+@media (hover: hover) {
+  .index .tile:hover { padding: 0 .8rem; background: var(--surface); }
+  .index .tile:hover .tile-arrow { transform: translateX(6px); color: var(--accent); }
+}
 
 /* tile-img inner (polaroid) */
 .tile-img-bg {
@@ -793,8 +882,6 @@ nav.top.hidden { transform: translateY(-110%); }
   color: var(--rim); letter-spacing: -.04em;
   transition: opacity .6s ease;
 }
-.tile:hover .tile-img-mark { opacity: 0; }
-.tile:hover .tile-img-bg  { opacity: 1; }
 .tile-img-bg { opacity: 0; }
 
 .tile-overlay {
@@ -802,7 +889,6 @@ nav.top.hidden { transform: translateY(-110%); }
   background: linear-gradient(to top, rgba(0,0,0,.85) 0%, transparent 55%);
   opacity: 0; transition: opacity .5s;
 }
-.tile:hover .tile-overlay { opacity: 1; }
 .tile-label {
   position: absolute; bottom: 1.2rem; left: 1.2rem;
   font-family: var(--ff-mono); font-size: .65rem; letter-spacing: .1em;
@@ -810,7 +896,6 @@ nav.top.hidden { transform: translateY(-110%); }
   opacity: 0; transform: translateY(6px);
   transition: opacity .4s .15s, transform .4s var(--expo) .15s;
 }
-.tile:hover .tile-label { opacity: 1; transform: translateY(0); }
 .tile-arrow-corner {
   position: absolute; top: 1rem; right: 1rem; width: 32px; height: 32px;
   border: 1px solid var(--ink-dim); border-radius: 50%;
@@ -819,7 +904,6 @@ nav.top.hidden { transform: translateY(-110%); }
   opacity: 0; transform: scale(.6);
   transition: opacity .4s, transform .4s var(--expo);
 }
-.tile:hover .tile-arrow-corner { opacity: 1; transform: scale(1); }
 
 .tile-name {
   font-family: var(--ff-display); font-weight: var(--ff-display-weight, 900);
@@ -827,7 +911,17 @@ nav.top.hidden { transform: translateY(-110%); }
   letter-spacing: -.02em; color: var(--ink);
   transition: color .25s;
 }
-.tile:hover .tile-name { color: var(--accent); }
+/* Tile hover affordances — only fire on devices that can hover.
+   On touch, the brief :hover flash after a tap was disorienting; the
+   tile-name + tile-tags below the image are enough to identify the work. */
+@media (hover: hover) {
+  .tile:hover .tile-img-mark { opacity: 0; }
+  .tile:hover .tile-img-bg { opacity: 1; }
+  .tile:hover .tile-overlay { opacity: 1; }
+  .tile:hover .tile-label { opacity: 1; transform: translateY(0); }
+  .tile:hover .tile-arrow-corner { opacity: 1; transform: scale(1); }
+  .tile:hover .tile-name { color: var(--accent); }
+}
 .tile-tags {
   font-family: var(--ff-mono); font-size: .65rem; letter-spacing: .08em;
   text-transform: uppercase; color: var(--ink-dim);
@@ -1132,7 +1226,9 @@ nav.top.hidden { transform: translateY(-110%); }
   letter-spacing: -.015em;
   transition: gap .3s var(--expo), transform .3s var(--expo);
 }
-.contact-btn:hover { gap: 1.4rem; transform: translateY(-2px); }
+@media (hover: hover) {
+  .contact-btn:hover { gap: 1.4rem; transform: translateY(-2px); }
+}
 .contact-links {
   display: flex; justify-content: center; gap: 2.5rem; margin-top: 3rem;
   list-style: none; flex-wrap: wrap;
@@ -1167,7 +1263,9 @@ footer a:hover { color: var(--accent); }
   padding: 5rem var(--pad-x) 1rem;
   transition: gap .25s, color .25s;
 }
-.back-btn:hover { gap: 1.1rem; color: var(--accent); }
+@media (hover: hover) {
+  .back-btn:hover { gap: 1.1rem; color: var(--accent); }
+}
 
 .proj-hero {
   min-height: 50vh; display: flex; flex-direction: column; justify-content: flex-end;
@@ -1300,9 +1398,7 @@ footer a:hover { color: var(--accent); }
   transform: scaleY(0); transform-origin: bottom;
   transition: transform .55s var(--expo); z-index: 0;
 }
-.next-proj:hover::before { transform: scaleY(1); }
 .next-proj > * { position: relative; z-index: 1; }
-.next-proj:hover { padding-left: calc(var(--pad-x) + 1rem); }
 .next-label {
   font-family: var(--ff-mono); font-size: .62rem; letter-spacing: .12em;
   text-transform: uppercase; color: var(--muted); margin-bottom: .5rem;
@@ -1312,12 +1408,17 @@ footer a:hover { color: var(--accent); }
   font-size: clamp(1.8rem, 3.5vw, 3rem);
   letter-spacing: -.025em; color: var(--ink); transition: color .25s;
 }
-.next-proj:hover .next-title { color: var(--accent); }
 .next-arrow {
   font-family: var(--ff-display); font-weight: var(--ff-display-weight, 900); font-size: 2rem;
   color: var(--muted); transition: transform .4s var(--expo), color .25s;
 }
-.next-proj:hover .next-arrow { transform: translateX(8px); color: var(--accent); }
+/* Next-proj hover — guarded for touch (dramatic bg fill + padding shift flash on tap). */
+@media (hover: hover) {
+  .next-proj:hover::before { transform: scaleY(1); }
+  .next-proj:hover { padding-left: calc(var(--pad-x) + 1rem); }
+  .next-proj:hover .next-title { color: var(--accent); }
+  .next-proj:hover .next-arrow { transform: translateX(8px); color: var(--accent); }
+}
 
 /* ─── Resume page ─── */
 .resume { padding: 6rem var(--pad-x) 3rem; max-width: 1100px; margin: 0 auto; }
@@ -1492,6 +1593,10 @@ footer a:hover { color: var(--accent); }
   nav.top.compact { padding: .9rem var(--pad-x); }
   .nav-right { gap: 2.25rem; }
   .nav-links { display: flex; }
+  .nav-actions { display: flex; }
+  /* Burger + overlay are mobile-only */
+  .burger { display: none; }
+  .mobile-menu { display: none; }
 
   /* Hero */
   .hero { padding: 8rem var(--pad-x) 5rem; min-height: 100vh; }
@@ -3181,8 +3286,62 @@ function BlobCursor({ enabled, style }) {
   const dotRef = useRef(null);
   const trailRef = useRef(null);
   const ringLayerRef = useRef(null);
+  /* Touch devices: matchMedia('(hover: none)') is the right detector — it
+     targets devices whose primary input can't hover. We skip the cursor
+     element + mousemove loop entirely and bind a touchstart handler that
+     fires the CMYK burst at the touch point, giving touch users the same
+     playful "tap feedback" without the wasted cursor machinery. */
+  const isTouch = useMemo(
+    () => typeof window !== 'undefined' && window.matchMedia('(hover: none)').matches,
+    []
+  );
   useEffect(() => {
     if (!enabled) return;
+    /* Shared burst spawner — used by both pointer mousedown (desktop)
+       and touchstart (mobile). On touch there's no cursor element, so it
+       falls back to the explicit (x, y) we pass in. */
+    const spawnCmykAt = (x, y) => {
+      const burst = document.createElement('div');
+      burst.className = 'cmyk-burst';
+      const cursorEl = dotRef.current;
+      if (cursorEl && !isTouch) {
+        const r = cursorEl.getBoundingClientRect();
+        burst.style.left   = (r.left + r.width / 2)  + 'px';
+        burst.style.top    = (r.top  + r.height / 2) + 'px';
+        burst.style.width  = cursorEl.offsetWidth  + 'px';
+        burst.style.height = cursorEl.offsetHeight + 'px';
+      } else {
+        burst.style.left = x + 'px';
+        burst.style.top  = y + 'px';
+        /* No live cursor to size against on touch — use a fixed splat size. */
+        burst.style.width = '56px';
+        burst.style.height = '56px';
+      }
+      const blob = 'M50,18 C72,12 90,28 88,52 C92,72 70,90 50,86 C30,90 12,74 12,52 C10,30 28,16 50,18 Z';
+      burst.innerHTML = `
+        <svg class="c" viewBox="0 0 100 100" aria-hidden="true"><path d="${blob}"/></svg>
+        <svg class="m" viewBox="0 0 100 100" aria-hidden="true"><path d="${blob}"/></svg>
+        <svg class="y" viewBox="0 0 100 100" aria-hidden="true"><path d="${blob}"/></svg>
+      `;
+      document.body.appendChild(burst);
+      activeBursts.add(burst);
+      setTimeout(() => { burst.remove(); activeBursts.delete(burst); }, 460);
+    };
+    const activeBursts = new Set();
+
+    if (isTouch) {
+      /* Touch path — no cursor element, no animation loop, no cursor-on
+         class (which would hide the native cursor needlessly). Just bind
+         touchstart and let taps generate CMYK splats. */
+      const onTouch = e => {
+        const t = e.touches?.[0] || e.changedTouches?.[0];
+        if (!t) return;
+        spawnCmykAt(t.clientX, t.clientY);
+      };
+      window.addEventListener('touchstart', onTouch, { passive: true });
+      return () => window.removeEventListener('touchstart', onTouch);
+    }
+
     document.documentElement.classList.add('cursor-on');
     document.documentElement.classList.toggle('cursor-water', style === 'ripple');
     let mx = window.innerWidth/2, my = window.innerHeight/2;
@@ -3207,33 +3366,8 @@ function BlobCursor({ enabled, style }) {
       (ringLayerRef.current || document.body).appendChild(r);
       setTimeout(() => r.remove(), 1800);
     };
-    const activeBursts = new Set();
-    const spawnCmyk = (x, y) => {
-      const burst = document.createElement('div');
-      burst.className = 'cmyk-burst';
-      const cursorEl = dotRef.current;
-      if (cursorEl) {
-        const r = cursorEl.getBoundingClientRect();
-        burst.style.left   = (r.left + r.width / 2)  + 'px';
-        burst.style.top    = (r.top  + r.height / 2) + 'px';
-        burst.style.width  = cursorEl.offsetWidth  + 'px';
-        burst.style.height = cursorEl.offsetHeight + 'px';
-      } else {
-        burst.style.left = x + 'px';
-        burst.style.top  = y + 'px';
-      }
-      const blob = 'M50,18 C72,12 90,28 88,52 C92,72 70,90 50,86 C30,90 12,74 12,52 C10,30 28,16 50,18 Z';
-      burst.innerHTML = `
-        <svg class="c" viewBox="0 0 100 100" aria-hidden="true"><path d="${blob}"/></svg>
-        <svg class="m" viewBox="0 0 100 100" aria-hidden="true"><path d="${blob}"/></svg>
-        <svg class="y" viewBox="0 0 100 100" aria-hidden="true"><path d="${blob}"/></svg>
-      `;
-      document.body.appendChild(burst);
-      activeBursts.add(burst);
-      setTimeout(() => { burst.remove(); activeBursts.delete(burst); }, 460);
-    };
     const onDown = (e) => {
-      spawnCmyk(e.clientX, e.clientY);
+      spawnCmykAt(e.clientX, e.clientY);
       if (style !== 'ripple') return;
       spawnRing(e.clientX, e.clientY, 1.6);
       setTimeout(() => spawnRing(e.clientX, e.clientY, 1.2), 120);
@@ -3305,8 +3439,12 @@ function BlobCursor({ enabled, style }) {
       document.documentElement.classList.remove('cursor-on');
       document.documentElement.classList.remove('cursor-water');
     };
-  }, [enabled, style]);
+  }, [enabled, style, isTouch]);
   if (!enabled) return null;
+
+  /* Touch devices: still render CursorFilters so .cmyk-burst can use the
+     #cmyk-cutout mask and #gooey-puddle filter — just no live cursor. */
+  if (isTouch) return <CursorFilters />;
 
   if (style === 'puddle') {
     return (
@@ -3390,6 +3528,7 @@ function Loader({ onDone }) {
 function Nav({ page, setPage, onCmdK, theme, toggleTheme }) {
   const [compact, setCompact] = useState(false);
   const [hidden, setHidden] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const lastY = useRef(0);
   useEffect(() => {
     const onScroll = () => {
@@ -3401,43 +3540,108 @@ function Nav({ page, setPage, onCmdK, theme, toggleTheme }) {
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+  /* Lock body scroll + close on Escape while the mobile menu is open. */
+  useEffect(() => {
+    if (!menuOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const onKey = e => { if (e.key === 'Escape') setMenuOpen(false); };
+    window.addEventListener('keydown', onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [menuOpen]);
   const items = [
     { id: 'home',   label: 'Index' },
     { id: 'work',   label: 'Work' },
     { id: 'about',  label: 'About' },
     { id: 'resume', label: 'Resume' },
   ];
+  const pick = id => { setPage(id); setMenuOpen(false); };
+  const ThemeIcon = () => theme === 'dark' ? (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+  ) : (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+  );
+  const SearchIcon = () => (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <circle cx="11" cy="11" r="7"/><path d="M21 21l-4.5-4.5"/>
+    </svg>
+  );
   return (
-    <nav className={`top ${compact ? 'compact' : ''} ${hidden ? 'hidden' : ''}`}>
-      <a className="nav-logo" href="#" onClick={e => { e.preventDefault(); setPage('home'); }}>
-        Raz<span className="accent">.</span>
-      </a>
-      <div className="nav-right">
-        <ul className="nav-links">
+    <>
+      <nav className={`top ${compact ? 'compact' : ''} ${hidden ? 'hidden' : ''}`}>
+        <a className="nav-logo" href="#" onClick={e => { e.preventDefault(); pick('home'); }}>
+          Raz<span className="accent">.</span>
+        </a>
+        <div className="nav-right">
+          <ul className="nav-links">
+            {items.map(it => (
+              <li key={it.id}>
+                <a href="#" className={page === it.id ? 'active' : ''}
+                   onClick={e => { e.preventDefault(); setPage(it.id); }}>{it.label}</a>
+              </li>
+            ))}
+          </ul>
+          <div className="nav-actions">
+            <span className="avail"><span className="avail-dot"></span>Available</span>
+            <button className="icon-btn" onClick={onCmdK} title="Search (⌘K)" aria-label="Open command palette">
+              <SearchIcon />
+            </button>
+            <button className="icon-btn" onClick={toggleTheme} title={`${theme === 'dark' ? 'Light' : 'Dark'} mode`} aria-label="Toggle theme">
+              <ThemeIcon />
+            </button>
+          </div>
+          {/* Burger trigger — only visible at <960 via CSS */}
+          <button
+            className={`burger ${menuOpen ? 'open' : ''}`}
+            onClick={() => setMenuOpen(o => !o)}
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={menuOpen}
+            aria-controls="mobile-menu"
+          >
+            <span></span><span></span>
+          </button>
+        </div>
+      </nav>
+
+      {/* Mobile menu — full-screen overlay. Hidden on desktop via CSS. */}
+      <div
+        id="mobile-menu"
+        className={`mobile-menu ${menuOpen ? 'open' : ''}`}
+        aria-hidden={!menuOpen}
+        role="dialog"
+        aria-modal="true"
+      >
+        <ul className="mobile-menu-links">
           {items.map(it => (
             <li key={it.id}>
-              <a href="#" className={page === it.id ? 'active' : ''}
-                 onClick={e => { e.preventDefault(); setPage(it.id); }}>{it.label}</a>
+              <a
+                href="#"
+                className={page === it.id ? 'active' : ''}
+                onClick={e => { e.preventDefault(); pick(it.id); }}
+              >{it.label}</a>
             </li>
           ))}
         </ul>
-        <div className="nav-actions">
+        <div className="mobile-menu-foot">
           <span className="avail"><span className="avail-dot"></span>Available</span>
-          <button className="icon-btn" onClick={onCmdK} title="Search (⌘K)" aria-label="Open command palette">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="11" cy="11" r="7"/><path d="M21 21l-4.5-4.5"/>
-            </svg>
-          </button>
-          <button className="icon-btn" onClick={toggleTheme} title={`${theme === 'dark' ? 'Light' : 'Dark'} mode`} aria-label="Toggle theme">
-            {theme === 'dark' ? (
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
-            ) : (
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-            )}
-          </button>
+          <div className="mobile-menu-actions">
+            <button
+              className="icon-btn"
+              onClick={() => { setMenuOpen(false); onCmdK(); }}
+              aria-label="Open command palette"
+            ><SearchIcon /></button>
+            <button
+              className="icon-btn"
+              onClick={toggleTheme}
+              aria-label="Toggle theme"
+            ><ThemeIcon /></button>
+          </div>
         </div>
       </div>
-    </nav>
+    </>
   );
 }
 
