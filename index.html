@@ -858,15 +858,217 @@ nav.top.hidden { transform: translateY(-110%); }
   padding: 4rem var(--pad-x); border-top: 1px solid var(--rim-soft);
 }
 .about-photo-col { position: static; }
-.about-photo {
-  aspect-ratio: 3/4; max-height: 540px;
-  background: var(--accent-moment); border: 1px solid var(--rim);
-  position: relative; overflow: hidden;
+
+/* ═══════════════════════════════════════════════════════════════════════
+   .signal-tv — reusable CRT "test card" image component.
+
+   Renders any <img> as a vintage TV broadcast: butter background, scanlines,
+   slow tracking-error band, animated grain, subtle TV flicker. A JS scheduler
+   (see <script> at end of body) auto-fires sparse glitches at random intervals:
+     - chroma split (RGB channel separation)
+     - jitter (1.5px shake)
+     - tear (clip-path slice)
+     - slices (1–15 pixel rows displaced in two random groups)
+
+   Markup:
+     <div class="signal-tv">
+       <img class="signal-tv__img"   src="..." alt="..." />
+       <img class="signal-tv__ghost signal-tv__ghost--r" src="..." aria-hidden />
+       <img class="signal-tv__ghost signal-tv__ghost--c" src="..." aria-hidden />
+       <div class="signal-tv__slices" aria-hidden></div>
+     </div>
+
+   Scanlines / tracking / grain are pseudo-elements (no DOM nodes).
+   Channel-split ghosts share the main src (browser caches one fetch).
+
+   z-index stack:
+     0   container background
+     1   main image
+     2   chroma-split ghosts (hidden until .glitch-split)
+     7   scanlines (::before)
+     8   tracking band (::after)
+     9   grain (.signal-tv__grain)
+     12  slice-tear layer (.signal-tv__slices, JS-driven)
+
+   Tweakable via CSS custom properties on the container:
+     --signal-tv-bg            background color    (default: butter)
+     --signal-tv-border        border              (default: 1px solid --rim)
+     --signal-tv-aspect        aspect ratio        (default: 3/4)
+     --signal-tv-max-h         max height          (default: 540px)
+     --signal-tv-img-w         image width %       (default: 100%, fills frame)
+     --signal-tv-img-max-h     image max height %  (default: 100%, fills frame)
+   ═══════════════════════════════════════════════════════════════════════ */
+.signal-tv {
+  /* Defaults — override via inline style or scoped CSS */
+  --signal-tv-bg:        var(--accent-moment, #F2D74E);
+  --signal-tv-border:    1px solid var(--rim, currentColor);
+  --signal-tv-aspect:    3 / 4;
+  --signal-tv-max-h:     540px;
+  --signal-tv-img-w:     100%;
+  --signal-tv-img-max-h: 100%;
+
+  position: relative;
+  aspect-ratio: var(--signal-tv-aspect);
+  max-height: var(--signal-tv-max-h);
+  background: var(--signal-tv-bg);
+  border: var(--signal-tv-border);
+  overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+
+  /* Perf: paint-isolate the component + give compositor a hint */
+  contain: layout paint style;
+  isolation: isolate;
 }
-.about-photo img {
-  width: 100%; height: 100%;
-  object-fit: cover; object-position: center;
+
+/* ─── Main image ──────────────────────────────────────────────────── */
+.signal-tv__img {
+  width: var(--signal-tv-img-w);
+  height: auto;
+  max-height: var(--signal-tv-img-max-h);
+  object-fit: contain;
   display: block;
+  position: relative;
+  z-index: 1;
+  animation: signal-tv-flicker 5s ease-in-out infinite;
+}
+
+/* ─── Chroma-split ghosts (red / cyan channels via SVG colorMatrix) ── */
+.signal-tv__ghost {
+  width: var(--signal-tv-img-w);
+  height: auto;
+  max-height: var(--signal-tv-img-max-h);
+  object-fit: contain;
+  display: block;
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  mix-blend-mode: screen;
+  will-change: opacity, transform;
+}
+.signal-tv__ghost--r { filter: url(#signal-tv-channel-r); }
+.signal-tv__ghost--c { filter: url(#signal-tv-channel-c); }
+
+/* ─── CRT overlays — scanlines (::before) + tracking band (::after) ── */
+.signal-tv::before,
+.signal-tv::after {
+  content: '';
+  position: absolute; inset: 0;
+  pointer-events: none;
+}
+.signal-tv::before {
+  z-index: 7;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(0,0,0,0) 0px,
+    rgba(0,0,0,0) 2px,
+    rgba(0,0,0,.18) 3px,
+    rgba(0,0,0,0) 4px
+  );
+  mix-blend-mode: multiply;
+  opacity: .5;
+}
+.signal-tv::after {
+  z-index: 8;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0 80px,
+    rgba(255,255,255,.05) 80px 82px,
+    transparent 82px 160px,
+    rgba(0,0,0,.18) 160px 163px,
+    transparent 163px 320px
+  );
+  background-size: 100% 320px;
+  mix-blend-mode: overlay;
+  animation: signal-tv-tracking 14s linear infinite;
+  will-change: background-position;
+}
+
+/* ─── CRT grain (animated fractal noise) ──────────────────────────── */
+.signal-tv__grain {
+  position: absolute; inset: -50%;
+  width: 200%; height: 200%;
+  z-index: 9;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: .1;
+  mix-blend-mode: multiply;
+  animation: signal-tv-grain .12s steps(2) infinite;
+  will-change: transform;
+}
+
+/* ─── Slice-tear layer (JS appends row strips here) ──────────────── */
+.signal-tv__slices {
+  position: absolute; inset: 0;
+  z-index: 12;
+  pointer-events: none;
+}
+.signal-tv__slices > .slice {
+  position: absolute;
+  background-repeat: no-repeat;
+  will-change: transform;
+}
+
+/* ─── Always-on keyframes ─────────────────────────────────────────── */
+@keyframes signal-tv-flicker {
+  0%, 100% { filter: brightness(1)    contrast(1); }
+  50%      { filter: brightness(1.02) contrast(1.02); }
+  92%      { filter: brightness(.97)  contrast(1.04); }
+  94%      { filter: brightness(1.04) contrast(.98); }
+}
+@keyframes signal-tv-tracking {
+  0%   { background-position: 0 0%; }
+  100% { background-position: 0 -200%; }
+}
+@keyframes signal-tv-grain {
+  0%   { transform: translate(0, 0); }
+  25%  { transform: translate(-2%, -3%); }
+  50%  { transform: translate(3%, 1%); }
+  75%  { transform: translate(-1%, 2%); }
+  100% { transform: translate(2%, -1%); }
+}
+
+/* ═══ Glitch states ═══
+   Class toggled by the scheduler; never on by default. */
+.signal-tv.glitch-tear .signal-tv__img   { animation: signal-tv-tear .24s steps(3) 1; }
+.signal-tv.glitch-jitter .signal-tv__img { animation: signal-tv-jitter .16s steps(2) 1; }
+.signal-tv.glitch-split .signal-tv__img    { animation: signal-tv-split-dim .36s steps(2) 1; }
+.signal-tv.glitch-split .signal-tv__ghost--r { animation: signal-tv-split-r .36s steps(2) 1; }
+.signal-tv.glitch-split .signal-tv__ghost--c { animation: signal-tv-split-c .36s steps(2) 1; }
+
+@keyframes signal-tv-tear {
+  0%   { transform: translateX(0); clip-path: inset(0 0 0 0); }
+  25%  { transform: translateX(-5px); clip-path: inset(38% 0 48% 0); }
+  50%  { transform: translateX(6px);  clip-path: inset(22% 0 62% 0); }
+  75%  { transform: translateX(-3px); clip-path: inset(58% 0 30% 0); }
+  100% { transform: translateX(0);    clip-path: inset(0 0 0 0); }
+}
+@keyframes signal-tv-jitter {
+  0%, 100% { transform: translateX(0); }
+  50%      { transform: translateX(1.5px); }
+}
+@keyframes signal-tv-split-dim {
+  0%, 100% { opacity: 1; }
+  25%, 75% { opacity: .35; }
+}
+@keyframes signal-tv-split-r {
+  0%, 100% { transform: translate(-50%, -50%); opacity: 0; }
+  25%      { transform: translate(calc(-50% - 8px), -50%); opacity: 1; }
+  75%      { transform: translate(calc(-50% - 11px), calc(-50% + 1px)); opacity: 1; }
+}
+@keyframes signal-tv-split-c {
+  0%, 100% { transform: translate(-50%, -50%); opacity: 0; }
+  25%      { transform: translate(calc(-50% + 8px), -50%); opacity: 1; }
+  75%      { transform: translate(calc(-50% + 11px), calc(-50% - 1px)); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .signal-tv__img,
+  .signal-tv__grain,
+  .signal-tv::after { animation: none !important; }
+  .signal-tv::before { opacity: .25; }
 }
 .about-eyebrow {
   font-family: var(--ff-mono); font-size: .68rem; letter-spacing: .14em;
@@ -3343,8 +3545,12 @@ function Home({ onOpen, tweaks, openContact }) {
 
       <section className="about" id="about">
         <div className="about-photo-col">
-          <div className="about-photo clip-reveal">
-            <img src="about/me.png" alt="Raz — illustrated avatar" />
+          <div className="signal-tv clip-reveal" style={{'--signal-tv-img-w':'78%','--signal-tv-img-max-h':'86%'}}>
+            <img className="signal-tv__img" src="about/me.png" alt="Raz — illustrated avatar" />
+            <img className="signal-tv__ghost signal-tv__ghost--r" src="about/me.png" aria-hidden="true" />
+            <img className="signal-tv__ghost signal-tv__ghost--c" src="about/me.png" aria-hidden="true" />
+            <div className="signal-tv__grain" aria-hidden="true"></div>
+            <div className="signal-tv__slices" aria-hidden="true"></div>
           </div>
         </div>
         <div className="about-text">
@@ -3444,8 +3650,12 @@ function About({ onOpen }) {
     <div className="page active">
       <section className="about" style={{paddingTop:'9rem', borderTop:'none'}}>
         <div className="about-photo-col">
-          <div className="about-photo">
-            <img src="about/me.png" alt="Raz — illustrated avatar" />
+          <div className="signal-tv" style={{'--signal-tv-img-w':'78%','--signal-tv-img-max-h':'86%'}}>
+            <img className="signal-tv__img" src="about/me.png" alt="Raz — illustrated avatar" />
+            <img className="signal-tv__ghost signal-tv__ghost--r" src="about/me.png" aria-hidden="true" />
+            <img className="signal-tv__ghost signal-tv__ghost--c" src="about/me.png" aria-hidden="true" />
+            <div className="signal-tv__grain" aria-hidden="true"></div>
+            <div className="signal-tv__slices" aria-hidden="true"></div>
           </div>
         </div>
         <div className="about-text">
@@ -4508,6 +4718,126 @@ function App() {
 
 ReactDOM.createRoot(document.getElementById('root')).render(<App />);
 
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     .signal-tv runtime
+     -------------------------------------------------------------------------
+     One SVG block + one IIFE. Auto-discovers every .signal-tv on the page
+     and drives the sparse glitch scheduler. Self-contained — no globals.
+
+     To reuse: drop the .signal-tv markup anywhere. This script handles the
+     rest. Multiple instances are picked from at random on each fire.
+     ═══════════════════════════════════════════════════════════════════════ -->
+
+<!-- Channel-isolation filters for the chroma-split ghosts. Outside #root so
+     React can't replace them. -->
+<svg width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
+  <defs>
+    <filter id="signal-tv-channel-r"><feColorMatrix type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0"/></filter>
+    <filter id="signal-tv-channel-c"><feColorMatrix type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0"/></filter>
+  </defs>
+</svg>
+
+<script>
+(function () {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  // ─── Slice-tear: pick 1–15 single-pixel rows of the image, split them
+  //     into two random groups (independent coin flip per row → can be
+  //     consecutive or non-consecutive, equal or uneven), assign each
+  //     group a random ±1 direction, displace each row by a random 2–15px.
+  //     Every second slice fire is paired with a chroma split. ──────────
+  var sliceFireCount = 0;
+  function fireSlices(host) {
+    var img = host.querySelector('.signal-tv__img');
+    var layer = host.querySelector('.signal-tv__slices');
+    if (!img || !layer || layer.children.length > 0) return;
+
+    var hostRect = host.getBoundingClientRect();
+    var imgRect  = img.getBoundingClientRect();
+    if (imgRect.height < 4) return;
+
+    var iL = imgRect.left - hostRect.left;
+    var iT = imgRect.top  - hostRect.top;
+    var iW = imgRect.width;
+    var iH = imgRect.height;
+    var src = img.src;
+    var sliceH = 2;
+
+    var rowCount = 1 + Math.floor(Math.random() * 15);
+    var taken = {};
+    var rows = [];
+    for (var i = 0, safety = rowCount * 8; rows.length < rowCount && i < safety; i++) {
+      var y = Math.floor(Math.random() * Math.max(1, iH - sliceH));
+      if (!taken[y]) { taken[y] = 1; rows.push(y); }
+    }
+
+    var dirA = Math.random() < 0.5 ? -1 : 1;
+    var dirB = Math.random() < 0.5 ? -1 : 1;
+
+    var frag = document.createDocumentFragment();
+    rows.forEach(function (rowY) {
+      var dir = (Math.random() < 0.5 ? dirA : dirB);
+      var offset = (2 + Math.random() * 13) * dir;
+      var slice = document.createElement('div');
+      slice.className = 'slice';
+      slice.style.cssText =
+        'left:' + iL + 'px;' +
+        'top:' + (iT + rowY) + 'px;' +
+        'width:' + iW + 'px;' +
+        'height:' + sliceH + 'px;' +
+        'background-image:url("' + src + '");' +
+        'background-size:' + iW + 'px ' + iH + 'px;' +
+        'background-position:0 -' + rowY + 'px;' +
+        'transform:translateX(' + offset.toFixed(1) + 'px);';
+      frag.appendChild(slice);
+    });
+    layer.appendChild(frag);
+
+    // Every second fire: pair with a chroma split.
+    sliceFireCount++;
+    if (sliceFireCount % 2 === 0 && host.className.indexOf('glitch-split') === -1) {
+      host.classList.add('glitch-split');
+      setTimeout(function () { host.classList.remove('glitch-split'); }, 360);
+    }
+
+    setTimeout(function () {
+      while (layer.firstChild) layer.removeChild(layer.firstChild);
+    }, 180 + Math.random() * 240);
+  }
+
+  // ─── Variant pool ──────────────────────────────────────────────────
+  // Class variants animate via CSS keyframes; `fire`-callback variants
+  // run JS (currently just the slice-tear).
+  var variants = [
+    { fire: fireSlices,             weight: 7 }, // row-slice tear (most common)
+    { cls: 'glitch-split',  dur: 360, weight: 4 }, // chroma split
+    { cls: 'glitch-jitter', dur: 160, weight: 3 },
+    { cls: 'glitch-tear',   dur: 240, weight: 2 }  // loudest, rarest
+  ];
+  var pool = variants.flatMap(function (v) { return Array(v.weight).fill(v); });
+
+  function fire() {
+    var hosts = document.querySelectorAll('.signal-tv');
+    if (!hosts.length) return;
+    var host = hosts[Math.floor(Math.random() * hosts.length)];
+    var g = pool[Math.floor(Math.random() * pool.length)];
+    if (g.fire) { g.fire(host); return; }
+    if (host.className.indexOf('glitch-') !== -1) return; // already animating
+    host.classList.add(g.cls);
+    setTimeout(function () { host.classList.remove(g.cls); }, g.dur);
+  }
+
+  (function tick() {
+    // 5–12s between fires; 15% chance of a quick double-burst.
+    setTimeout(function () {
+      fire();
+      if (Math.random() < 0.15) setTimeout(fire, 180 + Math.random() * 240);
+      tick();
+    }, 5000 + Math.random() * 7000);
+  })();
+})();
 </script>
 </body>
 </html>
