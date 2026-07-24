@@ -1599,6 +1599,53 @@ footer a:hover { color: var(--accent); }
 .cmdk-item .lbl { flex: 1; font-size: .92rem; color: var(--ink); }
 .cmdk-item .sub { font-family: var(--ff-mono); font-size: .68rem; color: var(--muted); }
 
+/* ─── Image lightbox ───
+   A single delegated click handler (see the Lightbox component) opens any
+   content image full-size here. Backdrop, the ✕, the image, or Escape close it. */
+.lightbox {
+  position: fixed; inset: 0; z-index: 9500;
+  display: flex; align-items: center; justify-content: center;
+  padding: clamp(1rem, 4vw, 3.5rem);
+  background: rgba(0,0,0,.86);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  opacity: 0; pointer-events: none;
+  transition: opacity .28s var(--expo);
+}
+.lightbox.open { opacity: 1; pointer-events: auto; }
+.lightbox-figure {
+  margin: 0; max-width: 100%; max-height: 100%;
+  display: flex; flex-direction: column; gap: .85rem; align-items: center;
+  transform: scale(.965); transition: transform .28s var(--expo);
+}
+.lightbox.open .lightbox-figure { transform: scale(1); }
+.lightbox img {
+  display: block; max-width: 100%; max-height: 85vh;
+  width: auto; height: auto; object-fit: contain;
+  border-radius: 6px; border: 1px solid var(--rim-soft);
+  box-shadow: 0 30px 90px rgba(0,0,0,.55);
+  cursor: zoom-out;
+}
+.lightbox-cap {
+  font-family: var(--ff-mono); font-size: .68rem; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--muted); text-align: center;
+}
+.lightbox-close {
+  position: fixed; top: 1.25rem; right: 1.25rem;
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 1px solid var(--rim-soft); background: var(--surface);
+  color: var(--ink); font-size: 1rem; line-height: 1; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .2s, transform .2s;
+}
+.lightbox-close:hover { background: var(--surface-2); transform: scale(1.08); }
+
+/* zoom-in affordance on the images that open in the lightbox
+   (only visible when the custom blob cursor is toggled off) */
+.proj-media-item img,
+.proj-hero-image img,
+.proj-side-gallery-frame img,
+.problem-img img { cursor: zoom-in; }
+
 /* ─── Responsive — small tablet (≥640px) ───
    Two-column upgrades that work on iPad portrait but not on phones. */
 @media (min-width: 640px) {
@@ -4824,6 +4871,52 @@ function PortfolioTweaks({ tweaks, setTweak }) {
 }
 
 /* ─── App ─── */
+// ─── Lightbox ───────────────────────────────────────────────────────────
+// One delegated click listener catches clicks on any content image (galleries,
+// hero, side gallery, problem shots) and opens it full-size. Delegation means
+// images added to any case study later are covered automatically. Tiles, nav
+// icons, the .signal-tv effect, and anything inside a link are excluded so we
+// never hijack navigation.
+function Lightbox() {
+  const [item, setItem] = useState(null); // { src, cap } | null
+  const ZOOMABLE = '.proj-media-item, .proj-hero-image, .proj-side-gallery-frame, .problem-img';
+
+  useEffect(() => {
+    const onClick = (e) => {
+      const img = e.target.closest && e.target.closest('img');
+      if (!img) return;
+      if (!img.closest(ZOOMABLE)) return;                 // only content images
+      if (img.closest('a, .tile, .signal-tv, .proj-beforeafter')) return; // skip links, tiles, TV, slider
+      e.preventDefault();
+      const fig = img.closest('figure');
+      const capEl = fig && fig.querySelector('.proj-caption');
+      setItem({ src: img.currentSrc || img.src, cap: capEl ? capEl.textContent.trim() : (img.alt || '') });
+    };
+    document.addEventListener('click', onClick);
+    return () => document.removeEventListener('click', onClick);
+  }, []);
+
+  useEffect(() => {
+    if (!item) return;
+    const onKey = (e) => { if (e.key === 'Escape') setItem(null); };
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', onKey);
+    return () => { document.body.style.overflow = ''; window.removeEventListener('keydown', onKey); };
+  }, [item]);
+
+  return (
+    <div className={`lightbox ${item ? 'open' : ''}`} onClick={() => setItem(null)}>
+      {item && <button className="lightbox-close" aria-label="Close image" onClick={() => setItem(null)}>✕</button>}
+      {item && (
+        <figure className="lightbox-figure" onClick={e => e.stopPropagation()}>
+          <img src={item.src} alt={item.cap} onClick={() => setItem(null)} />
+          {item.cap && <figcaption className="lightbox-cap">{item.cap}</figcaption>}
+        </figure>
+      )}
+    </div>
+  );
+}
+
 function App() {
   const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
   const [loading, setLoading] = useState(true);
@@ -4947,6 +5040,7 @@ function App() {
             toggleTheme={toggleTheme} />
 
       <PortfolioTweaks tweaks={tweaks} setTweak={setTweak} />
+      <Lightbox />
     </>
   );
 }
