@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark" data-density="dense" data-display-font="sleeper">
+<html lang="en" data-theme="dark" data-density="dense" data-display-font="philephant">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -134,16 +134,44 @@
   --indigo-600: #3B529C; --indigo-700: #253776; --indigo-800: #0B1541;
 }
 
+/* ─── Phil E. Phant Sans (local test — typeface-test branch) ───────────
+   Self-hosted from assets/fonts/. Ships Light/Regular/Bold + italics;
+   there is no 800/900 cut, so --ff-display-weight caps at 700 here. */
+@font-face {
+  font-family: 'Phil E. Phant Sans'; font-style: normal; font-weight: 300;
+  src: url('assets/fonts/PhilEPhantSans-Light.ttf') format('truetype'); font-display: swap;
+}
+@font-face {
+  font-family: 'Phil E. Phant Sans'; font-style: italic; font-weight: 300;
+  src: url('assets/fonts/PhilEPhantSans-LightItalic.ttf') format('truetype'); font-display: swap;
+}
+@font-face {
+  font-family: 'Phil E. Phant Sans'; font-style: normal; font-weight: 400;
+  src: url('assets/fonts/PhilEPhantSans-Regular.ttf') format('truetype'); font-display: swap;
+}
+@font-face {
+  font-family: 'Phil E. Phant Sans'; font-style: italic; font-weight: 400;
+  src: url('assets/fonts/PhilEPhantSans-Italic.ttf') format('truetype'); font-display: swap;
+}
+@font-face {
+  font-family: 'Phil E. Phant Sans'; font-style: normal; font-weight: 700;
+  src: url('assets/fonts/PhilEPhantSans-Bold.ttf') format('truetype'); font-display: swap;
+}
+@font-face {
+  font-family: 'Phil E. Phant Sans'; font-style: italic; font-weight: 700;
+  src: url('assets/fonts/PhilEPhantSans-BoldItalic.ttf') format('truetype'); font-display: swap;
+}
+
 :root {
-  /* Sleeper typography — Geist sans (display + body) + Geist Mono.
+  /* Sleeper typography — Phil E. Phant Sans (display) + Geist (body) + Geist Mono.
      Instrument Serif takes over .hero-title and .contact-headline only
      (the "moment" treatment), defined further down in the display-font
      swap section. --ff-display-weight is the variable refactored into
      all hardcoded display weights. */
-  --ff-display: 'Geist', system-ui, -apple-system, sans-serif;
+  --ff-display: 'Phil E. Phant Sans', system-ui, -apple-system, sans-serif;
   --ff-body:    'Geist', system-ui, -apple-system, sans-serif;
   --ff-mono:    'Geist Mono', ui-monospace, monospace;
-  --ff-display-weight: 800;
+  --ff-display-weight: 700;
   font-optical-sizing: auto;
   --expo: cubic-bezier(0.16, 1, 0.3, 1);
   --circ: cubic-bezier(0.85, 0, 0.15, 1);
@@ -1691,6 +1719,7 @@ footer a:hover { color: var(--accent); }
 [data-display-font="serif"]     { --ff-display: 'Instrument Serif', 'Times New Roman', serif; --ff-display-weight: 400; }
 [data-display-font="mono"]      { --ff-display: 'JetBrains Mono', ui-monospace, monospace; --ff-display-weight: 700; }
 [data-display-font="sans"]      { --ff-display: 'Inter Tight', system-ui, sans-serif; --ff-display-weight: 900; }
+[data-display-font="philephant"]{ --ff-display: 'Phil E. Phant Sans', system-ui, sans-serif; --ff-display-weight: 700; }
 
 /* Sleeper's "Voice Rule"
    ─────────────────────
@@ -1707,7 +1736,7 @@ footer a:hover { color: var(--accent); }
    - About-section body italic emphasis also gets serif italic (.about em
      covers both the headline em and the body paragraph em).
 
-   Scoped to [data-display-font="sleeper"] so the tweaks-panel picker can
+   Scoped to the "sleeper" and "philephant" pickers so the tweaks-panel can
    restore normal display behavior on these elements with another font. */
 
 /* Hero + contact: full Sleeper treatment (huge serif moments, tight tracking).
@@ -1715,7 +1744,9 @@ footer a:hover { color: var(--accent); }
    long descenders and the tighter line-height clipped the "g"s below the
    element's box. */
 [data-display-font="sleeper"] .hero-title,
-[data-display-font="sleeper"] .contact-headline {
+[data-display-font="sleeper"] .contact-headline,
+[data-display-font="philephant"] .hero-title,
+[data-display-font="philephant"] .contact-headline {
   font-family: 'Instrument Serif', Georgia, serif;
   font-weight: 400;
   letter-spacing: -0.015em;
@@ -1725,7 +1756,8 @@ footer a:hover { color: var(--accent); }
 /* About headline: serif font, keep its own size-appropriate spacing,
    but reserve padding for descenders so the .clip-reveal clip-path
    doesn't cut the "g"s on the last line. */
-[data-display-font="sleeper"] .about-headline {
+[data-display-font="sleeper"] .about-headline,
+[data-display-font="philephant"] .about-headline {
   font-family: 'Instrument Serif', Georgia, serif;
   font-weight: 400;
   padding-bottom: 0.2em;
@@ -1734,7 +1766,11 @@ footer a:hover { color: var(--accent); }
 [data-display-font="sleeper"] .hero-title em,
 [data-display-font="sleeper"] .contact-headline em,
 [data-display-font="sleeper"] .about em,
-[data-display-font="sleeper"] .proj-hero-title em {
+[data-display-font="sleeper"] .proj-hero-title em,
+[data-display-font="philephant"] .hero-title em,
+[data-display-font="philephant"] .contact-headline em,
+[data-display-font="philephant"] .about em,
+[data-display-font="philephant"] .proj-hero-title em {
   font-family: 'Instrument Serif', Georgia, serif;
   font-style: italic;
   font-weight: 400;
@@ -1804,7 +1840,7 @@ footer a:hover { color: var(--accent); }
 }
 .proj-media-item.k-sq img    { aspect-ratio: 4 / 3;  object-fit: cover; }
 .proj-media-item.k-tall img  { aspect-ratio: 3 / 4;  object-fit: cover; }
-.proj-media.thumbs .proj-media-item img { aspect-ratio: 4 / 3; object-fit: cover; }
+.proj-media.thumbs .proj-media-item img { aspect-ratio: 16 / 9; object-fit: cover; object-position: top; }
 .proj-media-placeholder {
   width: 100%; aspect-ratio: 16 / 9;
   background: var(--surface);
@@ -3207,7 +3243,7 @@ const { useState, useEffect, useRef, useCallback, useMemo } = React;
 
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "accent": "signal",
-  "displayFont": "sleeper",
+  "displayFont": "philephant",
   "theme": "dark",
   "tileStyle": "polaroid",
   "heroAlign": "bottom",
@@ -4763,7 +4799,7 @@ function PortfolioTweaks({ tweaks, setTweak }) {
                    onChange={v => setTweak('accent', v)} />
       <TweakSection label="Typography" />
       <TweakSelect label="Display font" value={tweaks.displayFont}
-                   options={['sleeper', 'editorial', 'afacad', 'serif', 'mono', 'sans']}
+                   options={['philephant', 'sleeper', 'editorial', 'afacad', 'serif', 'mono', 'sans']}
                    onChange={v => setTweak('displayFont', v)} />
       <TweakSection label="Layout" />
       <TweakSelect label="Tile style" value={tweaks.tileStyle}
