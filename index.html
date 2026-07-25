@@ -657,14 +657,16 @@ nav.top.hidden { transform: translateY(-110%); }
   font-family: var(--ff-mono); font-size: .65rem; letter-spacing: .08em;
   color: var(--ink-dim); text-transform: uppercase;
 }
+/* Mini morphing blob — a shrunk cousin of the blob cursor, marks "available" */
 .avail-dot {
-  width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
-  box-shadow: 0 0 0 0 var(--accent-md);
-  animation: pulse 2.4s ease-out infinite;
+  display: inline-flex; flex: none;
+  width: 14px; height: 14px; vertical-align: middle;
 }
-@keyframes pulse {
-  0%   { box-shadow: 0 0 0 0 var(--accent-md); }
-  100% { box-shadow: 0 0 0 10px transparent; }
+.avail-dot svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.avail-dot .ab-blob {
+  fill: var(--accent);
+  transform-origin: 50px 50px;
+  animation: blobMorph 4s ease-in-out infinite, blobSpin 6s linear infinite;
 }
 
 /* ─── Mobile menu (burger + full-screen overlay) ───
@@ -1839,6 +1841,17 @@ footer a:hover { color: var(--accent); }
 .proj-hero-image img {
   display: block; width: 100%; height: auto; max-height: 50vh; object-fit: cover;
 }
+/* Bare hero — device mockup floats on the page, no frame, no crop */
+.proj-hero-image.is-bare {
+  border: none;
+  background: transparent;
+  padding: 2.5rem var(--pad-x) 1rem;
+}
+.proj-hero-image.is-bare img {
+  width: 100%; height: auto; max-height: 74vh;
+  object-fit: contain; object-position: center;
+  margin: 0 auto;
+}
 
 /* Gallery — real images replace the hatched placeholders */
 .g-cell.has-img { background: var(--surface); }
@@ -1901,6 +1914,12 @@ footer a:hover { color: var(--accent); }
 .proj-media-item.k-sq   .proj-media-placeholder { aspect-ratio: 4 / 3; }
 .proj-media-item.k-tall .proj-media-placeholder { aspect-ratio: 3 / 4; }
 .proj-media-item.k-half { width: calc(50% - 1.25rem); align-self: flex-end; }
+/* Bare media — image floats with no frame (transparent PNG, e.g. panel mosaic) */
+.proj-media-item.is-bare img {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+}
 
 /* Parallax section — sticky full-width header + sticky left text, naturally scrolling right column */
 .proj-section.is-parallax { position: relative; }
@@ -2366,7 +2385,8 @@ const PROJECTS = [
     company: 'KMS Lighthouse',
     tile: 'wide',
     summary: 'A self-service Help Center that hands business admins full control of their branded support site — no developers required. Built to replace a legacy product that couldn\'t customize, couldn\'t scale, and wasn\'t winning customers.',
-    heroImage: 'help center/v2/homepage-style1.png',
+    heroImage: 'help center/v2/homepage-devices.png',
+    heroBare: true,
     swatch: { from: '#0F5A4A', to: '#082E25', mark: '#5BCAB8' },
     sections: [
       { id: 'context', title: 'Context', body: [
@@ -2420,7 +2440,7 @@ const PROJECTS = [
             title: 'Customization studio',
             body: ['Direct control over logo, favicon, header, footer, color system, card styles, and content layout — no code. Admins change how the site looks and behaves in real time.'],
             media: [
-              { src: 'help center/v2/admin-panel-breakdown.png', caption: 'Customization panel breakdown', kind: 'wide' },
+              { src: 'help center/v2/admin-panel-mosaic.png', caption: 'Customization panel breakdown', kind: 'wide', bare: true },
             ],
           },
           {
@@ -2428,8 +2448,7 @@ const PROJECTS = [
             title: 'Editing in place',
             body: ['Admins compose the homepage widget by widget, editing cards against a live preview of the site itself.'],
             media: [
-              { src: 'help center/v2/admin-cards-edit.png',   caption: 'Editing a card against live preview', kind: 'wide' },
-              { src: 'help center/v2/admin-cards-upload.png', caption: 'Image upload and cropping', kind: 'wide' },
+              { src: 'help center/v2/admin-cards-edit.mov', caption: 'Editing a card against live preview', kind: 'wide' },
             ],
           },
           {
@@ -3663,7 +3682,7 @@ function Nav({ page, setPage, onCmdK, theme, toggleTheme }) {
             ))}
           </ul>
           <div className="nav-actions">
-            <span className="avail"><span className="avail-dot"></span>Available</span>
+            <span className="avail"><AvailBlob/>Available</span>
             <button className="icon-btn" onClick={onCmdK} title="Search (⌘K)" aria-label="Open command palette">
               <SearchIcon />
             </button>
@@ -3704,7 +3723,7 @@ function Nav({ page, setPage, onCmdK, theme, toggleTheme }) {
           ))}
         </ul>
         <div className="mobile-menu-foot">
-          <span className="avail"><span className="avail-dot"></span>Available</span>
+          <span className="avail"><AvailBlob/>Available</span>
           <div className="mobile-menu-actions">
             <button
               className="icon-btn"
@@ -3723,6 +3742,17 @@ function Nav({ page, setPage, onCmdK, theme, toggleTheme }) {
   );
 }
 
+/* Mini blob that stands in for the old "available" dot — same morph/spin as the cursor */
+function AvailBlob() {
+  return (
+    <span className="avail-dot" aria-hidden="true">
+      <svg viewBox="0 0 100 100">
+        <path className="ab-blob" d="M50,8 C72,6 94,22 94,46 C96,68 80,90 56,94 C32,98 10,82 6,58 C2,36 18,12 50,8 Z" />
+      </svg>
+    </span>
+  );
+}
+
 /* ─── Hero ─── */
 function Hero({ align }) {
   const [up, setUp] = useState(false);
@@ -3733,7 +3763,7 @@ function Hero({ align }) {
   return (
     <section className="hero" data-align={align}>
       <div className={`hero-eyebrow ${up ? 'up' : ''}`}>
-        <span className="avail-dot" style={{display:'inline-block'}}></span>
+        <AvailBlob/>
         <span>Product designer · Tel Aviv · Open to work</span>
       </div>
       <h1 className={`hero-title ${up ? 'up' : ''}`}>
@@ -3859,7 +3889,7 @@ function Home({ onOpen, tweaks, openContact }) {
       <section className="contact" id="contact">
         <div className="contact-eyebrow">Open to work · Q3 2025</div>
         <h2 className="contact-headline">
-          Let's make<br/>something <em>good.</em>
+          Let's connect,<br/>my rent's <em>due</em>
         </h2>
         <a className="contact-btn" href="mailto:hello@razsilberman.com">
           hello@razsilberman.com
@@ -4386,7 +4416,7 @@ function ProjectMedia({ items }) {
   return (
     <div className={`proj-media ${allThumb ? 'thumbs' : 'stack'}`}>
       {items.map((m, i) => (
-        <figure key={i} className={`proj-media-item k-${m.kind || 'wide'} ${isVideo(m.src) ? 'is-video' : ''} ${m.placeholder ? 'is-placeholder' : ''} ${m.diagram ? 'is-diagram' : ''}`}>
+        <figure key={i} className={`proj-media-item k-${m.kind || 'wide'} ${isVideo(m.src) ? 'is-video' : ''} ${m.placeholder ? 'is-placeholder' : ''} ${m.diagram ? 'is-diagram' : ''} ${m.bare ? 'is-bare' : ''}`}>
           {m.diagram === 'user-flow' ? (
             <UserFlowDiagram />
           ) : m.placeholder ? (
@@ -4691,7 +4721,7 @@ function Project({ projectId, onBack, onOpen }) {
       </section>
 
       {p.heroImage && (
-        <div className="proj-hero-image">
+        <div className={`proj-hero-image ${p.heroBare ? 'is-bare' : ''}`}>
           <img src={p.heroImage} alt={`${p.title} — hero`} loading="eager" />
         </div>
       )}
