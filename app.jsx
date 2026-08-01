@@ -1278,6 +1278,22 @@ function ProjectSection({ s }) {
               </figure>
             </div>
           )}
+          {s.beforeAfterPairs && (
+            <div className="proj-ba-pairs">
+              {s.beforeAfterPairs.map((pair, i) => (
+                <div key={i} className="proj-ba-pair">
+                  <figure className="proj-media-item k-wide">
+                    <img src={pair.before.src} alt={pair.before.label || 'before'} loading="lazy" />
+                    <figcaption className="proj-caption"><span className="ba-tag">Before</span>{pair.before.label}</figcaption>
+                  </figure>
+                  <figure className="proj-media-item k-wide">
+                    <img src={pair.after.src} alt={pair.after.label || 'after'} loading="lazy" />
+                    <figcaption className="proj-caption"><span className="ba-tag after">After</span>{pair.after.label}</figcaption>
+                  </figure>
+                </div>
+              ))}
+            </div>
+          )}
         </>
       )}
     </div>

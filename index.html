@@ -2315,6 +2315,17 @@ footer a:hover { color: var(--accent); }
 }
 .ba-tag.after { background: var(--accent-lo); color: var(--accent); }
 
+/* Before / After screen pairs — multiple paired rows of full, uncropped,
+   zoomable screenshots (reuses .proj-media-item framing + lightbox). */
+.proj-ba-pairs { margin: 2rem 0 2.5rem; display: flex; flex-direction: column; gap: 2rem; }
+.proj-ba-pair { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
+.proj-ba-pair figcaption.proj-caption {
+  display: flex; align-items: center; gap: .65rem; text-transform: none;
+}
+@media (min-width: 720px) {
+  .proj-ba-pair { grid-template-columns: 1fr 1fr; align-items: start; }
+}
+
 /* Placeholder sections (Outcome, Reflection) */
 .proj-section.is-placeholder .proj-section-title {
   color: var(--muted);
@@ -2809,6 +2820,118 @@ const PROJECTS = [
     gallery: [
       { kind: 'wide', label: 'Admin setup', tone: '#101315' },
       { kind: 'sq', label: 'End-user welcome', tone: '#0E1112' },
+    ],
+  },
+  {
+    id: 'advanced-search',
+    n: '05',
+    title: 'Advanced Search',
+    subtitle: 'Redesigning search and filtering in an enterprise knowledge management system',
+    role: 'Lead Designer',
+    year: '2025',
+    timeline: '2025',
+    platform: 'Web — responsive',
+    team: 'Lead designer · PMs · engineers',
+    sector: 'B2B SaaS · Enterprise knowledge',
+    kind: 'B2B SaaS',
+    company: 'KMS Lighthouse',
+    tile: 'wide',
+    summary: 'A two-phase redesign of the Advanced Search module inside KMS Lighthouse, a knowledge management system used by enterprise support teams. Phase one aligned the interface with a new design system. Phase two rebuilt the filtering mechanism for accessibility, performance and scale.',
+    heroImage: 'advanced-search/after-04-results-table.png',
+    swatch: { from: '#0E4258', to: '#07222E', mark: '#5BC6D6' },
+    sections: [
+      { id: 'problem', title: 'The problem',
+        body: [
+          'The legacy interface no longer matched our design guidelines, and its filtering was the weakest part of the experience. As the platform grew to handle larger datasets and more varied user roles, the existing filter tools stopped scaling — precise searches became slow and error-prone.',
+          'Four issues drove the work:',
+        ],
+        list: [
+          { label: 'Visual inconsistency —', text: 'the UI sat outside the updated design system, fragmenting the wider product.' },
+          { label: 'Cluttered layout —', text: 'dense and hard to scan, especially for new users.' },
+          { label: 'Limited accessibility —', text: 'nested dropdowns and icon-only buttons blocked keyboard and screen reader users.' },
+          { label: 'High cognitive load —', text: 'users combined filters manually with no visible logic, causing frequent mistakes.' },
+        ],
+        sideMedia: { src: 'advanced-search/filters-00-legacy-zone.png', caption: 'The legacy filtering area targeted in stage 2' },
+      },
+      { id: 'stage-1', title: 'Stage 1 — Visual redesign',
+        list: [
+          { label: 'Aligned the page to the new design system:', text: 'typography, spacing, and component standards.' },
+          { label: 'Introduced clear hierarchy and grouping', text: 'so controls can be scanned rather than read.' },
+          { label: 'Improved responsive and mobile behaviour.', text: '' },
+        ],
+        beforeAfterPairs: [
+          { before: { src: 'advanced-search/before-01-empty-state.png', label: 'No search entered' },
+            after:  { src: 'advanced-search/after-01-empty-state.png',  label: 'No search entered' } },
+          { before: { src: 'advanced-search/before-02-nested-dropdown.png', label: 'Nested filter dropdown' },
+            after:  { src: 'advanced-search/after-02-search-parameters.png', label: 'Search parameters menu' } },
+          { before: { src: 'advanced-search/before-03-results-table.png', label: 'Results table' },
+            after:  { src: 'advanced-search/after-04-results-table.png',  label: 'Results table' } },
+        ],
+        media: [
+          { src: 'advanced-search/after-03-folder-picker.png',   caption: 'Redesigned folder picker', kind: 'wide' },
+          { src: 'advanced-search/after-05-results-scrolled.png', caption: 'Redesigned results, filter row in use', kind: 'wide' },
+        ],
+      },
+      { id: 'stage-2', title: 'Stage 2 — Filtering overhaul',
+        list: [
+          { label: 'Replaced the legacy filter system', text: 'with a modular, accessible framework.' },
+          { label: 'Made AND/OR filter logic', text: 'explicit and visible to the user.' },
+          { label: 'Designed a panel that scales', text: 'to dozens of filter types without crowding the page.' },
+          { label: 'Built for full keyboard navigation,', text: 'screen reader support, and WCAG compliance.' },
+          { label: 'Aimed at reducing time-to-filter', text: 'and raising search success rates, measured against usage analytics.' },
+        ],
+        subsections: [
+          {
+            id: 'stage-2-wireframes',
+            title: 'Brainstorming & wireframing',
+            body: [
+              'Before the panel took its final shape, filtering ran through several low-fidelity directions. Each answered two questions differently — where the filters live, and how multiple conditions combine — and was pressure-tested against the same result table.',
+              'Four concepts carried the exploration: a right-hand filter panel, a horizontal filter bar with applied-filter chips, a two-pane tabbed panel, and an explicit condition builder. Collapsed, empty, and expanded states were wireframed alongside them to check how each direction held up in use.',
+            ],
+            media: [
+              { src: 'advanced-search/wireframes/wireframe-concept-A-drawer.png',            caption: 'Concept A — right-hand filter panel', kind: 'sq' },
+              { src: 'advanced-search/wireframes/wireframe-concept-B-filter-bar.png',         caption: 'Concept B — filter bar with applied chips', kind: 'sq' },
+              { src: 'advanced-search/wireframes/wireframe-concept-C-two-pane.png',           caption: 'Concept C — two-pane tabbed panel', kind: 'sq' },
+              { src: 'advanced-search/wireframes/wireframe-concept-D-conditions.png',         caption: 'Concept D — explicit condition builder', kind: 'sq' },
+              { src: 'advanced-search/wireframes/wireframe-state-A-drawer-collapsed.png',     caption: 'Concept A — collapsed rail', kind: 'sq' },
+              { src: 'advanced-search/wireframes/wireframe-state-B-filter-menu-open.png',     caption: 'Concept B — filter menu open', kind: 'sq' },
+              { src: 'advanced-search/wireframes/wireframe-state-B-more-filters-overlay.png', caption: 'Concept B — more-filters drawer', kind: 'sq' },
+              { src: 'advanced-search/wireframes/wireframe-state-D-add-filter-menu.png',      caption: 'Concept D — add-filter menu', kind: 'sq' },
+              { src: 'advanced-search/wireframes/wireframe-state-empty.png',                  caption: 'Empty state — suggested searches', kind: 'sq' },
+              { src: 'advanced-search/wireframes/wireframe-state-row-expanded.png',           caption: 'Row expanded — version matches', kind: 'sq' },
+            ],
+          },
+          {
+            id: 'stage-2-panel',
+            title: 'The filter panel',
+            body: [
+              'The filters sit in a collapsible right panel grouped into search parameters, high level filters, and drill-down filters. Selections are staged, then committed with Apply filters, so the results table always reflects a deliberate choice rather than every keystroke. Each group carries a count computed from its own selections.',
+            ],
+            media: [
+              { src: 'advanced-search/filters-01-panel-collapsed.png',   caption: 'New filter panel, groups collapsed', kind: 'wide' },
+              { src: 'advanced-search/filters-02-search-parameters.png',  caption: 'Search parameters group expanded', kind: 'wide' },
+              { src: 'advanced-search/filters-03-high-level-filters.png', caption: 'High level filters — chips and folder list', kind: 'wide' },
+              { src: 'advanced-search/filters-04-drill-down-filters.png', caption: 'Drill down filters group', kind: 'wide' },
+              { src: 'advanced-search/filters-05-results-with-panel.png', caption: 'Results table alongside the filter panel', kind: 'wide' },
+              { src: 'advanced-search/filters-06-filters-applied.png',    caption: 'Filters applied against results', kind: 'wide' },
+              { src: 'advanced-search/filters-07-versions-view.png',      caption: 'Versions view with filters applied', kind: 'wide' },
+            ],
+          },
+        ],
+      },
+      { id: 'outcome', title: 'Outcome',
+        body: [
+          'Stage 1 shipped and stage 2 followed, building on the same foundations. Stakeholder feedback shaped refinements across both releases.',
+          'Next steps focus on usage data and A/B testing to validate the design decisions, plus expanded and customisable filter options.',
+        ],
+      },
+    ],
+    gallery: [
+      { src: 'advanced-search/after-04-results-table.png',       label: 'Redesigned results table', kind: 'wide' },
+      { src: 'advanced-search/after-01-empty-state.png',         label: 'Redesigned empty state',    kind: 'sq'   },
+      { src: 'advanced-search/filters-03-high-level-filters.png', label: 'High level filters',        kind: 'sq'   },
+      { src: 'advanced-search/filters-01-panel-collapsed.png',   label: 'Filter panel',              kind: 'tall' },
+      { src: 'advanced-search/before-03-results-table.png',      label: 'Legacy results table',      kind: 'tall' },
     ],
   },
 ];
@@ -3846,7 +3969,7 @@ function Home({ onOpen, tweaks, openContact }) {
       <section className="section" id="work">
         <div className="section-head">
           <h2>Selected Work</h2>
-          <span className="right">04 · 2022 — 2025</span>
+          <span className="right">05 · 2022 — 2025</span>
         </div>
         <div className={`work-grid ${tweaks.tileStyle}`}>
           {window.PROJECTS.map((p, i) => (
@@ -4671,6 +4794,22 @@ function ProjectSection({ s }) {
                 <img src={s.beforeAfter.after.src} alt={s.beforeAfter.after.label || 'after'} loading="lazy" />
                 <figcaption><span className="ba-tag after">After</span>{s.beforeAfter.after.label}</figcaption>
               </figure>
+            </div>
+          )}
+          {s.beforeAfterPairs && (
+            <div className="proj-ba-pairs">
+              {s.beforeAfterPairs.map((pair, i) => (
+                <div key={i} className="proj-ba-pair">
+                  <figure className="proj-media-item k-wide">
+                    <img src={pair.before.src} alt={pair.before.label || 'before'} loading="lazy" />
+                    <figcaption className="proj-caption"><span className="ba-tag">Before</span>{pair.before.label}</figcaption>
+                  </figure>
+                  <figure className="proj-media-item k-wide">
+                    <img src={pair.after.src} alt={pair.after.label || 'after'} loading="lazy" />
+                    <figcaption className="proj-caption"><span className="ba-tag after">After</span>{pair.after.label}</figcaption>
+                  </figure>
+                </div>
+              ))}
             </div>
           )}
         </>
