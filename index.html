@@ -1914,6 +1914,9 @@ footer a:hover { color: var(--accent); }
 .proj-media-item.k-sq   .proj-media-placeholder { aspect-ratio: 4 / 3; }
 .proj-media-item.k-tall .proj-media-placeholder { aspect-ratio: 3 / 4; }
 .proj-media-item.k-half { width: calc(50% - 1.25rem); align-self: flex-end; }
+/* Concept prototype/video slot — full-width blank hero above the screen gallery */
+.proj-proto-slot { margin: 1.75rem 0 2.25rem; }
+.proj-proto-slot .proj-media-placeholder { aspect-ratio: 16 / 9; }
 /* Bare media — image floats with no frame (transparent PNG, e.g. panel mosaic) */
 .proj-media-item.is-bare img {
   background: transparent;
@@ -2968,6 +2971,7 @@ const PROJECTS = [
       },
       { id: 'stage-2-concept-a', title: 'Concept A — Filter side bar',
         group: 'stage-2', groupLabel: 'Stage 2',
+        prototype: true,
         body: [
           'Every filter available at all times, with search kept as a prominent trigger for narrowing the list — the scalable-yet-familiar take on the existing advanced-search page, rebuilt to hold dozens of filter types without crowding.',
           'Filters organise into collapsible groups: search parameters, high level filters, and drill-down filters. Editing a filter stages it; Apply filters commits it, so the results table always reflects a deliberate choice rather than every keystroke. Each group carries a count computed from its own selections, so a badge can never drift from what is actually selected.',
@@ -2977,18 +2981,19 @@ const PROJECTS = [
           'What it tests: a more scalable version of what users already know.',
         ],
         media: [
-          { src: 'advanced-search/concept-a-01-empty.png',                  caption: 'Search prominent, filter panel with collapsed groups', kind: 'wide' },
-          { src: 'advanced-search/concept-a-02-search-applied.png',          caption: 'Keyword searched — results with the panel collapsed',  kind: 'wide' },
-          { src: 'advanced-search/concept-a-03-search-settings.png',         caption: 'Search settings — language, scope, match type',        kind: 'wide' },
-          { src: 'advanced-search/concept-a-04-content-filters.png',         caption: 'Content filters — source, activity, global filters',   kind: 'wide' },
-          { src: 'advanced-search/concept-a-05-content-filter-selection.png', caption: 'Selecting a template in content filters',              kind: 'wide' },
-          { src: 'advanced-search/concept-a-06-content-filters-applied.png', caption: 'Content filters applied, results narrowed',            kind: 'wide' },
-          { src: 'advanced-search/concept-a-07-items-filters.png',           caption: 'Items filters — status and item groups',              kind: 'wide' },
-          { src: 'advanced-search/concept-a-08-items-filters-applied.png',   caption: 'Items filter applied — status set to Online',          kind: 'wide' },
+          { src: 'advanced-search/concept-a-01-empty.png',                  caption: 'Search prominent, filter panel with collapsed groups', kind: 'sq' },
+          { src: 'advanced-search/concept-a-02-search-applied.png',          caption: 'Keyword searched — results with the panel collapsed',  kind: 'sq' },
+          { src: 'advanced-search/concept-a-03-search-settings.png',         caption: 'Search settings — language, scope, match type',        kind: 'sq' },
+          { src: 'advanced-search/concept-a-04-content-filters.png',         caption: 'Content filters — source, activity, global filters',   kind: 'sq' },
+          { src: 'advanced-search/concept-a-05-content-filter-selection.png', caption: 'Selecting a template in content filters',              kind: 'sq' },
+          { src: 'advanced-search/concept-a-06-content-filters-applied.png', caption: 'Content filters applied, results narrowed',            kind: 'sq' },
+          { src: 'advanced-search/concept-a-07-items-filters.png',           caption: 'Items filters — status and item groups',              kind: 'sq' },
+          { src: 'advanced-search/concept-a-08-items-filters-applied.png',   caption: 'Items filter applied — status set to Online',          kind: 'sq' },
         ],
       },
       { id: 'stage-2-concept-b', title: 'Concept B — Condition bar',
         group: 'stage-2', groupLabel: 'Stage 2',
+        prototype: true,
         body: [
           'Search is still present but de-emphasized. Users add filters as they need them and save the combination as a named filter set to re-run later — built for the recurring, scheduled bulk work the screen is actually used for.',
         ],
@@ -2996,11 +3001,11 @@ const PROJECTS = [
           'What it tests: whether filtering has outgrown the need to actively type a keyword, and whether saved filter sets make ongoing work faster than starting from a search each time.',
         ],
         media: [
-          { src: 'advanced-search/concept-b-01-empty.png',            caption: 'Search de-emphasized, saved filter sets in view', kind: 'wide' },
-          { src: 'advanced-search/concept-b-02-add-filter.png',       caption: 'Adding a filter from the condition bar',          kind: 'wide' },
-          { src: 'advanced-search/concept-b-03-filters-selected.png', caption: 'Filters staged in the condition bar',             kind: 'wide' },
-          { src: 'advanced-search/concept-b-04-results.png',          caption: 'Results — items view, 100 matches',               kind: 'wide' },
-          { src: 'advanced-search/concept-b-05-bulk-actions.png',     caption: 'Bulk actions on the selected set',                kind: 'wide' },
+          { src: 'advanced-search/concept-b-01-empty.png',            caption: 'Search de-emphasized, saved filter sets in view', kind: 'sq' },
+          { src: 'advanced-search/concept-b-02-add-filter.png',       caption: 'Adding a filter from the condition bar',          kind: 'sq' },
+          { src: 'advanced-search/concept-b-03-filters-selected.png', caption: 'Filters staged in the condition bar',             kind: 'sq' },
+          { src: 'advanced-search/concept-b-04-results.png',          caption: 'Results — items view, 100 matches',               kind: 'sq' },
+          { src: 'advanced-search/concept-b-05-bulk-actions.png',     caption: 'Bulk actions on the selected set',                kind: 'sq' },
         ],
       },
       { id: 'stage-2-ab-test', title: 'A/B test',
@@ -4822,6 +4827,11 @@ function ProjectSection({ s }) {
   return (
     <div id={`s-${s.id}`} className={`proj-section ${s.placeholder ? 'is-placeholder' : ''} ${isSub ? 'is-sub' : ''}`}>
       {titleBlock}
+      {s.prototype && (
+        <figure className="proj-media-item k-wide proj-proto-slot">
+          <div className="proj-media-placeholder"><span>Prototype · video</span></div>
+        </figure>
+      )}
       {s.placeholder ? (
         <div className="proj-placeholder">
           <div className="proj-placeholder-tag">Placeholder · to fill in</div>
