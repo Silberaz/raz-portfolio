@@ -1978,6 +1978,48 @@ footer a:hover { color: var(--accent); }
   text-transform: uppercase; color: var(--muted);
 }
 
+/* A-vs-B comparison — same rim-gap grid language as .outcome-grid */
+.proj-compare { margin: 1.5rem 0 2.5rem; max-width: 48rem; }
+.proj-compare-grid {
+  display: grid; grid-template-columns: 1fr; gap: 2px;
+  background: var(--rim-soft);
+}
+.proj-compare-corner, .proj-compare-colhead { display: none; } /* head row is desktop-only */
+.proj-compare-dim {
+  background: var(--surface); padding: 1rem 1.25rem;
+  font-family: var(--ff-mono); font-size: .66rem; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--ink);
+}
+.proj-compare-cell {
+  background: var(--surface); padding: 1.1rem 1.25rem;
+  font-size: .95rem; color: var(--ink-dim); line-height: 1.6;
+}
+.proj-compare-cell-tag {
+  display: block; font-family: var(--ff-mono); font-size: .6rem;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--muted);
+  margin-bottom: .35rem;
+}
+.proj-compare-note {
+  font-size: .92rem; color: var(--ink-dim); line-height: 1.7;
+  border-left: 2px solid var(--accent); padding-left: 1rem;
+  margin: 1.5rem 0 0; max-width: 42rem;
+}
+@media (min-width: 720px) {
+  .proj-compare-grid { grid-template-columns: minmax(0, .8fr) 1fr 1fr; align-items: stretch; }
+  .proj-compare-corner { display: block; background: var(--ground); }
+  .proj-compare-colhead {
+    display: flex; flex-direction: column; gap: .25rem;
+    background: var(--surface); padding: 1rem 1.25rem;
+  }
+  .proj-compare-col-title { font-weight: 700; color: var(--ink); font-size: 1rem; }
+  .proj-compare-col-label {
+    font-family: var(--ff-mono); font-size: .6rem; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .proj-compare-cell-tag { display: none; } /* column heads carry identity on desktop */
+  .proj-compare-dim { display: flex; align-items: center; }
+}
+
 /* User Flows — article versioning diagram, themed */
 .uf-svg { width: 100%; height: auto; display: block; }
 .uf-lane-rect {
@@ -2836,7 +2878,7 @@ const PROJECTS = [
     kind: 'B2B SaaS',
     company: 'KMS Lighthouse',
     tile: 'wide',
-    summary: 'A two-stage redesign of the Advanced Search module inside KMS Lighthouse, a knowledge management system used by enterprise support teams. Stage one translated the interface to the Spark design system. Stage two created a scalable filtering tool, explored as four competing concepts before committing to a side panel built for accessibility and scale.',
+    summary: 'A two-stage redesign of the Advanced Search module inside KMS Lighthouse, a knowledge management system used by enterprise support teams. Stage one translated the interface to the Spark design system. Stage two rebuilt filtering as a scalable tool — explored as four concepts, then narrowed to two directions now running as a live A/B test.',
     heroImage: 'advanced-search/hero-devices.png',
     heroBare: true,
     swatch: { from: '#0E4258', to: '#07222E', mark: '#5BC6D6' },
@@ -2876,58 +2918,115 @@ const PROJECTS = [
           { src: 'advanced-search/after-05-results-scrolled.png', caption: 'Redesigned results, filter row in use', kind: 'wide' },
         ],
       },
-      { id: 'stage-2', title: 'Stage 2 — Creating a scalable filtering tool',
+      { id: 'stage-2', title: 'Scalable filtering',
+        group: 'stage-2', groupLabel: 'Stage 2',
+        body: [
+          'A few guidelines set the bar for whatever the filtering tool became:',
+        ],
         list: [
-          { label: 'Rebuilt filtering as a modular, accessible system', text: 'on the same Spark foundation.' },
-          { label: 'Made AND/OR filter logic', text: 'explicit and visible to the user.' },
-          { label: 'Scaled to dozens of filter types', text: 'without crowding the page.' },
-          { label: 'Built for full keyboard navigation,', text: 'screen reader support, and WCAG compliance.' },
-          { label: 'Aimed at reducing time-to-filter', text: 'and raising search success rates, measured against usage analytics.' },
+          { label: 'Build on the Spark foundation —', text: 'a modular, accessible system, not one-off styles.' },
+          { label: 'Keep AND/OR logic explicit —', text: 'every combination visible to the user, never inferred.' },
+          { label: 'Scale to dozens of filter types —', text: 'without crowding the page.' },
+          { label: 'Design for keyboard and screen readers first —', text: 'treat WCAG compliance as the baseline, not a pass at the end.' },
+          { label: 'Optimise for time-to-filter —', text: 'raise search success rates, and measure against usage analytics.' },
         ],
-        subsections: [
-          {
-            id: 'stage-2-wireframes',
-            title: 'Wireframes and brainstorming',
-            body: [
-              'Stage two opened with wide exploration. Filtering was wireframed as four competing concepts, each a different answer to two questions — where the filters live, and how multiple conditions combine — and each pressure-tested against the same result table.',
-              'Concept 1 put everything in a collapsible side panel; concept 2 lifted the highest-traffic filters into a horizontal filter bar with applied-filter chips; concept 3 split a two-pane panel with a category rail; concept 4 framed filtering as an explicit condition builder. Collapsed, empty, and expanded states were drawn alongside each to see how it held up in use. The side panel won — it scaled to the most filter types without crowding the table.',
-            ],
-            media: [
-              { src: 'advanced-search/wireframes/wireframe-concept-A-drawer.png',            caption: 'Concept 1 — side panel', kind: 'sq' },
-              { src: 'advanced-search/wireframes/wireframe-concept-B-filter-bar.png',         caption: 'Concept 2 — filter bar', kind: 'sq' },
-              { src: 'advanced-search/wireframes/wireframe-concept-C-two-pane.png',           caption: 'Concept 3 — two-pane', kind: 'sq' },
-              { src: 'advanced-search/wireframes/wireframe-concept-D-conditions.png',         caption: 'Concept 4 — conditions', kind: 'sq' },
-              { src: 'advanced-search/wireframes/wireframe-state-A-drawer-collapsed.png',     caption: 'Concept 1 — collapsed rail', kind: 'sq' },
-              { src: 'advanced-search/wireframes/wireframe-state-B-filter-menu-open.png',     caption: 'Concept 2 — filter menu open', kind: 'sq' },
-              { src: 'advanced-search/wireframes/wireframe-state-B-more-filters-overlay.png', caption: 'Concept 2 — more-filters drawer', kind: 'sq' },
-              { src: 'advanced-search/wireframes/wireframe-state-D-add-filter-menu.png',      caption: 'Concept 4 — add-filter menu', kind: 'sq' },
-              { src: 'advanced-search/wireframes/wireframe-state-empty.png',                  caption: 'Empty state — suggested searches', kind: 'sq' },
-              { src: 'advanced-search/wireframes/wireframe-state-row-expanded.png',           caption: 'Row expanded — version matches', kind: 'sq' },
-            ],
-          },
-          {
-            id: 'stage-2-panel',
-            title: 'The filter panel',
-            body: [
-              'The chosen concept — the side panel — organises filters into collapsible groups: search parameters, high level filters, and drill-down filters. Editing a filter stages it; Apply filters commits it, so the results table always reflects a deliberate choice rather than every keystroke. Each group carries a count computed from its own selections, so a badge can never drift from what is actually selected.',
-              'Global filters follow a client-defined hierarchy where each level narrows the next — region, country, city — so a parent constrains its children without ever gating them.',
-            ],
-            media: [
-              { src: 'advanced-search/filters-01-panel-collapsed.png',   caption: 'New filter panel, groups collapsed', kind: 'wide' },
-              { src: 'advanced-search/filters-02-search-parameters.png',  caption: 'Search parameters group expanded', kind: 'wide' },
-              { src: 'advanced-search/filters-03-high-level-filters.png', caption: 'High level filters — chips and folder list', kind: 'wide' },
-              { src: 'advanced-search/filters-04-drill-down-filters.png', caption: 'Drill down filters group', kind: 'wide' },
-              { src: 'advanced-search/filters-05-results-with-panel.png', caption: 'Results table alongside the filter panel', kind: 'wide' },
-              { src: 'advanced-search/filters-06-filters-applied.png',    caption: 'Filters applied against results', kind: 'wide' },
-              { src: 'advanced-search/filters-07-versions-view.png',      caption: 'Versions view with filters applied', kind: 'wide' },
-            ],
-          },
+      },
+      { id: 'stage-2-wireframes', title: 'Ideation',
+        group: 'stage-2', groupLabel: 'Stage 2',
+        body: [
+          'Stage two opened with wide exploration. Filtering was wireframed as four competing concepts, each a different answer to two questions — where the filters live, and how multiple conditions combine — and each pressure-tested against the same result table.',
+          'Concept 1 put everything in a collapsible side panel; concept 2 lifted the highest-traffic filters into a horizontal filter bar with applied-filter chips; concept 3 split a two-pane panel with a category rail; concept 4 framed filtering as an explicit condition builder. Collapsed, empty, and expanded states were drawn alongside each to see how it held up in use.',
         ],
+        outro: [
+          'The wireframes didn\'t crown a layout. They surfaced two realizations that reframed the brief — search might no longer be the main event, and the screen\'s real job is bulk operating on groups, not single lookups.',
+        ],
+        media: [
+          { src: 'advanced-search/wireframes/wireframe-concept-A-drawer.png',            caption: 'Concept 1 — side panel', kind: 'sq' },
+          { src: 'advanced-search/wireframes/wireframe-concept-B-filter-bar.png',         caption: 'Concept 2 — filter bar', kind: 'sq' },
+          { src: 'advanced-search/wireframes/wireframe-concept-C-two-pane.png',           caption: 'Concept 3 — two-pane', kind: 'sq' },
+          { src: 'advanced-search/wireframes/wireframe-concept-D-conditions.png',         caption: 'Concept 4 — conditions', kind: 'sq' },
+          { src: 'advanced-search/wireframes/wireframe-state-A-drawer-collapsed.png',     caption: 'Concept 1 — collapsed rail', kind: 'sq' },
+          { src: 'advanced-search/wireframes/wireframe-state-B-filter-menu-open.png',     caption: 'Concept 2 — filter menu open', kind: 'sq' },
+          { src: 'advanced-search/wireframes/wireframe-state-B-more-filters-overlay.png', caption: 'Concept 2 — more-filters drawer', kind: 'sq' },
+          { src: 'advanced-search/wireframes/wireframe-state-D-add-filter-menu.png',      caption: 'Concept 4 — add-filter menu', kind: 'sq' },
+          { src: 'advanced-search/wireframes/wireframe-state-empty.png',                  caption: 'Empty state — suggested searches', kind: 'sq' },
+          { src: 'advanced-search/wireframes/wireframe-state-row-expanded.png',           caption: 'Row expanded — version matches', kind: 'sq' },
+        ],
+      },
+      { id: 'stage-2-decision', title: 'The decision point',
+        group: 'stage-2', groupLabel: 'Stage 2',
+        body: [
+          'Two understandings reframed the brief.',
+        ],
+        list: [
+          { label: 'Search may no longer be the main event.', text: 'Keyword search was the original ask — the feature clients first requested — but the filtering built alongside it now drives a faster drill-down. Users reach their target quicker by narrowing than by typing.' },
+          { label: 'The screen\'s real job is bulk operating on groups.', text: 'Most sessions aren\'t a single lookup — they isolate a large set of items to act on together: exporting, editing, updating. Much of it recurs, runs on set time periods, and often targets the same items.' },
+        ],
+        outro: [
+          'So rather than crown a wireframe on layout alone, we set up an A/B test to answer a sharper question — has filtering outgrown active search, and do reusable filter sets make recurring work faster? Two concepts went forward.',
+        ],
+      },
+      { id: 'stage-2-concept-a', title: 'Concept A — Filter side bar',
+        group: 'stage-2', groupLabel: 'Stage 2',
+        body: [
+          'Every filter available at all times, with search kept as a prominent trigger for narrowing the list — the scalable-yet-familiar take on the existing advanced-search page, rebuilt to hold dozens of filter types without crowding.',
+          'Filters organise into collapsible groups: search parameters, high level filters, and drill-down filters. Editing a filter stages it; Apply filters commits it, so the results table always reflects a deliberate choice rather than every keystroke. Each group carries a count computed from its own selections, so a badge can never drift from what is actually selected.',
+          'Global filters follow a client-defined hierarchy where each level narrows the next — region, country, city — so a parent constrains its children without ever gating them.',
+        ],
+        outro: [
+          'What it tests: a more scalable version of what users already know.',
+        ],
+        media: [
+          { src: 'advanced-search/concept-a-01-empty.png',                  caption: 'Search prominent, filter panel with collapsed groups', kind: 'wide' },
+          { src: 'advanced-search/concept-a-02-search-applied.png',          caption: 'Keyword searched — results with the panel collapsed',  kind: 'wide' },
+          { src: 'advanced-search/concept-a-03-search-settings.png',         caption: 'Search settings — language, scope, match type',        kind: 'wide' },
+          { src: 'advanced-search/concept-a-04-content-filters.png',         caption: 'Content filters — source, activity, global filters',   kind: 'wide' },
+          { src: 'advanced-search/concept-a-05-content-filter-selection.png', caption: 'Selecting a template in content filters',              kind: 'wide' },
+          { src: 'advanced-search/concept-a-06-content-filters-applied.png', caption: 'Content filters applied, results narrowed',            kind: 'wide' },
+          { src: 'advanced-search/concept-a-07-items-filters.png',           caption: 'Items filters — status and item groups',              kind: 'wide' },
+          { src: 'advanced-search/concept-a-08-items-filters-applied.png',   caption: 'Items filter applied — status set to Online',          kind: 'wide' },
+        ],
+      },
+      { id: 'stage-2-concept-b', title: 'Concept B — Condition bar',
+        group: 'stage-2', groupLabel: 'Stage 2',
+        body: [
+          'Search is still present but de-emphasized. Users add filters as they need them and save the combination as a named filter set to re-run later — built for the recurring, scheduled bulk work the screen is actually used for.',
+        ],
+        outro: [
+          'What it tests: whether filtering has outgrown the need to actively type a keyword, and whether saved filter sets make ongoing work faster than starting from a search each time.',
+        ],
+        media: [
+          { src: 'advanced-search/concept-b-01-empty.png',            caption: 'Search de-emphasized, saved filter sets in view', kind: 'wide' },
+          { src: 'advanced-search/concept-b-02-add-filter.png',       caption: 'Adding a filter from the condition bar',          kind: 'wide' },
+          { src: 'advanced-search/concept-b-03-filters-selected.png', caption: 'Filters staged in the condition bar',             kind: 'wide' },
+          { src: 'advanced-search/concept-b-04-results.png',          caption: 'Results — items view, 100 matches',               kind: 'wide' },
+          { src: 'advanced-search/concept-b-05-bulk-actions.png',     caption: 'Bulk actions on the selected set',                kind: 'wide' },
+        ],
+      },
+      { id: 'stage-2-ab-test', title: 'A/B test',
+        group: 'stage-2', groupLabel: 'Stage 2',
+        body: [
+          'The two concepts go head to head on the questions the wireframes raised — not which layout looks better, but whether filtering has outgrown search, and whether reusable sets speed up the recurring work.',
+        ],
+        compare: {
+          columns: [
+            { title: 'Concept A', label: 'Filters always on' },
+            { title: 'Concept B', label: 'Filter sets for repeat work' },
+          ],
+          rows: [
+            { dim: 'Search’s role',   a: 'Kept prominent — the trigger that narrows the list.',                    b: 'Present but de-emphasized — filters lead, search follows.' },
+            { dim: 'Finding a filter',     a: 'Every filter on screen, grouped and always available.',                 b: 'Add filters as you need them; save the combination.' },
+            { dim: 'Repeat work',          a: 'Rebuilt each session from the same controls.',                          b: 'Named filter sets re-run scheduled, recurring work.' },
+            { dim: 'Who it favours',       a: 'Users who know the existing page — a scalable version of the familiar.', b: 'Power users running the same bulk operations on set periods.' },
+            { dim: 'Hypothesis',           a: 'A more scalable version of what users already know.',                    b: 'Filtering has outgrown active search, and saved sets make ongoing work faster.' },
+          ],
+          note: 'Both concepts are currently live in an A/B test — results are pending. The outcome will decide how filtering scales next.',
+        },
       },
       { id: 'outcome', title: 'Outcome',
         body: [
-          'The Spark translation shipped first; the filtering tool followed on the same foundation. Stakeholder feedback shaped refinements across both stages, and the side-panel concept became the basis for how filtering scales as new filter types are added.',
-          'Next steps focus on usage data and A/B testing to validate the decisions, plus expanded and customisable filter options.',
+          'The Spark translation shipped first, on the shared foundation. Filtering followed as two competing directions rather than one answer — a more scalable take on the familiar page, and a filter-set model built for recurring bulk work.',
+          'Both are now running head to head in a live A/B test, results pending. The winner sets how filtering scales — which concept holds up as new filter types and heavier, repeat workloads are added.',
         ],
       },
     ],
@@ -4561,6 +4660,37 @@ function ProjectMedia({ items }) {
   );
 }
 
+/* ─── Project page — A-vs-B comparison table (built from the same tokens as outcome-grid) ─── */
+function ProjectCompare({ data }) {
+  if (!data || !data.columns || !data.rows) return null;
+  const [a, b] = data.columns;
+  return (
+    <div className="proj-compare">
+      <div className="proj-compare-grid" role="table" aria-label="Concept A versus Concept B">
+        <div className="proj-compare-corner" role="columnheader" aria-hidden="true"></div>
+        {data.columns.map((c, i) => (
+          <div key={i} className="proj-compare-colhead" role="columnheader">
+            <span className="proj-compare-col-title">{c.title}</span>
+            {c.label && <span className="proj-compare-col-label">{c.label}</span>}
+          </div>
+        ))}
+        {data.rows.map((r, i) => (
+          <React.Fragment key={i}>
+            <div className="proj-compare-dim" role="rowheader">{r.dim}</div>
+            <div className="proj-compare-cell" role="cell">
+              <span className="proj-compare-cell-tag">{a.title}</span>{r.a}
+            </div>
+            <div className="proj-compare-cell" role="cell">
+              <span className="proj-compare-cell-tag">{b.title}</span>{r.b}
+            </div>
+          </React.Fragment>
+        ))}
+      </div>
+      {data.note && <p className="proj-compare-note">{data.note}</p>}
+    </div>
+  );
+}
+
 /* ─── Parallax section — sticky full-width header + sticky text that releases when last item reaches top ─── */
 function ParallaxSection({ s, isSub }) {
   const headerRef = useRef(null);
@@ -4780,6 +4910,7 @@ function ProjectSection({ s }) {
             </div>
           )}
           {s.media && <ProjectMedia items={s.media} />}
+          {s.compare && <ProjectCompare data={s.compare} />}
           {s.subsections?.map((sub, i) => (
             <div key={sub.id || i}
                  id={sub.id ? `s-${sub.id}` : undefined}
