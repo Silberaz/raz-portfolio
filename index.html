@@ -7100,7 +7100,15 @@ function Project({ projectId, onBack, onOpen }) {
       let cur = p.sections[0].id;
       for (const s of p.sections) {
         const el = document.getElementById('s-' + s.id);
-        if (el && window.scrollY >= el.offsetTop - 220) cur = s.id;
+        // getBoundingClientRect().top is viewport-relative, so it stays correct
+        // regardless of offsetParent (.proj-content is positioned for the atmos
+        // layer, which broke the old offsetTop-vs-scrollY comparison).
+        if (el && el.getBoundingClientRect().top <= 220) cur = s.id;
+      }
+      // Short trailing sections can't scroll under the threshold near the
+      // footer — pin the last section once the page is scrolled to the bottom.
+      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) {
+        cur = p.sections[p.sections.length - 1].id;
       }
       setActiveSection(cur);
     };
