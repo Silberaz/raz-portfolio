@@ -993,7 +993,7 @@ nav.top.hidden { transform: translateY(-110%); }
      - chroma split (RGB channel separation)
      - jitter (1.5px shake)
      - tear (clip-path slice)
-     - slices (1–15 pixel rows displaced in two random groups)
+     - slices (1-15 pixel rows displaced in two random groups)
 
    Markup:
      <div class="signal-tv">
@@ -2452,7 +2452,7 @@ footer a:hover { color: var(--accent); }
    The Help Center flow explorer. This is the one place in the site where
    all six bars appear at once - a categorical encoding where six
    distinguishable colours are the functional requirement. Kept honest by
-   two rules: bars are strokes and 3–10% tints, never filled blocks; and
+   two rules: bars are strokes and 3-10% tints, never filled blocks; and
    no other section of the case study uses more than tomato + sky.
 
    Every colour below aliases an existing Signal token, so the diagram
@@ -2756,7 +2756,7 @@ dialog.fv-dialog .fv { --fv-h: 100vh; border: none; border-radius: 0; margin: 0;
   color: var(--muted); margin-top: .65rem;
 }
 
-/* 768–1023px - cards two-up, pills collapse to a select, legend folds away */
+/* 768-1023px - cards two-up, pills collapse to a select, legend folds away */
 @media (max-width: 1023px) {
   .fv-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .fv-pills { display: none; }
@@ -5751,7 +5751,7 @@ function Home({ onOpen, tweaks, openContact }) {
       </section>
 
       <section className="contact" id="contact">
-        <div className="contact-eyebrow">Open to work · Q3 2025</div>
+        <div className="contact-eyebrow">Open to work · Q3 2026</div>
         <h2 className="contact-headline">
           Let's connect,<br/>my rent's <em>due</em>
         </h2>
@@ -5804,7 +5804,7 @@ function WorkIndex({ onOpen }) {
           <span className="filter-spacer"></span>
           <span className="filter-sort">Sort:</span>
           <button className={`filter-chip ${sort === 'recent' ? 'active' : ''}`} onClick={() => setSort('recent')}>Recent</button>
-          <button className={`filter-chip ${sort === 'name' ? 'active' : ''}`} onClick={() => setSort('name')}>A–Z</button>
+          <button className={`filter-chip ${sort === 'name' ? 'active' : ''}`} onClick={() => setSort('name')}>A-Z</button>
         </div>
         <div className="work-grid index">
           {items.map((p, i) => (
@@ -5886,7 +5886,7 @@ function Resume() {
       <section className="resume">
         <div className="resume-head">
           <div>
-            <div className="role">Resume · CV · v2025.3</div>
+            <div className="role">Resume · CV · v2026.1</div>
             <h1>{r.name}</h1>
             <p>{r.blurb}</p>
           </div>
@@ -7623,10 +7623,10 @@ ReactDOM.createRoot(document.getElementById('root')).render(<App />);
 (function () {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-  // ─── Slice-tear: pick 1–15 single-pixel rows of the image, split them
+  // ─── Slice-tear: pick 1-15 single-pixel rows of the image, split them
   //     into two random groups (independent coin flip per row → can be
   //     consecutive or non-consecutive, equal or uneven), assign each
-  //     group a random ±1 direction, displace each row by a random 2–15px.
+  //     group a random ±1 direction, displace each row by a random 2-15px.
   //     Every second slice fire is paired with a chroma split. ──────────
   var sliceFireCount = 0;
   function fireSlices(host) {
@@ -7710,7 +7710,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(<App />);
   }
 
   (function tick() {
-    // 5–12s between fires; 15% chance of a quick double-burst.
+    // 5-12s between fires; 15% chance of a quick double-burst.
     setTimeout(function () {
       fire();
       if (Math.random() < 0.15) setTimeout(fire, 180 + Math.random() * 240);
