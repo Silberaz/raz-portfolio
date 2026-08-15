@@ -3,21 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Raz Silberman — Product Designer</title>
+<title>Raz Silberman - Product Designer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&family=Afacad:wght@400;500;600;700&family=Afacad+Flux:wght@400;500;600;700;800;900&family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Geist:wght@400;500;600;700;800;900&family=Geist+Mono:wght@400;500&family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@500;700;900&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&family=Red+Hat+Display:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&display=swap" rel="stylesheet">
 <style>
 /* ─── Tokens ─── */
 :root {
-  /* Dark theme (default) — Signal "Signal lost"
+  /* Dark theme (default) - Signal "Signal lost"
      Near-black CRT screen with the SMPTE color bars glowing in the dark.
      Token roles per color palettes/signal-design-tokens.md:
        --accent = tomato (primary CTA / brand pop)
        --accent-sky = sky (links, eyebrows)
        --accent-moment = butter (badges, moments)
        --bar-sage/-orchid/-indigo = extended bars (tags, data viz, reveals) */
-  --ground:    #14131A;            /* CRT black — faint purple-warmth, not pure */
+  --ground:    #14131A;            /* CRT black - faint purple-warmth, not pure */
   --surface:   #211F2A;
   --surface-2: #211F2A;
   --rim:       #2E2C38;
@@ -26,7 +26,7 @@
   --ink-dim:   #B2AEBC;
   --muted:     #8C8898;
 
-  /* Primary (tomato) — brightened for dark-text AA */
+  /* Primary (tomato) - brightened for dark-text AA */
   --accent:        #F25450;
   --accent-hover:  #FF7568;        /* hover LIGHTER (dark-mode exception) */
   --accent-active: #FFA698;
@@ -36,18 +36,18 @@
   --accent-lo:     color-mix(in oklab, var(--accent) 14%, transparent);
   --accent-md:     color-mix(in oklab, var(--accent) 30%, transparent);
 
-  /* Accent (sky) — links + eyebrows */
+  /* Accent (sky) - links + eyebrows */
   --accent-sky:         #5BC4E8;
   --accent-sky-hover:   #96D9F3;   /* hover LIGHTER on dark */
   --accent-sky-surface: #5BC4E8;
   --accent-sky-bg:      #002032;
 
-  /* Moment (butter) — badges, joy-moment */
+  /* Moment (butter) - badges, joy-moment */
   --accent-moment:         #F2D74E;
   --accent-moment-bg:      #281800;
   --accent-moment-text-on: #F2D74E;
 
-  /* Extended bars — sage/orchid/indigo (tags, data viz, the reveal set) */
+  /* Extended bars - sage/orchid/indigo (tags, data viz, the reveal set) */
   --bar-sage:           #6FB264;
   --bar-sage-surface:   #6FB264;
   --bar-orchid:         #C16AB8;
@@ -55,23 +55,23 @@
   --bar-indigo:         #7A92E0;   /* lightened for dark-text legibility */
   --bar-indigo-surface: #3A52A0;
 
-  /* Focus ring — sky (most visible on CRT black) */
+  /* Focus ring - sky (most visible on CRT black) */
   --focus-ring: #5BC4E8;
 }
 [data-theme="light"] {
-  /* Light theme — Signal "On air"
+  /* Light theme - Signal "On air"
      Warm broadcast white with the bars deepened to AA-compliant text colors.
      The bright bars stay for surfaces/badges. */
-  --ground:    #F4F2EC;            /* warm broadcast white — not pure */
+  --ground:    #F4F2EC;            /* warm broadcast white - not pure */
   --surface:   #E8E5DA;
   --surface-2: #FFFFFF;
   --rim:       #D5CFC0;
   --rim-soft:  rgba(20,19,26,.08);
-  --ink:       #14131A;            /* CRT black — same hue as dark mode bg */
+  --ink:       #14131A;            /* CRT black - same hue as dark mode bg */
   --ink-dim:   #3D3B45;
   --muted:     #5C5A50;
 
-  /* Primary (tomato) — deepened for white-text AA */
+  /* Primary (tomato) - deepened for white-text AA */
   --accent:        #C42018;
   --accent-hover:  #A01410;        /* hover darker (light-mode standard) */
   --accent-active: #7E0C0A;
@@ -81,18 +81,18 @@
   --accent-lo:     color-mix(in oklab, var(--accent) 12%, transparent);
   --accent-md:     color-mix(in oklab, var(--accent) 28%, transparent);
 
-  /* Accent (sky) — deepened for in-body text use */
+  /* Accent (sky) - deepened for in-body text use */
   --accent-sky:         #136B92;
   --accent-sky-hover:   #004660;
-  --accent-sky-surface: #5BC4E8;   /* bright sky — for surfaces / badges */
+  --accent-sky-surface: #5BC4E8;   /* bright sky - for surfaces / badges */
   --accent-sky-bg:      #E6F9FF;
 
-  /* Moment (butter) — background only in light mode */
+  /* Moment (butter) - background only in light mode */
   --accent-moment:         #F2D74E;
   --accent-moment-bg:      #FAF6DF;
   --accent-moment-text-on: #503A00;
 
-  /* Extended bars — deepened for light-mode text use */
+  /* Extended bars - deepened for light-mode text use */
   --bar-sage:           #356E30;
   --bar-sage-surface:   #6FB264;
   --bar-orchid:         #8B3A84;
@@ -100,7 +100,7 @@
   --bar-indigo:         #2A3F85;
   --bar-indigo-surface: #3A52A0;
 
-  /* Focus ring — tomato primary */
+  /* Focus ring - tomato primary */
   --focus-ring: #C42018;
 }
 
@@ -134,7 +134,7 @@
   --indigo-600: #3B529C; --indigo-700: #253776; --indigo-800: #0B1541;
 }
 
-/* ─── Phil E. Phant Sans (local test — typeface-test branch) ───────────
+/* ─── Phil E. Phant Sans (local test - typeface-test branch) ───────────
    Self-hosted from assets/fonts/. Ships Light/Regular/Bold + italics;
    there is no 800/900 cut, so --ff-display-weight caps at 700 here. */
 @font-face {
@@ -163,7 +163,7 @@
 }
 
 :root {
-  /* Sleeper typography — Phil E. Phant Sans (display) + Geist (body) + Geist Mono.
+  /* Sleeper typography - Phil E. Phant Sans (display) + Geist (body) + Geist Mono.
      Instrument Serif takes over .hero-title and .contact-headline only
      (the "moment" treatment), defined further down in the display-font
      swap section. --ff-display-weight is the variable refactored into
@@ -182,9 +182,9 @@
      Mobile-first. Base styles target ~375px phones. Three min-width
      breakpoints widen the layout as space allows:
 
-       --bp-sm: 640px  — small tablet / large phone landscape
-       --bp-md: 960px  — tablet landscape / small laptop (main desktop break)
-       --bp-lg: 1280px — full desktop / wide screens
+       --bp-sm: 640px  - small tablet / large phone landscape
+       --bp-md: 960px  - tablet landscape / small laptop (main desktop break)
+       --bp-lg: 1280px - full desktop / wide screens
 
      Custom properties can't be used in @media queries, but documenting
      them here keeps the values discoverable.
@@ -220,7 +220,7 @@ a { color: inherit; text-decoration: none; }
 button { font-family: inherit; }
 ::selection { background: var(--accent-md); color: var(--ink); }
 
-/* WCAG focus ring — keyboard-only via :focus-visible.
+/* WCAG focus ring - keyboard-only via :focus-visible.
    --focus-ring is sky in dark, tomato in light per signal-design-tokens.md */
 :focus-visible {
   outline: 2px solid var(--focus-ring);
@@ -236,7 +236,7 @@ button { font-family: inherit; }
      Butter → badges (joy moment, dark-text-on-butter passes AAA both modes)
    Sage/Orchid/Indigo cycle across cap-pills as the "reveal set". */
 
-/* Sky — all eyebrow-style mono uppercase labels */
+/* Sky - all eyebrow-style mono uppercase labels */
 .hero-eyebrow,
 .about-eyebrow,
 .contact-eyebrow,
@@ -248,7 +248,7 @@ button { font-family: inherit; }
 }
 .tile-img-mark { color: var(--accent-sky); }
 
-/* Sky — body links (underlined per doc) */
+/* Sky - body links (underlined per doc) */
 .proj-section a,
 .about p a,
 .contact-links a {
@@ -261,21 +261,21 @@ button { font-family: inherit; }
 .about p a:hover,
 .contact-links a:hover { color: var(--accent-sky-hover); }
 
-/* Butter — moment tags (before/after, placeholder) */
+/* Butter - moment tags (before/after, placeholder) */
 .ba-tag {
   background: color-mix(in oklab, var(--accent-moment) 18%, transparent);
   color: var(--accent-moment-text-on);
 }
 .proj-placeholder-tag { color: var(--accent-moment-text-on); }
 
-/* Extended bars (sage / orchid / indigo) — cycle across cap-pills so the
+/* Extended bars (sage / orchid / indigo) - cycle across cap-pills so the
    reveal set appears together in the capabilities row. */
 .cap-pill { border-color: currentColor; }
 .cap-pill:nth-child(3n+1) { color: var(--bar-sage); }
 .cap-pill:nth-child(3n+2) { color: var(--bar-orchid); }
 .cap-pill:nth-child(3n+3) { color: var(--bar-indigo); }
 
-/* Six-bar reveal — the test card footer strip. The full bar set appears
+/* Six-bar reveal - the test card footer strip. The full bar set appears
    together only in deliberate moments (footer / 404 / loading) per the doc.
    Uses the raw bar role-table values so the reference reads. */
 footer { position: relative; }
@@ -425,7 +425,7 @@ footer::before {
   content: ''; position: absolute; inset: 0; background: var(--ink); border-radius: 1px;
 }
 
-/* Goo trail — droplets joined by the gooey filter into a stretchy tail */
+/* Goo trail - droplets joined by the gooey filter into a stretchy tail */
 .cur-trail-layer {
   position: fixed; inset: 0; pointer-events: none; z-index: 9998;
   filter: url(#gooey-puddle);
@@ -443,7 +443,7 @@ footer::before {
   100% { opacity: 0;   transform: translate(-50%,-50%) rotate(var(--rot, 0deg)) scale(.15, .15); }
 }
 
-/* ─── Ripple cursor — water surface (graphic only) ─── */
+/* ─── Ripple cursor - water surface (graphic only) ─── */
 .water-veil {
   position: fixed; inset: 0; pointer-events: none; z-index: 9996;
   background:
@@ -473,12 +473,12 @@ footer::before {
   100% { transform: translate(-50%,-50%) scale(calc(var(--rs, 1) * 4.5));  opacity: 0; border-width: 1px; }
 }
 
-/* ─── CMYK jitter (click — perimeter leak around cursor) ─── */
+/* ─── CMYK jitter (click - perimeter leak around cursor) ─── */
 .cmyk-burst {
   position: fixed; width: 64px; height: 64px;
   pointer-events: none; z-index: 9998;
   transform: translate(-50%, -50%);
-  /* No blend mode — the CMY blobs render as their actual colors on top of any backdrop.
+  /* No blend mode - the CMY blobs render as their actual colors on top of any backdrop.
      Visible on cream AND dark without the color shift that difference/hard-light cause. */
   -webkit-mask: url(#cmyk-cutout);
           mask: url(#cmyk-cutout);
@@ -486,7 +486,7 @@ footer::before {
 .cmyk-mask-blob {
   animation: puddleMorph 3s ease-in-out infinite;
   /* Run the cutout through the same gooey filter as the cursor so the mask matches
-     the cursor's actual gooey-rendered shape exactly — CMY only shows past it. */
+     the cursor's actual gooey-rendered shape exactly - CMY only shows past it. */
   filter: url(#gooey-puddle);
 }
 .cmyk-burst svg {
@@ -633,7 +633,7 @@ nav.top.hidden { transform: translateY(-110%); }
 .nav-links a:hover, .nav-links a.active { color: var(--ink); }
 .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
 /* nav-actions (avail pill + search + theme) live in the mobile menu on
-   small screens — hide here so the burger is the only nav-right control.
+   small screens - hide here so the burger is the only nav-right control.
    Desktop @media (min-width: 960px) flips this back to flex. */
 .nav-actions { display: none; align-items: center; gap: 1rem; }
 .icon-btn {
@@ -658,7 +658,7 @@ nav.top.hidden { transform: translateY(-110%); }
   font-family: var(--ff-mono); font-weight: var(--fw-mono); font-size: .65rem; letter-spacing: .08em;
   color: var(--ink-dim); text-transform: uppercase;
 }
-/* Mini morphing blob — a shrunk cousin of the blob cursor, marks "available" */
+/* Mini morphing blob - a shrunk cousin of the blob cursor, marks "available" */
 .avail-dot {
   display: inline-flex; flex: none;
   width: 14px; height: 14px; vertical-align: middle;
@@ -674,7 +674,7 @@ nav.top.hidden { transform: translateY(-110%); }
    Burger is the only nav-right control visible <960px (alongside the logo).
    The overlay renders outside nav.top so it can fade in over everything
    without inheriting nav's translateY-when-hidden transform.
-   On desktop (≥960) the burger + overlay are display:none — the regular
+   On desktop (≥960) the burger + overlay are display:none - the regular
    nav-links / nav-actions row takes over via the desktop @media block. */
 .burger {
   appearance: none; background: transparent; border: 0;
@@ -718,7 +718,7 @@ nav.top.hidden { transform: translateY(-110%); }
 }
 .mobile-menu-links a.active { color: var(--ink); }
 .mobile-menu-links a:active { color: var(--accent); transform: translateX(.5rem); }
-/* Stagger entrance — each link slides up + fades in after the overlay opens */
+/* Stagger entrance - each link slides up + fades in after the overlay opens */
 .mobile-menu-links li {
   opacity: 0; transform: translateY(12px);
   transition: opacity .5s var(--expo), transform .55s var(--expo);
@@ -844,7 +844,7 @@ nav.top.hidden { transform: translateY(-110%); }
 .polaroid .tile.wide .tile-img { aspect-ratio: 21/9; }
 .polaroid .tile.tall .tile-img { aspect-ratio: 3/4; }
 .polaroid .tile-meta {
-  padding-top: .9rem; display: flex; align-items: baseline; justify-content: space-between;
+  padding-top: .5rem; display: flex; align-items: baseline; justify-content: space-between;
 }
 
 /* full-bleed list */
@@ -867,7 +867,7 @@ nav.top.hidden { transform: translateY(-110%); }
 }
 .fullbleed .tile .tile-tags { font-family: var(--ff-mono); font-weight: var(--fw-mono); font-size: .7rem; color: var(--ink-dim); letter-spacing: .06em; }
 .fullbleed .tile .tile-arrow { justify-self: end; font-size: 1.4rem; color: var(--muted); transition: transform .4s var(--expo), color .3s; }
-/* Fullbleed hover — guarded for touch (padding/transform shift looks jumpy on tap). */
+/* Fullbleed hover - guarded for touch (padding/transform shift looks jumpy on tap). */
 @media (hover: hover) {
   .fullbleed .tile:hover { padding-left: 1rem; }
   .fullbleed .tile:hover .tile-name { color: var(--accent); }
@@ -893,7 +893,7 @@ nav.top.hidden { transform: translateY(-110%); }
 .index .tile .tile-num { color: var(--muted); }
 .index .tile .tile-tags, .index .tile .tile-year { color: var(--ink-dim); font-size: .72rem; letter-spacing: .04em; }
 .index .tile .tile-arrow { justify-self: end; color: var(--muted); transition: transform .35s var(--expo), color .25s; }
-/* Index hover — guarded for touch (padding+bg shift flashes on tap). */
+/* Index hover - guarded for touch (padding+bg shift flashes on tap). */
 @media (hover: hover) {
   .index .tile:hover { padding: 0 .8rem; background: var(--surface); }
   .index .tile:hover .tile-arrow { transform: translateX(6px); color: var(--accent); }
@@ -942,7 +942,7 @@ nav.top.hidden { transform: translateY(-110%); }
   letter-spacing: -.02em; color: var(--ink);
   transition: color .25s;
 }
-/* Tile hover affordances — only fire on devices that can hover.
+/* Tile hover affordances - only fire on devices that can hover.
    On touch, the brief :hover flash after a tap was disorienting; the
    tile-name + tile-tags below the image are enough to identify the work. */
 @media (hover: hover) {
@@ -985,7 +985,7 @@ nav.top.hidden { transform: translateY(-110%); }
 .about-photo-col { position: static; }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   .signal-tv — reusable CRT "test card" image component.
+   .signal-tv - reusable CRT "test card" image component.
 
    Renders any <img> as a vintage TV broadcast: butter background, scanlines,
    slow tracking-error band, animated grain, subtle TV flicker. A JS scheduler
@@ -1024,7 +1024,7 @@ nav.top.hidden { transform: translateY(-110%); }
      --signal-tv-img-max-h     image max height %  (default: 100%, fills frame)
    ═══════════════════════════════════════════════════════════════════════ */
 .signal-tv {
-  /* Defaults — override via inline style or scoped CSS */
+  /* Defaults - override via inline style or scoped CSS */
   --signal-tv-bg:        var(--accent-moment, #F2D74E);
   --signal-tv-border:    1px solid var(--rim, currentColor);
   --signal-tv-aspect:    3 / 4;
@@ -1076,7 +1076,7 @@ nav.top.hidden { transform: translateY(-110%); }
 .signal-tv__ghost--r { filter: url(#signal-tv-channel-r); }
 .signal-tv__ghost--c { filter: url(#signal-tv-channel-c); }
 
-/* ─── CRT overlays — scanlines (::before) + tracking band (::after) ── */
+/* ─── CRT overlays - scanlines (::before) + tracking band (::after) ── */
 .signal-tv::before,
 .signal-tv::after {
   content: '';
@@ -1302,7 +1302,7 @@ footer a:hover { color: var(--accent); }
 .proj-hero {
   min-height: 50vh; display: flex; flex-direction: column; justify-content: flex-end;
   padding: 2rem var(--pad-x) 3rem;
-  /* No backdrop — the full-width hero image below this section creates the
+  /* No backdrop - the full-width hero image below this section creates the
      visual break to the gallery. Hero inherits page theme tokens. */
 }
 .proj-hero-inner {
@@ -1322,7 +1322,7 @@ footer a:hover { color: var(--accent); }
   margin-top: 1.75rem; font-size: 1.1rem; color: var(--ink-dim); line-height: 1.6;
   max-width: 38rem;
 }
-/* Status note — small, muted line under the hero summary */
+/* Status note - small, muted line under the hero summary */
 .proj-status-note {
   margin-top: .9rem;
   font-family: var(--ff-mono); font-weight: var(--fw-mono); font-size: .68rem; letter-spacing: .1em;
@@ -1451,7 +1451,7 @@ footer a:hover { color: var(--accent); }
   font-family: var(--ff-display); font-weight: var(--ff-display-weight, 900); font-size: 2rem;
   color: var(--muted); transition: transform .4s var(--expo), color .25s;
 }
-/* Next-proj hover — guarded for touch (dramatic bg fill + padding shift flash on tap). */
+/* Next-proj hover - guarded for touch (dramatic bg fill + padding shift flash on tap). */
 @media (hover: hover) {
   .next-proj:hover::before { transform: scaleY(1); }
   .next-proj:hover { padding-left: calc(var(--pad-x) + 1rem); }
@@ -1659,7 +1659,7 @@ footer a:hover { color: var(--accent); }
 .proj-side-gallery-frame img,
 .problem-img img { cursor: zoom-in; }
 
-/* ─── Responsive — small tablet (≥640px) ───
+/* ─── Responsive - small tablet (≥640px) ───
    Two-column upgrades that work on iPad portrait but not on phones. */
 @media (min-width: 640px) {
   .work-grid.polaroid { grid-template-columns: 1fr 1fr; }
@@ -1671,9 +1671,9 @@ footer a:hover { color: var(--accent); }
   .outcome-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
-/* ─── Responsive — desktop (≥960px) ───
+/* ─── Responsive - desktop (≥960px) ───
    Full multi-column layouts, sticky sidebars, larger section padding,
-   and nav links return. This is the primary "desktop break" — most
+   and nav links return. This is the primary "desktop break" - most
    layout shifts happen here. */
 @media (min-width: 960px) {
   /* Nav */
@@ -1700,14 +1700,14 @@ footer a:hover { color: var(--accent); }
   .section { padding: 6rem var(--pad-x); }
   .work-grid { gap: 1.5rem; }
 
-  /* Fullbleed tile — restore 4-col grid with tags column */
+  /* Fullbleed tile - restore 4-col grid with tags column */
   .fullbleed .tile {
     grid-template-columns: 80px 1fr 1fr 80px;
     gap: 2rem; padding: 2.5rem 0;
   }
   .fullbleed .tile .tile-tags { display: block; }
 
-  /* Index tile — restore 5-col grid */
+  /* Index tile - restore 5-col grid */
   .index .tile {
     grid-template-columns: 60px 2.6fr 1.4fr 1fr 80px;
     gap: 1.5rem;
@@ -1715,7 +1715,7 @@ footer a:hover { color: var(--accent); }
   .index .tile .tile-tags,
   .index .tile .tile-year { display: block; }
 
-  /* About — 2-col with sticky photo */
+  /* About - 2-col with sticky photo */
   .about {
     grid-template-columns: 1fr 1.4fr;
     gap: 5rem; padding: 6rem var(--pad-x);
@@ -1771,6 +1771,10 @@ footer a:hover { color: var(--accent); }
 [data-density="dense"]   .section, [data-density="dense"]   .about, [data-density="dense"]   .contact { padding-top: 4rem; padding-bottom: 4rem; }
 [data-density="dense"]   .work-grid { gap: 1rem; }
 [data-density="loose"]   .work-grid { gap: 2rem; }
+/* Work grid - group each tile with its own caption (proximity): the caption
+   hugs its image (small padding above), and a wider row-gap clearly separates
+   one tile from the next so the title's ownership is unambiguous. */
+.work-grid.polaroid { row-gap: 2.5rem; }
 
 /* ─── Display font swap ─── */
 [data-display-font="sleeper"]   { --ff-display: 'Geist', system-ui, sans-serif; --ff-display-weight: 800; }
@@ -1786,12 +1790,12 @@ footer a:hover { color: var(--accent); }
    Instrument Serif speaks in the designer's personal voice. Geist speaks
    in the system / professional voice (project names, UI, navigation,
    labels, descriptions). Italic emphasis inside any personal-voice
-   context is always serif italic — the recurring brand grammar.
+   context is always serif italic - the recurring brand grammar.
 
    - Full Instrument Serif on first-person headlines:
        .hero-title  ·  .about-headline  ·  .contact-headline
    - Project NAMES stay Geist (the work labels itself in system voice).
-     But .proj-hero-title em (the project subtitle) gets serif italic —
+     But .proj-hero-title em (the project subtitle) gets serif italic -
      it reads as the designer's note on the work.
    - About-section body italic emphasis also gets serif italic (.about em
      covers both the headline em and the body paragraph em).
@@ -1800,7 +1804,7 @@ footer a:hover { color: var(--accent); }
    restore normal display behavior on these elements with another font. */
 
 /* Hero + contact: full Sleeper treatment (huge serif moments, tight tracking).
-   line-height bumped to 0.98 (was 0.94 on contact) — Instrument Serif has
+   line-height bumped to 0.98 (was 0.94 on contact) - Instrument Serif has
    long descenders and the tighter line-height clipped the "g"s below the
    element's box. */
 [data-display-font="sleeper"] .hero-title,
@@ -1840,7 +1844,7 @@ footer a:hover { color: var(--accent); }
 .hero[data-align="center"] { text-align: left; }
 
 
-/* ─── Case study — extended section infrastructure ─── */
+/* ─── Case study - extended section infrastructure ─── */
 
 /* Hero image (rendered between proj-hero and proj-gallery) */
 .proj-hero-image {
@@ -1852,7 +1856,7 @@ footer a:hover { color: var(--accent); }
 .proj-hero-image img {
   display: block; width: 100%; height: auto; max-height: 50vh; object-fit: cover;
 }
-/* Bare hero — device mockup floats on the page, no frame, no crop */
+/* Bare hero - device mockup floats on the page, no frame, no crop */
 .proj-hero-image.is-bare {
   border: none;
   background: transparent;
@@ -1864,7 +1868,7 @@ footer a:hover { color: var(--accent); }
   margin: 0 auto;
 }
 
-/* Hero placeholder — same slot as the hero image, awaiting a real asset */
+/* Hero placeholder - same slot as the hero image, awaiting a real asset */
 .proj-hero-image.is-placeholder {
   border: none; background: transparent;
   margin: 0;
@@ -1881,7 +1885,7 @@ footer a:hover { color: var(--accent); }
   letter-spacing: .14em; text-transform: uppercase;
 }
 
-/* Gallery — real images replace the hatched placeholders */
+/* Gallery - real images replace the hatched placeholders */
 .g-cell.has-img { background: var(--surface); }
 .g-cell.has-img::before { display: none; }
 .g-cell .g-img {
@@ -1891,7 +1895,7 @@ footer a:hover { color: var(--accent); }
 }
 .g-cell.has-img:hover .g-img { transform: scale(1.02); }
 
-/* Bolded-label list — used for Problem, Goals, Research, Insights */
+/* Bolded-label list - used for Problem, Goals, Research, Insights */
 .proj-list {
   list-style: none; padding: 0; margin: .25rem 0 1.5rem;
   max-width: 42rem;
@@ -1909,7 +1913,7 @@ footer a:hover { color: var(--accent); }
   color: var(--ink); font-weight: 700; margin-right: .35rem;
 }
 
-/* Media — large stack OR small-thumb grid */
+/* Media - large stack OR small-thumb grid */
 .proj-media {
   margin: 2rem 0 2.5rem;
   display: flex; flex-direction: column; gap: 1.75rem;
@@ -1942,17 +1946,17 @@ footer a:hover { color: var(--accent); }
 .proj-media-item.k-sq   .proj-media-placeholder { aspect-ratio: 4 / 3; }
 .proj-media-item.k-tall .proj-media-placeholder { aspect-ratio: 3 / 4; }
 .proj-media-item.k-half { width: calc(50% - 1.25rem); align-self: flex-end; }
-/* Concept prototype/video slot — full-width blank hero above the screen gallery */
+/* Concept prototype/video slot - full-width blank hero above the screen gallery */
 .proj-proto-slot { margin: 1.75rem 0 2.25rem; }
 .proj-proto-slot .proj-media-placeholder { aspect-ratio: 16 / 9; }
-/* Bare media — image floats with no frame (transparent PNG, e.g. panel mosaic) */
+/* Bare media - image floats with no frame (transparent PNG, e.g. panel mosaic) */
 .proj-media-item.is-bare img {
   background: transparent;
   border: none;
   border-radius: 0;
 }
 
-/* Parallax section — sticky full-width header + sticky left text, naturally scrolling right column */
+/* Parallax section - sticky full-width header + sticky left text, naturally scrolling right column */
 .proj-section.is-parallax { position: relative; }
 .proj-parallax-header {
   position: static;
@@ -1981,7 +1985,7 @@ footer a:hover { color: var(--accent); }
 }
 .proj-parallax-left {
   min-width: 0;
-  /* height: inline by JS at ≥960 — controls when sticky text releases. JS clears it on mobile. */
+  /* height: inline by JS at ≥960 - controls when sticky text releases. JS clears it on mobile. */
 }
 .proj-parallax-text {
   position: static;
@@ -2009,7 +2013,7 @@ footer a:hover { color: var(--accent); }
   text-transform: uppercase; color: var(--muted);
 }
 
-/* A-vs-B comparison — same rim-gap grid language as .outcome-grid */
+/* A-vs-B comparison - same rim-gap grid language as .outcome-grid */
 .proj-compare { margin: 1.5rem 0 2.5rem; max-width: 48rem; }
 .proj-compare-grid {
   display: grid; grid-template-columns: 1fr; gap: 2px;
@@ -2055,7 +2059,7 @@ footer a:hover { color: var(--accent); }
   .proj-compare-dim { display: flex; align-items: center; }
 }
 
-/* User Flows — article versioning diagram, themed */
+/* User Flows - article versioning diagram, themed */
 .uf-svg { width: 100%; height: auto; display: block; }
 .uf-lane-rect {
   fill: none; stroke: var(--accent);
@@ -2136,7 +2140,7 @@ footer a:hover { color: var(--accent); }
 .uf-dot.uf-on  { fill: var(--accent); }
 .uf-dot.uf-off { fill: var(--muted); }
 
-/* Inline interactive grid demo — styled with portfolio tokens */
+/* Inline interactive grid demo - styled with portfolio tokens */
 #proj-grid-demo {
   font-family: var(--ff-body);
   color: var(--ink);
@@ -2262,7 +2266,7 @@ footer a:hover { color: var(--accent); }
 }
 .grid-demo-figure { margin: 2rem 0 2.5rem; }
 
-/* Split layout — body text next to a single image (e.g. Responsive Grid section) */
+/* Split layout - body text next to a single image (e.g. Responsive Grid section) */
 .proj-split {
   display: grid;
   grid-template-columns: 1fr;
@@ -2323,7 +2327,7 @@ footer a:hover { color: var(--accent); }
   background: var(--accent);
   border-color: var(--accent);
 }
-/* Problem rows — labeled rows + image placeholders (Problem section) */
+/* Problem rows - labeled rows + image placeholders (Problem section) */
 .problem-rows { margin: 2rem 0 2.5rem; border-top: 1px solid var(--rim-soft); }
 .problem-row {
   display: grid; grid-template-columns: 1fr;
@@ -2356,7 +2360,7 @@ footer a:hover { color: var(--accent); }
   font-family: var(--ff-mono); font-weight: var(--fw-mono); font-size: .65rem;
   letter-spacing: .14em; text-transform: uppercase;
 }
-/* Subsections — used inside Admin Experience */
+/* Subsections - used inside Admin Experience */
 .proj-subsection {
   margin: 2.5rem 0 1rem;
   padding-top: 2rem;
@@ -2392,7 +2396,7 @@ footer a:hover { color: var(--accent); }
 }
 .ba-tag.after { background: var(--accent-lo); color: var(--accent); }
 
-/* Before / After screen pairs — multiple paired rows of full, uncropped,
+/* Before / After screen pairs - multiple paired rows of full, uncropped,
    zoomable screenshots (reuses .proj-media-item framing + lightbox). */
 .proj-ba-pairs { margin: 2rem 0 2.5rem; display: flex; flex-direction: column; gap: 2rem; }
 .proj-ba-pair { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
@@ -2426,7 +2430,7 @@ footer a:hover { color: var(--accent); }
    driven by scroll position (see the atmos effect in <Project>). As the
    reader moves through contextual regions, the page ground blends from
    CRT-black (or broadcast-white in light mode) toward a subtle Signal
-   hue and back — a slow, low-saturation shift, never a hard band.
+   hue and back - a slow, low-saturation shift, never a hard band.
 
    It sits at z-index 0 inside the positioned .proj-page and every real
    child is lifted to z-index 1 so content always paints above it. Opaque
@@ -2446,7 +2450,7 @@ footer a:hover { color: var(--accent); }
 
 /* ─── Flow viewer ──────────────────────────────────────────────────────
    The Help Center flow explorer. This is the one place in the site where
-   all six bars appear at once — a categorical encoding where six
+   all six bars appear at once - a categorical encoding where six
    distinguishable colours are the functional requirement. Kept honest by
    two rules: bars are strokes and 3–10% tints, never filled blocks; and
    no other section of the case study uses more than tomato + sky.
@@ -2461,21 +2465,21 @@ footer a:hover { color: var(--accent); }
   --fv-orchid:  var(--bar-orchid);
   --fv-indigo:  var(--bar-indigo);
   --fv-butter:  var(--butter-base);   /* dark: the bright butter is correct */
-  --fv-neutral: var(--muted);         /* the shared save lane — deliberately achromatic */
+  --fv-neutral: var(--muted);         /* the shared save lane - deliberately achromatic */
 
   --fv-ink:         var(--ink);
   --fv-ink-2:       var(--ink-dim);
   --fv-ink-3:       var(--muted);
   --fv-line:        var(--rim);
   --fv-line-2:      color-mix(in oklab, var(--ink) 26%, var(--surface));
-  --fv-surface:     var(--surface-2); /* opaque — labels stay crisp over the grain */
+  --fv-surface:     var(--surface-2); /* opaque - labels stay crisp over the grain */
   --fv-surface-alt: var(--surface);
   --fv-bg:          var(--ground);
   --fv-edge:        var(--fv-line-2);
   --fv-dot:         transparent;      /* a dot grid over CRT black + grain is noise */
 }
 [data-theme="light"] {
-  /* #F2D74E on broadcast white is ~1.4:1 — invisible. butter-400 clears
+  /* #F2D74E on broadcast white is ~1.4:1 - invisible. butter-400 clears
      3:1 for a graphical object (WCAG 1.4.11). Don't lighten it. */
   --fv-butter: var(--butter-400);
   --fv-dot:    color-mix(in oklab, var(--rim) 55%, transparent);
@@ -2594,7 +2598,7 @@ footer a:hover { color: var(--accent); }
   font: 500 10px var(--ff-mono); letter-spacing: .1em; text-transform: uppercase;
   opacity: .85; pointer-events: none;
 }
-/* hover / focus trace — the active path restrokes to ink, which reads as
+/* hover / focus trace - the active path restrokes to ink, which reads as
    "ink" in both modes and stays out of the bar palette's way */
 .fv-diagram.is-focused .fv-node { opacity: .18; }
 .fv-diagram.is-focused .fv-edge { opacity: .08; }
@@ -2642,7 +2646,7 @@ footer a:hover { color: var(--accent); }
 .fv-cards { display: grid; gap: .9rem; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); }
 /* A card carries a colour bar, a name, and an honest silhouette. Nothing
    else. The map is where a reader decides whether to engage at all, and
-   they are scanning, not reading — the hover is the whole affordance. */
+   they are scanning, not reading - the hover is the whole affordance. */
 .fv-card {
   position: relative; text-align: left; cursor: pointer;
   background: var(--fv-surface); border: 1px solid var(--fv-line);
@@ -2706,7 +2710,7 @@ footer a:hover { color: var(--accent); }
   border: 1px solid var(--fv-line-2); border-bottom-width: 2px;
   border-radius: 3px; padding: 0 .2rem; color: var(--fv-ink-2);
 }
-/* top-right, not centred — a centred chip lands on the first rank of an
+/* top-right, not centred - a centred chip lands on the first rank of an
    LR graph and reads as part of the diagram */
 .fv-armed {
   position: absolute; right: 12px; top: 10px; z-index: 5;
@@ -2752,7 +2756,7 @@ dialog.fv-dialog .fv { --fv-h: 100vh; border: none; border-radius: 0; margin: 0;
   color: var(--muted); margin-top: .65rem;
 }
 
-/* 768–1023px — cards two-up, pills collapse to a select, legend folds away */
+/* 768–1023px - cards two-up, pills collapse to a select, legend folds away */
 @media (max-width: 1023px) {
   .fv-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .fv-pills { display: none; }
@@ -2763,7 +2767,7 @@ dialog.fv-dialog .fv { --fv-h: 100vh; border: none; border-radius: 0; margin: 0;
   .fv-hint { display: none; }
   .fv-foot:not(:has(.fv-legend.is-open)) { padding: 0; border-top: none; }
 }
-/* <768px — a pan/zoom canvas is a bad experience on a phone. The map still
+/* <768px - a pan/zoom canvas is a bad experience on a phone. The map still
    ships with real thumbnails; the detail view becomes the step list. */
 @media (max-width: 767px) {
   .fv { --fv-h: clamp(440px, 78vh, 620px); }
@@ -2787,16 +2791,16 @@ dialog.fv-dialog .fv { --fv-h: 100vh; border: none; border-radius: 0; margin: 0;
 <body>
 <div id="root"></div>
 <script type="text/babel">
-// Portfolio data — Raz Silberman
+// Portfolio data - Raz Silberman
 
 const COMPANIES = [
   {
     id: 'quill',
     name: 'Quill',
     tagline: 'Knowledge management for support teams',
-    description: 'B2B SaaS · Tel Aviv. The KMS lighthouse for support orgs — writers, agents, admins, and end-users sharing one knowledge graph.',
+    description: 'B2B SaaS · Tel Aviv. The KMS lighthouse for support orgs - writers, agents, admins, and end-users sharing one knowledge graph.',
     role: 'Senior → Lead Product Designer',
-    when: '2023 — Present',
+    when: '2023 - Present',
     accent: 'sage',
     swatch: { from: '#0F5A4A', to: '#082E25', mark: '#5BCAB8' },
     projectIds: ['help-center', 'design-system', 'product-redesign'],
@@ -2810,41 +2814,41 @@ const PROJECTS = [
     title: 'Help Center',
     subtitle: 'A customizable B2B2C Help Center',
     role: 'Lead Designer (solo)',
-    year: '2024 — ongoing',
+    year: '2024 - ongoing',
     timeline: 'Ongoing, multi-phase',
-    platform: 'Web — admin + end-user, responsive',
+    platform: 'Web - admin + end-user, responsive',
     team: 'Solo designer · PMs · engineers',
     sector: 'B2B SaaS · B2B2C · Enterprise knowledge',
     kind: 'B2B SaaS',
     kinds: ['B2B SaaS', 'B2B2C SaaS'],
     company: 'KMS Lighthouse',
     tile: 'wide',
-    summary: 'A self-service Help Center that hands business admins full control of their branded support site — no developers required. Built to replace a legacy product that couldn\'t customize, couldn\'t scale, and wasn\'t winning customers.',
+    summary: 'A self-service Help Center that hands business admins full control of their branded support site - no developers required. Built to replace a legacy product that couldn\'t customize, couldn\'t scale, and wasn\'t winning customers.',
     heroImage: 'help center/v2/homepage-devices.png',
     heroBare: true,
     swatch: { from: '#0F5A4A', to: '#082E25', mark: '#5BCAB8' },
     sections: [
       { id: 'context', title: 'Context', body: [
         'KMS Lighthouse is an enterprise knowledge platform behind the call centers and self-service portals of companies like DHL, GE Healthcare, and Allianz.',
-        'The Help Center is its customer-facing product — a fully branded self-service site that pulls content straight from the platform teams already use: no separate site, no migration, no parallel workflow.',
+        'The Help Center is its customer-facing product - a fully branded self-service site that pulls content straight from the platform teams already use: no separate site, no migration, no parallel workflow.',
       ]},
       { id: 'role', title: 'Role & Approach', body: [
-        'Sole designer across research, IA, flows, UI, and design-system work, partnering with PMs and engineers over multiple phases. The core challenge: serve two audiences in one product — the admin configuring the site, and the end user trying to find an answer fast.',
+        'Sole designer across research, IA, flows, UI, and design-system work, partnering with PMs and engineers over multiple phases. The core challenge: serve two audiences in one product - the admin configuring the site, and the end user trying to find an answer fast.',
       ]},
       { id: 'problem', title: 'The Problem', atmos: 'orchid',
         list: [
-          { label: 'No admin control.', text: 'Every change — copy, layout, branding — went through a specialized dev team. Admins couldn\'t touch their own site.' },
+          { label: 'No admin control.', text: 'Every change - copy, layout, branding - went through a specialized dev team. Admins couldn\'t touch their own site.' },
           { label: 'Not built for mobile.', text: 'Most users seek help on their phone; the legacy product wasn\'t responsive, answers were hard to find, and tickets went up.' },
-          { label: 'Barely customizable.', text: 'Enterprises couldn\'t make it feel like their brand — a dealbreaker for a product sold as a differentiator.' },
+          { label: 'Barely customizable.', text: 'Enterprises couldn\'t make it feel like their brand - a dealbreaker for a product sold as a differentiator.' },
         ],
         outro: ['A differentiator that didn\'t differentiate. Clients passed; prospects went elsewhere.'],
-        sideMedia: { src: 'help center/3.png', caption: 'Before — legacy product' },
+        sideMedia: { src: 'help center/3.png', caption: 'Before - legacy product' },
       },
       { id: 'goals', title: 'Goals',
         list: [
-          { label: 'Put admins in control —', text: 'own setup, content, and branding without dev or support.' },
-          { label: 'Design mobile-first —', text: 'around one user, one answer, fast.' },
-          { label: 'Make it brandable —', text: 'real control over look and layout, so it feels like the customer\'s own site.' },
+          { label: 'Put admins in control -', text: 'own setup, content, and branding without dev or support.' },
+          { label: 'Design mobile-first -', text: 'around one user, one answer, fast.' },
+          { label: 'Make it brandable -', text: 'real control over look and layout, so it feels like the customer\'s own site.' },
         ],
       },
       { id: 'research', title: 'Research',
@@ -2852,14 +2856,14 @@ const PROJECTS = [
       },
       { id: 'insights', title: 'Key Insights',
         list: [
-          { label: 'Branding isn\'t a nice-to-have.', text: 'Enterprises won\'t ship a Help Center that doesn\'t feel like theirs — and they need that control without code.' },
+          { label: 'Branding isn\'t a nice-to-have.', text: 'Enterprises won\'t ship a Help Center that doesn\'t feel like theirs - and they need that control without code.' },
           { label: 'Navigation is the product.', text: 'For end users, the Help Center is its search and structure; findability was the biggest unlock.' },
           { label: 'The UI had to earn its place.', text: 'It needed to look like something a brand would proudly link from its own site.' },
         ],
       },
       { id: 'flows', title: 'User Flows',
-        body: ['I mapped admin and end-user paths in parallel — shaping an admin model that gives real power without exposing end users to its complexity.'],
-        flowViewer: { caption: 'Admin access & routing, and the homepage widget model behind the customization studio — the real flows, walkable' },
+        body: ['I mapped admin and end-user paths in parallel - shaping an admin model that gives real power without exposing end users to its complexity.'],
+        flowViewer: { caption: 'Admin access & routing, and the homepage widget model behind the customization studio - the real flows, walkable' },
       },
       { id: 'wireframing', title: 'Wireframing',
         body: ['Structure before style: density, navigation, and hierarchy resolved across both admin and end-user screens before any visual design entered.'],
@@ -2867,13 +2871,13 @@ const PROJECTS = [
       },
       { id: 'admin', title: 'The Admin Experience', atmos: 'sky',
         body: [
-          'Where the product earns its keep. If admins can\'t run the Help Center themselves, nothing else matters. I designed it as focused, self-serve settings — configuration, localization, content, and a dedicated customization studio.',
+          'Where the product earns its keep. If admins can\'t run the Help Center themselves, nothing else matters. I designed it as focused, self-serve settings - configuration, localization, content, and a dedicated customization studio.',
         ],
         subsections: [
           {
             id: 'admin-custom',
             title: 'Customization studio',
-            body: ['Direct control over logo, favicon, header, footer, color system, card styles, and content layout — no code. Admins change how the site looks and behaves in real time.'],
+            body: ['Direct control over logo, favicon, header, footer, color system, card styles, and content layout - no code. Admins change how the site looks and behaves in real time.'],
             media: [
               { src: 'help center/v2/admin-panel-mosaic.png', caption: 'Customization panel breakdown', kind: 'wide', bare: true },
             ],
@@ -2889,7 +2893,7 @@ const PROJECTS = [
           {
             id: 'admin-styles',
             title: 'One product, any brand',
-            body: ['The proof that the customization model works: the same Help Center, rendered in three entirely different brand systems — no code, no dev team.'],
+            body: ['The proof that the customization model works: the same Help Center, rendered in three entirely different brand systems - no code, no dev team.'],
             media: [
               { src: 'help center/v2/site-styles-compare.png', caption: 'One Help Center, three brand styles', kind: 'wide' },
             ],
@@ -2908,7 +2912,7 @@ const PROJECTS = [
           {
             id: 'admin-onboarding',
             title: 'Guided onboarding',
-            body: ['Inline guides walk first-time admins through localization and translation — turning a former dev task into a self-serve flow.'],
+            body: ['Inline guides walk first-time admins through localization and translation - turning a former dev task into a self-serve flow.'],
             media: [
               { src: 'help center/17.png', kind: 'sq' },
               { src: 'help center/18.png', kind: 'sq' },
@@ -2927,19 +2931,19 @@ const PROJECTS = [
         media: [
           { src: 'help center/v2/homepage-style1.png',   caption: 'Final homepage', kind: 'wide' },
           { src: 'help center/v2/search-results.png',    caption: 'Search results', kind: 'wide' },
-          { src: 'help center/v2/ai-answer-loading.png', caption: 'AI answer — resolving', kind: 'wide' },
-          { src: 'help center/v2/ai-answer-complete.png',caption: 'AI answer — with sources', kind: 'wide' },
+          { src: 'help center/v2/ai-answer-loading.png', caption: 'AI answer - resolving', kind: 'wide' },
+          { src: 'help center/v2/ai-answer-complete.png',caption: 'AI answer - with sources', kind: 'wide' },
           { src: 'help center/v2/article-large.png',     caption: 'Article view', kind: 'wide' },
           { src: 'help center/v2/guide-page.png',        caption: 'Step-by-step guide', kind: 'wide' },
           { src: 'help center/34.png',                   caption: 'Multilingual and RTL support', kind: 'wide' },
         ],
         beforeAfter: {
-          before: { src: 'help center/3.png',                   label: 'Before — legacy product' },
-          after:  { src: 'help center/v2/homepage-style1.png',  label: 'After — new Help Center' },
+          before: { src: 'help center/3.png',                   label: 'Before - legacy product' },
+          after:  { src: 'help center/v2/homepage-style1.png',  label: 'After - new Help Center' },
         },
       },
       { id: 'responsive', title: 'Responsive',
-        body: ['Mobile-first as a constraint, not a slogan — the same search-first hierarchy holds across desktop, tablet, and mobile.'],
+        body: ['Mobile-first as a constraint, not a slogan - the same search-first hierarchy holds across desktop, tablet, and mobile.'],
         media: [
           { src: 'help center/33.png', caption: 'Desktop · tablet · mobile', kind: 'wide' },
         ],
@@ -2948,7 +2952,7 @@ const PROJECTS = [
         body: ['Candidates to draw from: first fully customizable Help Center in the Lighthouse line; former hold-outs now requesting the new version; new clients citing it in their decision; admins self-serving setup without dev or support; positive sales and CS feedback.'],
       },
       { id: 'reflection', title: 'Reflection', placeholder: true,
-        body: ['One honest sentence on what I learned or would do differently — to fill in.'],
+        body: ['One honest sentence on what I learned or would do differently - to fill in.'],
       },
     ],
     gallery: [
@@ -2964,20 +2968,20 @@ const PROJECTS = [
     n: '02',
     title: 'Spark',
     subtitle: 'A design system for enterprise knowledge management',
-    role: '{{ Product Designer — sole designer on the system / lead }}',
-    year: '2025 — present',
-    timeline: '2025 — present',
+    role: '{{ Product Designer - sole designer on the system / lead }}',
+    year: '2025 - present',
+    timeline: '2025 - present',
     kind: 'Design system',
     company: 'KMS Lighthouse',
     tags: ['Design System', 'Component Library', 'Design Tokens', 'Figma'],
-    statusNote: 'In active internal rollout — not yet shipped to customers.',
+    statusNote: 'In active internal rollout - not yet shipped to customers.',
     tile: 'tall',
-    summary: 'The design system behind KMS Lighthouse — tokens, components, and documentation serving two very different surfaces: a dense authoring environment for knowledge managers, and a fast lookup experience for agents.',
+    summary: 'The design system behind KMS Lighthouse - tokens, components, and documentation serving two very different surfaces: a dense authoring environment for knowledge managers, and a fast lookup experience for agents.',
     swatch: { from: '#553A0E', to: '#2B1D05', mark: '#F4D06F' },
-    heroPlaceholder: { label: 'IMG-1', caption: 'Spark — the component library at a glance' },
+    heroPlaceholder: { label: 'IMG-1', caption: 'Spark - the component library at a glance' },
     sections: [
       { id: 'context', title: 'Context', body: [
-        'KMS Lighthouse builds enterprise knowledge management software — the tool support agents, banks, and telcos use to find a verified answer in seconds. That means two very different surfaces in one product: a dense authoring and admin environment for knowledge managers, and a fast, low-friction lookup experience for agents under time pressure.',
+        'KMS Lighthouse builds enterprise knowledge management software - the tool support agents, banks, and telcos use to find a verified answer in seconds. That means two very different surfaces in one product: a dense authoring and admin environment for knowledge managers, and a fast, low-friction lookup experience for agents under time pressure.',
         'Spark is the design system that holds both together.',
       ]},
       { id: 'problem', title: 'The problem',
@@ -2988,23 +2992,23 @@ const PROJECTS = [
         ],
         media: [
           { placeholder: true, label: 'IMG-2', kind: 'wide',
-            caption: 'The audit — every button, input, and card in production before Spark' },
+            caption: 'The audit - every button, input, and card in production before Spark' },
         ],
       },
-      /* Principles — Raz edits these by hand. Starting points to rewrite in his own words:
+      /* Principles - Raz edits these by hand. Starting points to rewrite in his own words:
          "Density is a setting, not a default" (authoring vs. agent surfaces) ·
          "Answer-first" (the content is the interface) ·
          "Accessible by construction, not by review." */
       { id: 'principles', title: 'Principles',
         list: [
-          { label: '{{ Principle 1 }} —', text: '{{ one line }}' },
-          { label: '{{ Principle 2 }} —', text: '{{ one line }}' },
-          { label: '{{ Principle 3 }} —', text: '{{ one line }}' },
+          { label: '{{ Principle 1 }} -', text: '{{ one line }}' },
+          { label: '{{ Principle 2 }} -', text: '{{ one line }}' },
+          { label: '{{ Principle 3 }} -', text: '{{ one line }}' },
         ],
       },
       { id: 'foundations', title: 'Foundations',
         body: [
-          'Tokens first: color, type, spacing, radius, elevation — defined once, named semantically, and mirrored 1:1 between Figma variables and code.',
+          'Tokens first: color, type, spacing, radius, elevation - defined once, named semantically, and mirrored 1:1 between Figma variables and code.',
         ],
         media: [
           { placeholder: true, label: 'IMG-3', kind: 'wide',
@@ -3017,14 +3021,14 @@ const PROJECTS = [
         ],
         media: [
           { placeholder: true, label: 'IMG-4', kind: 'sq',
-            caption: 'One component, fully specified — variants, states, and usage rules' },
+            caption: 'One component, fully specified - variants, states, and usage rules' },
           { placeholder: true, label: 'IMG-5', kind: 'wide',
             caption: 'The same screen, before and after Spark' },
         ],
       },
       { id: 'documentation', title: 'Documentation & governance',
         body: [
-          'Spark ships with usage documentation, contribution guidelines, and a review path — so the system stays alive after I stop maintaining it personally.',
+          'Spark ships with usage documentation, contribution guidelines, and a review path - so the system stays alive after I stop maintaining it personally.',
         ],
         media: [
           { placeholder: true, label: 'IMG-6', kind: 'wide',
@@ -3037,13 +3041,13 @@ const PROJECTS = [
           'What I\'d measure at launch: time from design to shipped screen, share of UI built from Spark components, and accessibility defects caught before QA.',
         ],
       },
-      /* What I'd do differently — Raz edits by hand. Example of the register to aim for:
-         "I built the component library before I built the contribution path — which meant early
+      /* What I'd do differently - Raz edits by hand. Example of the register to aim for:
+         "I built the component library before I built the contribution path - which meant early
          adopters had no way to give the system back what they learned. I'd write the governance
          model first next time." */
       { id: 'differently', title: 'What I\'d do differently',
         body: [
-          '{{ Two sentences, max — one honest reflection on running the system, not just drawing it. }}',
+          '{{ Two sentences, max - one honest reflection on running the system, not just drawing it. }}',
         ],
       },
     ],
@@ -3054,33 +3058,33 @@ const PROJECTS = [
     title: 'Product Redesign',
     subtitle: 'A full redesign that pivoted mid-project',
     role: 'Senior Designer',
-    year: '2024 — ongoing',
-    timeline: '2024 — ongoing',
-    platform: 'Web — admin + end-user, responsive',
+    year: '2024 - ongoing',
+    timeline: '2024 - ongoing',
+    platform: 'Web - admin + end-user, responsive',
     team: 'In-house design team · PMs · engineers',
     sector: 'B2B SaaS · Enterprise knowledge',
     kind: 'B2B SaaS',
     company: 'KMS Lighthouse',
     tile: 'sq',
-    summary: 'A full redesign of the KMS Lighthouse platform that pivoted mid-project — and got better because of it.',
+    summary: 'A full redesign of the KMS Lighthouse platform that pivoted mid-project - and got better because of it.',
     heroImage: 'redesign/35.png',
     swatch: { from: '#3F1F4D', to: '#231030', mark: '#C28FE0' },
     sections: [
       { id: 'context', title: 'Context', body: [
         'KMS Lighthouse is an enterprise knowledge management platform used by companies like DHL, GE Healthcare, AIG, and Allianz to power their call centers, self-service portals, and internal knowledge bases. It\'s the core product the company is built on.',
-        'But by 2024, the platform was showing its age. Years of feature additions, multiple outsourced design teams, and no unified design system had produced an interface that was cluttered, inconsistent, and increasingly hard for users — and the company — to maintain.',
+        'But by 2024, the platform was showing its age. Years of feature additions, multiple outsourced design teams, and no unified design system had produced an interface that was cluttered, inconsistent, and increasingly hard for users - and the company - to maintain.',
         'We set out to redesign it. What we delivered wasn\'t what we started with.',
       ]},
       { id: 'role', title: 'Role & Approach', body: [
         'I worked on this as a Senior Designer alongside a small in-house design team, partnering closely with product and engineering across multiple phases.',
-        'It was a team effort with no single lead, but each designer owned distinct surfaces end to end. My focus was on the content management experience — the part of the product where business users spend most of their day — and I designed the field component system (input fields and view-only fields) that became the foundation for consolidating the platform\'s separate editing and end-user views. I also co-designed the responsive grid that underpins the whole redesign.',
+        'It was a team effort with no single lead, but each designer owned distinct surfaces end to end. My focus was on the content management experience - the part of the product where business users spend most of their day - and I designed the field component system (input fields and view-only fields) that became the foundation for consolidating the platform\'s separate editing and end-user views. I also co-designed the responsive grid that underpins the whole redesign.',
         'The work below reflects what I designed and led on.',
       ]},
       { id: 'problem', title: 'The Problem',
         body: ['The platform had three structural issues that compounded each other:'],
         list: [
           { label: 'Cluttered interface.', text: 'The UI was overloaded with information and lacked a clear grid system, making it difficult for users to focus on critical tasks.' },
-          { label: 'Inconsistency.', text: 'Built over several years without a unified design system — and through various outsourced designers — the platform had drifted into a confusing, inconsistent experience. The same pattern appeared in three different forms across the product.' },
+          { label: 'Inconsistency.', text: 'Built over several years without a unified design system - and through various outsourced designers - the platform had drifted into a confusing, inconsistent experience. The same pattern appeared in three different forms across the product.' },
           { label: 'Performance issues.', text: 'Years of layered feature additions had created redundancy, with multiple features serving the same purpose. The system had slowed down, both technically and cognitively.' },
         ],
         problemRows: [
@@ -3096,7 +3100,7 @@ const PROJECTS = [
           { label: 'Build for consistency and scale.', text: 'Establish a unified design system the company could grow with.' },
           { label: 'Optimize for mobile.', text: 'Make the platform genuinely responsive, not just adapted.' },
           { label: 'Consolidate features.', text: 'Merge redundant features that had drifted apart over years of patches.' },
-          { label: 'Enhance collaboration.', text: 'Add comments, tagging, and simultaneous editing — features long requested by users.' },
+          { label: 'Enhance collaboration.', text: 'Add comments, tagging, and simultaneous editing - features long requested by users.' },
         ],
         outro: ['These goals were the right destination. They turned out not to be the right route.'],
       },
@@ -3112,9 +3116,9 @@ const PROJECTS = [
       { id: 'insights', title: 'Key Insights',
         body: ['Four insights emerged from the research, and each one shaped a decision later in the project:'],
         list: [
-          { label: 'Editing felt disconnected from reading.', text: 'Lighthouse has three distinct user types — admins, content managers, and end users (typically call center reps) — and each one was looking at a completely different interface. The content managers had it worst: every time they updated a piece of content, they had to jump to a separate tab or window to see what the end user would actually see. That gap created constant low-grade anxiety — did I just break something? — and slowed work down because every edit required a context switch to verify it. Notion became our reference point here: editing and reading should feel nearly identical, so you trust what you\'re writing.' },
+          { label: 'Editing felt disconnected from reading.', text: 'Lighthouse has three distinct user types - admins, content managers, and end users (typically call center reps) - and each one was looking at a completely different interface. The content managers had it worst: every time they updated a piece of content, they had to jump to a separate tab or window to see what the end user would actually see. That gap created constant low-grade anxiety - did I just break something? - and slowed work down because every edit required a context switch to verify it. Notion became our reference point here: editing and reading should feel nearly identical, so you trust what you\'re writing.' },
           { label: 'Navigation was disorienting.', text: 'Users frequently lost track of where they were in the product. The information architecture had grown organically, not deliberately.' },
-          { label: 'Collaboration was a real gap.', text: 'There was strong demand for the ability to share notes, comment on documents, and work alongside teammates — features competitors offered and Lighthouse didn\'t.' },
+          { label: 'Collaboration was a real gap.', text: 'There was strong demand for the ability to share notes, comment on documents, and work alongside teammates - features competitors offered and Lighthouse didn\'t.' },
           { label: 'Mobile didn\'t really work.', text: 'The platform wasn\'t optimized for smaller screens, which had become a daily friction for users in the field.' },
         ],
       },
@@ -3124,12 +3128,12 @@ const PROJECTS = [
           'A particular focus: the article versioning model (Draft → Active → Past versions), which was central to how content managers worked but had no clear conceptual model in the old product.',
         ],
         media: [
-          { diagram: 'user-flow', caption: 'Article versioning flow — Draft → Active → Past', kind: 'wide' },
+          { diagram: 'user-flow', caption: 'Article versioning flow - Draft → Active → Past', kind: 'wide' },
         ],
       },
       { id: 'wireframing', title: 'Wireframing',
         body: [
-          'Wireframes explored layout structures, content hierarchy, and how responsiveness would work across devices — particularly for the densest screens like the article editor.',
+          'Wireframes explored layout structures, content hierarchy, and how responsiveness would work across devices - particularly for the densest screens like the article editor.',
         ],
         sideMedia: { src: 'redesign/wireframing.png', caption: 'Wireframes' },
       },
@@ -3137,12 +3141,12 @@ const PROJECTS = [
         body: [
           'I built interactive prototypes to validate flows, test interactions, and gather early feedback from product and engineering before committing to high-fidelity design.',
         ],
-        sideMedia: { src: 'redesign/scrapped_design_prototype.mov', caption: 'Prototype — early interactions' },
+        sideMedia: { src: 'redesign/scrapped_design_prototype.mov', caption: 'Prototype - early interactions' },
       },
       { id: 'testing', title: 'Usability Testing',
         body: [
           'We tested the prototypes with existing users to validate design decisions before going further.',
-          'The testing surfaced something we hadn\'t expected — and that became the inflection point of the entire project.',
+          'The testing surfaced something we hadn\'t expected - and that became the inflection point of the entire project.',
         ],
       },
       { id: 'setbacks', title: 'Setbacks',
@@ -3152,10 +3156,10 @@ const PROJECTS = [
         ],
         list: [
           { label: 'Dev estimates came in too high.', text: 'Implementation projected three full-time engineering teams working for nine months. That timeline didn\'t fit any reasonable product roadmap.' },
-          { label: 'Usability testing flagged adoption risk.', text: 'Every individual change in the redesign came from requests users had made over the years — but the cumulative effect of shipping them all together was too far from what those same users could accept. They\'d built workflows around the old patterns, and the data suggested low adoption if we shipped it as one release.' },
+          { label: 'Usability testing flagged adoption risk.', text: 'Every individual change in the redesign came from requests users had made over the years - but the cumulative effect of shipping them all together was too far from what those same users could accept. They\'d built workflows around the old patterns, and the data suggested low adoption if we shipped it as one release.' },
           { label: 'Users needed features now.', text: 'The roadmap had specific features users were urgently waiting on. A nine-month redesign cycle meant putting those on hold.' },
           { label: 'Two products in parallel was untenable.', text: 'Not all users wanted to upgrade. Supporting both interfaces during a long migration would have meant effectively maintaining two different products.' },
-          { label: 'Data migration was a non-starter.', text: 'Consolidating certain features would have created significant downstream problems migrating existing client data — a cost we couldn\'t justify imposing on customers who had years of content invested in the old structure.' },
+          { label: 'Data migration was a non-starter.', text: 'Consolidating certain features would have created significant downstream problems migrating existing client data - a cost we couldn\'t justify imposing on customers who had years of content invested in the old structure.' },
         ],
         outro: ['We had a choice: push through and hope, or pivot.'],
       },
@@ -3167,14 +3171,14 @@ const PROJECTS = [
           { label: 'Optimize for mobile.', text: '' },
         ],
         outro: [
-          'The other two — consolidating redundant features and adding collaboration tools — were paused, not killed. They\'d return in later phases, sequenced around what users actually needed first.',
+          'The other two - consolidating redundant features and adding collaboration tools - were paused, not killed. They\'d return in later phases, sequenced around what users actually needed first.',
           'The new approach: a focused facelift that improved the parts of the product users touched most, on the foundation of a real design system and grid, without breaking the workflows people relied on.',
         ],
       },
       { id: 'facelift-enduser', title: 'End-User Experience',
         group: 'facelift', groupLabel: 'The Facelift',
         body: [
-          'The facelift focused on the moments users hit most — homepage, search, article view, content editing — and brought them onto a shared visual and structural foundation.',
+          'The facelift focused on the moments users hit most - homepage, search, article view, content editing - and brought them onto a shared visual and structural foundation.',
           'The homepage kept what worked (search-first, customer\'s branded content, news, employee spotlight) but cleaned up the chrome around it. The article view got a clearer hierarchy, persistent navigation, and a right-side rail that surfaces related content and AI assistance.',
         ],
         media: [
@@ -3185,46 +3189,46 @@ const PROJECTS = [
       { id: 'facelift-grid', title: 'Responsive Grid System',
         group: 'facelift', groupLabel: 'The Facelift',
         body: [
-          'I co-designed the responsive grid system that became the foundation for the redesign — and the basis for the design system going forward.',
-          'The grid handles the full range of platform states: no side panels, left side panel, right side panel, both side panels — each across five breakpoints. It\'s the first time the product has had a unified spatial system that designers and engineers can both work from.',
+          'I co-designed the responsive grid system that became the foundation for the redesign - and the basis for the design system going forward.',
+          'The grid handles the full range of platform states: no side panels, left side panel, right side panel, both side panels - each across five breakpoints. It\'s the first time the product has had a unified spatial system that designers and engineers can both work from.',
         ],
         sideMedia: { src: 'redesign/responsive-grid.png' },
         inlineDemo: 'grid',
-        inlineDemoCaption: 'Responsive grid — panel states × breakpoints (interactive)',
+        inlineDemoCaption: 'Responsive grid - panel states × breakpoints (interactive)',
       },
       { id: 'facelift-consolidation', title: 'Consolidating the Editing Experience',
         group: 'facelift', groupLabel: 'The Facelift',
         body: [
-          'The biggest shift in the facelift — and the one I\'m proudest of — was closing the gap between editing and reading.',
-          'Lighthouse has three user types looking at different interfaces: admins, content managers, and end users. Of those, the content manager has the highest cognitive load — they\'re writing the content that powers everyone else\'s work — and the old product made their job harder by showing them an editor that looked nothing like what their readers would see. Every save was followed by a tab switch to verify nothing had broken.',
-          'In the facelift, the content manager\'s view and the end user\'s view sit on the same structural foundation. Same field types, same layout, same content blocks. The editor sees what the reader will see — minus the editing affordances — so they can write with confidence instead of constantly verifying.',
+          'The biggest shift in the facelift - and the one I\'m proudest of - was closing the gap between editing and reading.',
+          'Lighthouse has three user types looking at different interfaces: admins, content managers, and end users. Of those, the content manager has the highest cognitive load - they\'re writing the content that powers everyone else\'s work - and the old product made their job harder by showing them an editor that looked nothing like what their readers would see. Every save was followed by a tab switch to verify nothing had broken.',
+          'In the facelift, the content manager\'s view and the end user\'s view sit on the same structural foundation. Same field types, same layout, same content blocks. The editor sees what the reader will see - minus the editing affordances - so they can write with confidence instead of constantly verifying.',
           'We can\'t fully replicate the Notion model (Lighthouse is a much more complex system with more field types, more permission states, and more content structures), but we could borrow the principle: minimize the deviation between writing and reading.',
         ],
         outro: [
-          'My specific contribution: I designed the field components that made this consolidation possible — the input fields and the view-only fields — and the interaction model that governs how a single field behaves across edit and view-only states. The system-level decision to consolidate views could only ship if the components underneath it were designed to behave coherently across both modes. That\'s the piece I owned.',
+          'My specific contribution: I designed the field components that made this consolidation possible - the input fields and the view-only fields - and the interaction model that governs how a single field behaves across edit and view-only states. The system-level decision to consolidate views could only ship if the components underneath it were designed to behave coherently across both modes. That\'s the piece I owned.',
         ],
         media: [
-          { src: 'redesign/58.png', caption: 'Content manager view vs. end-user view — same structural foundation', kind: 'wide' },
-          { src: 'redesign/32.png', caption: 'Field components — table view', kind: 'sq' },
+          { src: 'redesign/58.png', caption: 'Content manager view vs. end-user view - same structural foundation', kind: 'wide' },
+          { src: 'redesign/32.png', caption: 'Field components - table view', kind: 'sq' },
           { src: 'redesign/50.png', caption: 'Editor with field-level controls', kind: 'sq' },
         ],
       },
       { id: 'facelift-sidebar', title: 'Right Sidebar & AI Assistant',
         group: 'facelift', groupLabel: 'The Facelift',
         body: [
-          'A new right sidebar was added in editing mode, designed to surface contextual tools without cluttering the main workspace — history, analytics, permissions, and properties, each opening as a focused panel.',
+          'A new right sidebar was added in editing mode, designed to surface contextual tools without cluttering the main workspace - history, analytics, permissions, and properties, each opening as a focused panel.',
           'This also set the stage for the AI Assistant, which sits in the same sidebar real estate and lets users ask questions of the content directly inside the article they\'re working on.',
         ],
         parallax: true,
-        sideMedia: { placeholder: true, caption: 'Right sidebar — contextual panels' },
+        sideMedia: { placeholder: true, caption: 'Right sidebar - contextual panels' },
         media: [
-          { placeholder: true, caption: 'AI Assistant — in-article Q&A' },
+          { placeholder: true, caption: 'AI Assistant - in-article Q&A' },
           { src: 'redesign/new-design-sidebar.mov', caption: 'Sidebar prototype' },
         ],
       },
       { id: 'scrapped', title: 'The Scrapped Design',
         body: [
-          'The original ambitious redesign isn\'t lost — it\'s documented and preserved as future direction for the platform. Not shipped, but informing future work.',
+          'The original ambitious redesign isn\'t lost - it\'s documented and preserved as future direction for the platform. Not shipped, but informing future work.',
         ],
         sideGallery: [
           { src: 'redesign/scrapped-1-collapsed.png',  caption: 'Sidebar collapsed' },
@@ -3237,12 +3241,12 @@ const PROJECTS = [
       },
       { id: 'outcome', title: 'Outcome & Key Takeaways',
         body: [
-          'Although the full redesign was ultimately scrapped, the process gave us a much clearer understanding of the platform\'s real constraints, user needs, and technical realities. The pivot — from a complete overhaul to a focused facelift — produced something that better aligned with what users and the business could actually absorb.',
-          'The shipped facelift improves the highest-traffic moments of the product, runs on a unified responsive grid system, and meaningfully closes the gap between content managers and the end users they\'re writing for. The structural groundwork is now in place for future phases — including the feature consolidation and collaboration work that got paused.',
+          'Although the full redesign was ultimately scrapped, the process gave us a much clearer understanding of the platform\'s real constraints, user needs, and technical realities. The pivot - from a complete overhaul to a focused facelift - produced something that better aligned with what users and the business could actually absorb.',
+          'The shipped facelift improves the highest-traffic moments of the product, runs on a unified responsive grid system, and meaningfully closes the gap between content managers and the end users they\'re writing for. The structural groundwork is now in place for future phases - including the feature consolidation and collaboration work that got paused.',
         ],
         list: [
-          { label: 'Prioritize user needs through consistent research and testing.', text: 'The feedback gathered throughout the project was what made the pivot possible — and the right call. Without it, we\'d have shipped a redesign users wouldn\'t have adopted.' },
-          { label: 'A simple, intuitive interface is what reduces frustration — not novelty.', text: 'Small, targeted changes to existing user flows significantly improved usability in testing.' },
+          { label: 'Prioritize user needs through consistent research and testing.', text: 'The feedback gathered throughout the project was what made the pivot possible - and the right call. Without it, we\'d have shipped a redesign users wouldn\'t have adopted.' },
+          { label: 'A simple, intuitive interface is what reduces frustration - not novelty.', text: 'Small, targeted changes to existing user flows significantly improved usability in testing.' },
           { label: 'Components are where systems live or die.', text: 'Decisions like "consolidate the editing and reading views" sound like UX architecture, but they only work if the underlying components are designed to behave coherently across every context they appear in. The system-level call and the component-level work are inseparable.' },
           { label: 'Collaboration tools should be integrated seamlessly, not bolted on.', text: 'Pausing the collaboration work was the right call, because doing it well requires more design space than a facelift allows. It\'s worth shipping later, properly, rather than now, poorly.' },
         ],
@@ -3262,35 +3266,35 @@ const PROJECTS = [
     title: 'Advanced Search',
     subtitle: 'Redesigning search and filtering in an enterprise knowledge management system',
     role: 'Lead Designer',
-    year: '2025',
-    timeline: '2025',
-    platform: 'Web — responsive',
+    year: '2026',
+    timeline: '2026',
+    platform: 'Web - responsive',
     team: 'Lead designer · PMs · engineers',
     sector: 'B2B SaaS · Enterprise knowledge',
     kind: 'B2B SaaS',
     company: 'KMS Lighthouse',
     tile: 'wide',
-    summary: 'A two-stage redesign of the Advanced Search module inside KMS Lighthouse, a knowledge management system used by enterprise support teams. Stage one translated the interface to the Spark design system. Stage two rebuilt filtering as a scalable tool — explored as four concepts, then narrowed to two directions now running as a live A/B test.',
+    summary: 'A two-stage redesign of the Advanced Search module inside KMS Lighthouse, a knowledge management system used by enterprise support teams. Stage one translated the interface to the Spark design system. Stage two rebuilt filtering as a scalable tool - explored as four concepts, then narrowed to two directions now running as a live A/B test.',
     heroImage: 'advanced-search/hero-devices.png',
     heroBare: true,
     swatch: { from: '#0E4258', to: '#07222E', mark: '#5BC6D6' },
     sections: [
       { id: 'problem', title: 'The problem',
         body: [
-          'The legacy interface no longer matched our design guidelines, and its filtering was the weakest part of the experience. As the platform grew to handle larger datasets and more varied user roles, the existing filter tools stopped scaling — precise searches became slow and error-prone.',
+          'The legacy interface no longer matched our design guidelines, and its filtering was the weakest part of the experience. As the platform grew to handle larger datasets and more varied user roles, the existing filter tools stopped scaling - precise searches became slow and error-prone.',
           'Four issues drove the work:',
         ],
         list: [
-          { label: 'Visual inconsistency —', text: 'the UI sat outside the updated design system, fragmenting the wider product.' },
-          { label: 'Cluttered layout —', text: 'dense and hard to scan, especially for new users.' },
-          { label: 'Limited accessibility —', text: 'nested dropdowns and icon-only buttons blocked keyboard and screen reader users.' },
-          { label: 'High cognitive load —', text: 'users combined filters manually with no visible logic, causing frequent mistakes.' },
+          { label: 'Visual inconsistency -', text: 'the UI sat outside the updated design system, fragmenting the wider product.' },
+          { label: 'Cluttered layout -', text: 'dense and hard to scan, especially for new users.' },
+          { label: 'Limited accessibility -', text: 'nested dropdowns and icon-only buttons blocked keyboard and screen reader users.' },
+          { label: 'High cognitive load -', text: 'users combined filters manually with no visible logic, causing frequent mistakes.' },
         ],
         sideMedia: { src: 'advanced-search/filters-00-legacy-zone.png', caption: 'The legacy filtering area targeted in stage 2' },
       },
-      { id: 'stage-1', title: 'Stage 1 — Spark UI translation',
+      { id: 'stage-1', title: 'Stage 1 - Spark UI translation',
         body: [
-          'The first stage brought the screen onto Spark, the company design system — every element rebuilt from shared components and tokens instead of one-off styles.',
+          'The first stage brought the screen onto Spark, the company design system - every element rebuilt from shared components and tokens instead of one-off styles.',
         ],
         list: [
           { label: 'Translated the page to the Spark design system:', text: 'typography, spacing, and components rebuilt on the shared foundation.' },
@@ -3316,33 +3320,33 @@ const PROJECTS = [
           'A few guidelines set the bar for whatever the filtering tool became:',
         ],
         list: [
-          { label: 'Build on the Spark foundation —', text: 'a modular, accessible system, not one-off styles.' },
-          { label: 'Keep AND/OR logic explicit —', text: 'every combination visible to the user, never inferred.' },
-          { label: 'Scale to dozens of filter types —', text: 'without crowding the page.' },
-          { label: 'Design for keyboard and screen readers first —', text: 'treat WCAG compliance as the baseline, not a pass at the end.' },
-          { label: 'Optimise for time-to-filter —', text: 'raise search success rates, and measure against usage analytics.' },
+          { label: 'Build on the Spark foundation -', text: 'a modular, accessible system, not one-off styles.' },
+          { label: 'Keep AND/OR logic explicit -', text: 'every combination visible to the user, never inferred.' },
+          { label: 'Scale to dozens of filter types -', text: 'without crowding the page.' },
+          { label: 'Design for keyboard and screen readers first -', text: 'treat WCAG compliance as the baseline, not a pass at the end.' },
+          { label: 'Optimise for time-to-filter -', text: 'raise search success rates, and measure against usage analytics.' },
         ],
       },
       { id: 'stage-2-wireframes', title: 'Ideation',
         group: 'stage-2', groupLabel: 'Stage 2',
         body: [
-          'Stage two opened with wide exploration. Filtering was wireframed as four competing concepts, each a different answer to two questions — where the filters live, and how multiple conditions combine — and each pressure-tested against the same result table.',
+          'Stage two opened with wide exploration. Filtering was wireframed as four competing concepts, each a different answer to two questions - where the filters live, and how multiple conditions combine - and each pressure-tested against the same result table.',
           'Concept 1 put everything in a collapsible side panel; concept 2 lifted the highest-traffic filters into a horizontal filter bar with applied-filter chips; concept 3 split a two-pane panel with a category rail; concept 4 framed filtering as an explicit condition builder. Collapsed, empty, and expanded states were drawn alongside each to see how it held up in use.',
         ],
         outro: [
-          'The wireframes didn\'t crown a layout. They surfaced two realizations that reframed the brief — search might no longer be the main event, and the screen\'s real job is bulk operating on groups, not single lookups.',
+          'The wireframes didn\'t crown a layout. They surfaced two realizations that reframed the brief - search might no longer be the main event, and the screen\'s real job is bulk operating on groups, not single lookups.',
         ],
         media: [
-          { src: 'advanced-search/wireframes/wireframe-concept-A-drawer.png',            caption: 'Concept 1 — side panel', kind: 'sq' },
-          { src: 'advanced-search/wireframes/wireframe-concept-B-filter-bar.png',         caption: 'Concept 2 — filter bar', kind: 'sq' },
-          { src: 'advanced-search/wireframes/wireframe-concept-C-two-pane.png',           caption: 'Concept 3 — two-pane', kind: 'sq' },
-          { src: 'advanced-search/wireframes/wireframe-concept-D-conditions.png',         caption: 'Concept 4 — conditions', kind: 'sq' },
-          { src: 'advanced-search/wireframes/wireframe-state-A-drawer-collapsed.png',     caption: 'Concept 1 — collapsed rail', kind: 'sq' },
-          { src: 'advanced-search/wireframes/wireframe-state-B-filter-menu-open.png',     caption: 'Concept 2 — filter menu open', kind: 'sq' },
-          { src: 'advanced-search/wireframes/wireframe-state-B-more-filters-overlay.png', caption: 'Concept 2 — more-filters drawer', kind: 'sq' },
-          { src: 'advanced-search/wireframes/wireframe-state-D-add-filter-menu.png',      caption: 'Concept 4 — add-filter menu', kind: 'sq' },
-          { src: 'advanced-search/wireframes/wireframe-state-empty.png',                  caption: 'Empty state — suggested searches', kind: 'sq' },
-          { src: 'advanced-search/wireframes/wireframe-state-row-expanded.png',           caption: 'Row expanded — version matches', kind: 'sq' },
+          { src: 'advanced-search/wireframes/wireframe-concept-A-drawer.png',            caption: 'Concept 1 - side panel', kind: 'sq' },
+          { src: 'advanced-search/wireframes/wireframe-concept-B-filter-bar.png',         caption: 'Concept 2 - filter bar', kind: 'sq' },
+          { src: 'advanced-search/wireframes/wireframe-concept-C-two-pane.png',           caption: 'Concept 3 - two-pane', kind: 'sq' },
+          { src: 'advanced-search/wireframes/wireframe-concept-D-conditions.png',         caption: 'Concept 4 - conditions', kind: 'sq' },
+          { src: 'advanced-search/wireframes/wireframe-state-A-drawer-collapsed.png',     caption: 'Concept 1 - collapsed rail', kind: 'sq' },
+          { src: 'advanced-search/wireframes/wireframe-state-B-filter-menu-open.png',     caption: 'Concept 2 - filter menu open', kind: 'sq' },
+          { src: 'advanced-search/wireframes/wireframe-state-B-more-filters-overlay.png', caption: 'Concept 2 - more-filters drawer', kind: 'sq' },
+          { src: 'advanced-search/wireframes/wireframe-state-D-add-filter-menu.png',      caption: 'Concept 4 - add-filter menu', kind: 'sq' },
+          { src: 'advanced-search/wireframes/wireframe-state-empty.png',                  caption: 'Empty state - suggested searches', kind: 'sq' },
+          { src: 'advanced-search/wireframes/wireframe-state-row-expanded.png',           caption: 'Row expanded - version matches', kind: 'sq' },
         ],
       },
       { id: 'stage-2-decision', title: 'The decision point',
@@ -3351,42 +3355,42 @@ const PROJECTS = [
           'Two understandings reframed the brief.',
         ],
         list: [
-          { label: 'Search may no longer be the main event.', text: 'Keyword search was the original ask — the feature clients first requested — but the filtering built alongside it now drives a faster drill-down. Users reach their target quicker by narrowing than by typing.' },
-          { label: 'The screen\'s real job is bulk operating on groups.', text: 'Most sessions aren\'t a single lookup — they isolate a large set of items to act on together: exporting, editing, updating. Much of it recurs, runs on set time periods, and often targets the same items.' },
+          { label: 'Search may no longer be the main event.', text: 'Keyword search was the original ask - the feature clients first requested - but the filtering built alongside it now drives a faster drill-down. Users reach their target quicker by narrowing than by typing.' },
+          { label: 'The screen\'s real job is bulk operating on groups.', text: 'Most sessions aren\'t a single lookup - they isolate a large set of items to act on together: exporting, editing, updating. Much of it recurs, runs on set time periods, and often targets the same items.' },
         ],
         outro: [
-          'So rather than crown a wireframe on layout alone, we set up an A/B test to answer a sharper question — has filtering outgrown active search, and do reusable filter sets make recurring work faster? Two concepts went forward.',
+          'So rather than crown a wireframe on layout alone, we set up an A/B test to answer a sharper question - has filtering outgrown active search, and do reusable filter sets make recurring work faster? Two concepts went forward.',
         ],
       },
-      { id: 'stage-2-concept-a', title: 'Concept A — Filter side bar',
+      { id: 'stage-2-concept-a', title: 'Concept A - Filter side bar',
         group: 'stage-2', groupLabel: 'Stage 2',
         prototype: 'advanced-search/sidebar-demo.mp4',
-        prototypeCaption: 'Filter side bar — prototype walkthrough',
+        prototypeCaption: 'Filter side bar - prototype walkthrough',
         body: [
-          'Every filter available at all times, with search kept as a prominent trigger for narrowing the list — the scalable-yet-familiar take on the existing advanced-search page, rebuilt to hold dozens of filter types without crowding.',
+          'Every filter available at all times, with search kept as a prominent trigger for narrowing the list - the scalable-yet-familiar take on the existing advanced-search page, rebuilt to hold dozens of filter types without crowding.',
           'Filters organise into collapsible groups: search parameters, high level filters, and drill-down filters. Editing a filter stages it; Apply filters commits it, so the results table always reflects a deliberate choice rather than every keystroke. Each group carries a count computed from its own selections, so a badge can never drift from what is actually selected.',
-          'Global filters follow a client-defined hierarchy where each level narrows the next — region, country, city — so a parent constrains its children without ever gating them.',
+          'Global filters follow a client-defined hierarchy where each level narrows the next - region, country, city - so a parent constrains its children without ever gating them.',
         ],
         outro: [
           'What it tests: a more scalable version of what users already know.',
         ],
         media: [
           { src: 'advanced-search/concept-a-01-empty.png',                  caption: 'Search prominent, filter panel with collapsed groups', kind: 'sq' },
-          { src: 'advanced-search/concept-a-02-search-applied.png',          caption: 'Keyword searched — results with the panel collapsed',  kind: 'sq' },
-          { src: 'advanced-search/concept-a-03-search-settings.png',         caption: 'Search settings — language, scope, match type',        kind: 'sq' },
-          { src: 'advanced-search/concept-a-04-content-filters.png',         caption: 'Content filters — source, activity, global filters',   kind: 'sq' },
+          { src: 'advanced-search/concept-a-02-search-applied.png',          caption: 'Keyword searched - results with the panel collapsed',  kind: 'sq' },
+          { src: 'advanced-search/concept-a-03-search-settings.png',         caption: 'Search settings - language, scope, match type',        kind: 'sq' },
+          { src: 'advanced-search/concept-a-04-content-filters.png',         caption: 'Content filters - source, activity, global filters',   kind: 'sq' },
           { src: 'advanced-search/concept-a-05-content-filter-selection.png', caption: 'Selecting a template in content filters',              kind: 'sq' },
           { src: 'advanced-search/concept-a-06-content-filters-applied.png', caption: 'Content filters applied, results narrowed',            kind: 'sq' },
-          { src: 'advanced-search/concept-a-07-items-filters.png',           caption: 'Items filters — status and item groups',              kind: 'sq' },
-          { src: 'advanced-search/concept-a-08-items-filters-applied.png',   caption: 'Items filter applied — status set to Online',          kind: 'sq' },
+          { src: 'advanced-search/concept-a-07-items-filters.png',           caption: 'Items filters - status and item groups',              kind: 'sq' },
+          { src: 'advanced-search/concept-a-08-items-filters-applied.png',   caption: 'Items filter applied - status set to Online',          kind: 'sq' },
         ],
       },
-      { id: 'stage-2-concept-b', title: 'Concept B — Condition bar',
+      { id: 'stage-2-concept-b', title: 'Concept B - Condition bar',
         group: 'stage-2', groupLabel: 'Stage 2',
         prototype: 'advanced-search/conditionbar-demo.mp4',
-        prototypeCaption: 'Condition bar — prototype walkthrough',
+        prototypeCaption: 'Condition bar - prototype walkthrough',
         body: [
-          'Search is still present but de-emphasized. Users add filters as they need them and save the combination as a named filter set to re-run later — built for the recurring, scheduled bulk work the screen is actually used for.',
+          'Search is still present but de-emphasized. Users add filters as they need them and save the combination as a named filter set to re-run later - built for the recurring, scheduled bulk work the screen is actually used for.',
         ],
         outro: [
           'What it tests: whether filtering has outgrown the need to actively type a keyword, and whether saved filter sets make ongoing work faster than starting from a search each time.',
@@ -3396,14 +3400,14 @@ const PROJECTS = [
           { src: 'advanced-search/concept-b-02-add-filter.png',       caption: 'Adding a filter from the condition bar',          kind: 'sq' },
           { src: 'advanced-search/concept-b-03-filter-selection.png', caption: 'Selecting values within a filter',                kind: 'sq' },
           { src: 'advanced-search/concept-b-04-filters-selected.png', caption: 'Filters staged in the condition bar',             kind: 'sq' },
-          { src: 'advanced-search/concept-b-05-results.png',          caption: 'Results — items view, 100 matches',               kind: 'sq' },
+          { src: 'advanced-search/concept-b-05-results.png',          caption: 'Results - items view, 100 matches',               kind: 'sq' },
           { src: 'advanced-search/concept-b-06-bulk-actions.png',     caption: 'Bulk actions on the selected set',                kind: 'sq' },
         ],
       },
       { id: 'stage-2-ab-test', title: 'A/B test',
         group: 'stage-2', groupLabel: 'Stage 2',
         body: [
-          'The two concepts go head to head on the questions the wireframes raised — not which layout looks better, but whether filtering has outgrown search, and whether reusable sets speed up the recurring work.',
+          'The two concepts go head to head on the questions the wireframes raised - not which layout looks better, but whether filtering has outgrown search, and whether reusable sets speed up the recurring work.',
         ],
         compare: {
           corner: 'How they compare',
@@ -3412,19 +3416,19 @@ const PROJECTS = [
             { title: 'Concept B', label: 'Filter sets for repeat work' },
           ],
           rows: [
-            { dim: 'Search’s role',   a: 'Kept prominent — the trigger that narrows the list.',                    b: 'Present but de-emphasized — filters lead, search follows.' },
+            { dim: 'Search’s role',   a: 'Kept prominent - the trigger that narrows the list.',                    b: 'Present but de-emphasized - filters lead, search follows.' },
             { dim: 'Finding a filter',     a: 'Every filter on screen, grouped and always available.',                 b: 'Add filters as you need them; save the combination.' },
             { dim: 'Repeat work',          a: 'Rebuilt each session from the same controls.',                          b: 'Named filter sets re-run scheduled, recurring work.' },
-            { dim: 'Who it favours',       a: 'Users who know the existing page — a scalable version of the familiar.', b: 'Power users running the same bulk operations on set periods.' },
+            { dim: 'Who it favours',       a: 'Users who know the existing page - a scalable version of the familiar.', b: 'Power users running the same bulk operations on set periods.' },
             { dim: 'Hypothesis',           a: 'A more scalable version of what users already know.',                    b: 'Filtering has outgrown active search, and saved sets make ongoing work faster.' },
           ],
-          note: 'Both concepts are currently live in an A/B test — results are pending. The outcome will decide how filtering scales next.',
+          note: 'Both concepts are currently live in an A/B test - results are pending. The outcome will decide how filtering scales next.',
         },
       },
       { id: 'outcome', title: 'Outcome',
         body: [
-          'The Spark translation shipped first, on the shared foundation. Filtering followed as two competing directions rather than one answer — a more scalable take on the familiar page, and a filter-set model built for recurring bulk work.',
-          'Both are now running head to head in a live A/B test, results pending. The winner sets how filtering scales — which concept holds up as new filter types and heavier, repeat workloads are added.',
+          'The Spark translation shipped first, on the shared foundation. Filtering followed as two competing directions rather than one answer - a more scalable take on the familiar page, and a filter-set model built for recurring bulk work.',
+          'Both are now running head to head in a live A/B test, results pending. The winner sets how filtering scales - which concept holds up as new filter types and heavier, repeat workloads are added.',
         ],
       },
     ],
@@ -3441,7 +3445,7 @@ const PROJECTS = [
 const RESUME = {
   name: 'Raz Silberman',
   title: 'Product Designer',
-  blurb: 'A product designer with an industrial-design foundation and a naval officer\'s read on people and teams. I design B2B and B2B2C SaaS end-to-end — research, structure, interaction, and visual — with a fast, design-thinking-led process and a stubborn focus on the details that make work actually ship.',
+  blurb: 'A product designer with an industrial-design foundation and a naval officer\'s read on people and teams. I design B2B and B2B2C SaaS end-to-end - research, structure, interaction, and visual - with a fast, design-thinking-led process and a stubborn focus on the details that make work actually ship.',
   contact: [
     { k: 'Location', v: 'Tel Aviv · Israel' },
   ],
@@ -3449,19 +3453,19 @@ const RESUME = {
     {
       role: 'Product Designer',
       org: 'KMS Lighthouse (B2B SaaS)',
-      when: '2023 — Present',
+      when: '2023 - Present',
       where: 'Tel Aviv',
       notes: [
-        'Led the redesign of a B2B2C Help Center — admin, customization studio, and end-user surfaces — with accessibility built in.',
+        'Led the redesign of a B2B2C Help Center - admin, customization studio, and end-user surfaces - with accessibility built in.',
         'Helped drive the company\'s first design system, emphasizing consistency and usability across the whole product.',
         'Ran a comprehensive product redesign, pairing the new system with feature work that lifted the overall experience.',
-        'Grounded features in research — brainstorming sessions, user interviews, and iterative wireframing.',
+        'Grounded features in research - brainstorming sessions, user interviews, and iterative wireframing.',
       ],
     },
     {
       role: 'Product Designer · S&O design team',
       org: 'Dropbox',
-      when: '2021 — 2022',
+      when: '2021 - 2022',
       where: 'Remote',
       notes: [
         'Contributed across the product lifecycle with designers, engineers, and PMs, untangling complex user journeys for new features.',
@@ -3472,30 +3476,30 @@ const RESUME = {
     {
       role: 'Acting Studio Manager & Senior Designer',
       org: 'Librus Product Solution Center',
-      when: '2019 — 2020',
+      when: '2019 - 2020',
       where: 'Israel',
       notes: [
         'Managed a team of designers and oversaw their projects end-to-end.',
-        'Owned client relationships — outreach, consultation meetings, and new business.',
+        'Owned client relationships - outreach, consultation meetings, and new business.',
       ],
     },
     {
       role: 'Industrial Designer',
       org: 'Product & industrial design',
-      when: '2017 — 2020',
+      when: '2017 - 2020',
       where: 'Israel',
       notes: [
-        'Product and industrial design work — the craft foundation the rest of my practice is built on.',
+        'Product and industrial design work - the craft foundation the rest of my practice is built on.',
       ],
     },
   ],
   education: [
-    { role: 'Diploma, User Experience Design', org: 'Create Future School', when: '2019 — 2020' },
-    { role: 'B.Design, Industrial Design', org: 'HIT — Holon Institute of Technology', when: '2012 — 2016' },
-    { role: 'Exchange, Faculty of Fine Arts', org: 'Lisbon University', when: '2014 — 2015' },
+    { role: 'Diploma, User Experience Design', org: 'Create Future School', when: '2019 - 2020' },
+    { role: 'B.Design, Industrial Design', org: 'HIT - Holon Institute of Technology', when: '2012 - 2016' },
+    { role: 'Exchange, Faculty of Fine Arts', org: 'Lisbon University', when: '2014 - 2015' },
   ],
   military: [
-    { role: 'Major (reserves)', org: 'Israeli Navy', when: '2005 — 2012' },
+    { role: 'Major (reserves)', org: 'Israeli Navy', when: '2005 - 2012' },
   ],
   capabilities: [
     'Product design', 'UX / UI design', 'Design systems', 'User research', 'Interaction design',
@@ -3507,7 +3511,7 @@ const RESUME = {
     'SolidWorks', 'Keyshot', 'Fusion 360', 'Onshape', 'Elementor',
   ],
   ai: [
-    'Claude Code — coded prototypes & UI',
+    'Claude Code - coded prototypes & UI',
     'Design-to-code with Claude + Figma MCP',
     'AI design systems & token pipelines',
     'Rapid prototyping (flows, modals, components)',
@@ -3528,7 +3532,7 @@ window.RESUME = RESUME;
 </script>
 <script>
 /* ============================================================
-   HELP CENTER FLOW ENGINE — data + layered layout + SVG builders
+   HELP CENTER FLOW ENGINE - data + layered layout + SVG builders
    ------------------------------------------------------------
    Plain JS (no JSX) so it stays out of Babel's way. Everything
    here is presentation-neutral: colours are passed in as CSS
@@ -3544,7 +3548,7 @@ const S = (tag, attrs) => {
   if (attrs) for (const k in attrs) el.setAttribute(k, attrs[k]);
   return el;
 };
-/* colour helper — tints are always derived, never literal */
+/* colour helper - tints are always derived, never literal */
 const tint = (c, pct) => `color-mix(in oklab, ${c} ${pct}%, transparent)`;
 
 /* Bar tokens. These are the only colour identifiers the data carries;
@@ -3560,13 +3564,13 @@ const BAR = {
 };
 
 /* ============================================================
-   FLOW DATA — rebuilt from two FigJam boards
+   FLOW DATA - rebuilt from two FigJam boards
    node: [id, label, kind, zone?]   edge: [from, to, label?, soft?]
    kind: entry | screen | action | decision | dialog | state | terminal
    ============================================================ */
 const FLOWS = {};
 
-/* ---- FLOW A — Admin access & routing ---- */
+/* ---- FLOW A - Admin access & routing ---- */
 FLOWS.admin = {
   id: 'admin',
   name: 'Admin access & routing',
@@ -3574,7 +3578,7 @@ FLOWS.admin = {
   zones: [
     { id: 'auth',  name: 'Authentication',              color: BAR.neutral },
     { id: 'route', name: 'Role & site routing',         color: BAR.sky },
-    { id: 'kms',   name: 'KMS admin — customers panel',  color: BAR.tomato },
+    { id: 'kms',   name: 'KMS admin - customers panel',  color: BAR.tomato },
     { id: 'hc',    name: 'HC site admin panel',          color: BAR.orchid }
   ],
   nodes: [
@@ -3641,7 +3645,7 @@ FLOWS.admin = {
   ]
 };
 
-/* ---- FLOW B — Homepage widget customization ---- */
+/* ---- FLOW B - Homepage widget customization ---- */
 FLOWS.widgets = {
   id: 'widgets',
   name: 'Homepage widget customization',
@@ -3650,12 +3654,12 @@ FLOWS.widgets = {
   branches: [
     {
       id: 'topic', name: 'Topic cards', color: BAR.tomato,
-      note: 'Richest component — card CRUD wraps a full article picker',
+      note: 'Richest component - card CRUD wraps a full article picker',
       nodes: [
         ['root',       'Topic cards',                  'entry'],
         ['add',        'Add a card',                   'action'],
         ['existing',   'Existing card',                'screen'],
-        ['empty',      'Empty state — no topic cards', 'state'],
+        ['empty',      'Empty state - no topic cards', 'state'],
         ['plus',       'Click ‘+’ button',             'action'],
         ['edit',       'Card editor',                  'screen'],
         ['drag',       'Drag & drop to reorder',       'action'],
@@ -3843,7 +3847,7 @@ FLOWS.widgets = {
     },
     {
       id: 'footer', name: 'Footer', color: BAR.indigo,
-      note: 'Simplest component — links only, no article picker',
+      note: 'Simplest component - links only, no article picker',
       nodes: [
         ['root',      'Footer',                  'entry'],
         ['addlink',   'Add link',                'action'],
@@ -3864,11 +3868,11 @@ FLOWS.widgets = {
       ]
     },
     {
-      /* deliberately achromatic — the shared lane every component funnels
+      /* deliberately achromatic - the shared lane every component funnels
          into, so it reads as a different kind of thing, not a 7th sibling */
       id: 'save', name: 'Save & validation', color: BAR.neutral,
       shared: true,
-      note: 'Consolidated from two duplicate clusters in the source board — applies to every component',
+      note: 'Consolidated from two duplicate clusters in the source board - applies to every component',
       nodes: [
         ['root',      'Save & validation',                       'entry'],
         ['save',      'Save changes',                            'action'],
@@ -3880,7 +3884,7 @@ FLOWS.widgets = {
         ['noart',     'No article connected',                    'state'],
         ['belowmin',  'Fewer than minimum articles',             'state'],
         ['combonote', 'Validation note in combo',                'state'],
-        ['dialog',    'Dialog — add what’s missing, then save',  'dialog'],
+        ['dialog',    'Dialog - add what’s missing, then save',  'dialog'],
         ['fielderr',  'Offending field marked red',              'state']
       ],
       edges: [
@@ -3909,7 +3913,7 @@ const KIND_LABEL = {
 };
 
 /* ============================================================
-   TYPE — resolved from the live stack, never declared here.
+   TYPE - resolved from the live stack, never declared here.
    The layout measures real text, so this has to be the same
    font the diagram actually renders in.
    ============================================================ */
@@ -3996,7 +4000,7 @@ function layoutFlow(rawNodes, rawEdges, opts) {
   edges.forEach(e => { out.get(e.from).push(e); inn.get(e.to).push(e); });
 
   // a decision that fans out to N siblings with the same answer only needs
-  // that answer written once — keep the middle one, blank the rest
+  // that answer written once - keep the middle one, blank the rest
   out.forEach(list => {
     const byLabel = new Map();
     list.forEach(e => {
@@ -4236,7 +4240,7 @@ function arrowPoly(xy, u, v, dir) {
 }
 
 /* ============================================================
-   SHAPES — the type of a step is carried by its silhouette,
+   SHAPES - the type of a step is carried by its silhouette,
    so the diagram survives greyscale and colour-blind viewing.
    ============================================================ */
 function shapeFor(n, color, opts) {
@@ -4287,7 +4291,7 @@ function shapeFor(n, color, opts) {
 }
 
 /* ============================================================
-   ZONE OUTLINE — staircase polygon over the ranks a zone occupies
+   ZONE OUTLINE - staircase polygon over the ranks a zone occupies
    ============================================================ */
 function zoneOutlines(members, L, pad) {
   const TB = L.direction === 'TB';
@@ -4372,7 +4376,7 @@ function drawNodeEl(n, color, opts) {
   if (opts.static) {
     g.setAttribute('aria-hidden', 'true');
   } else {
-    /* every step is a keyboard stop with its shape named — colour is
+    /* every step is a keyboard stop with its shape named - colour is
        never the only channel, and neither is hover */
     g.setAttribute('tabindex', '0');
     g.setAttribute('role', 'img');
@@ -4392,7 +4396,7 @@ function renderDiagram(L, opts) {
   const gZones = S('g'), gEdges = S('g'), gNodes = S('g'), gZoneLabels = S('g');
   [gZones, gEdges, gNodes, gZoneLabels].forEach(g => viewport.appendChild(g));
 
-  /* zone frames — preserve the grouping the source board expressed with colour.
+  /* zone frames - preserve the grouping the source board expressed with colour.
      Outlines hug the ranks the zone actually occupies (a staircase), so two
      zones sitting diagonally from each other never swallow one another. */
   if (opts.zones && opts.zones.length) {
@@ -4523,7 +4527,7 @@ function makeViewer(host, rendered, pad) {
 }
 
 /* ============================================================
-   FOCUS / HIGHLIGHT — hover, click-to-pin, and the keyboard
+   FOCUS / HIGHLIGHT - hover, click-to-pin, and the keyboard
    equivalent of both.
    ============================================================ */
 function wireFocus(rendered) {
@@ -4578,7 +4582,7 @@ function wireFocus(rendered) {
 }
 
 /* ============================================================
-   THUMBNAILS — rendered from the real layout engine with labels
+   THUMBNAILS - rendered from the real layout engine with labels
    off, so a card silhouette is honest rather than decorative.
    ============================================================ */
 const THUMB_ASPECT = 284 / 148;
@@ -4608,7 +4612,7 @@ function legendSwatch(kind) {
 }
 
 /* ============================================================
-   ENTIRE-FLOW SWIMLANES — all seven branches on one canvas
+   ENTIRE-FLOW SWIMLANES - all seven branches on one canvas
    ============================================================ */
 function renderAllLanes() {
   const branches = FLOWS.widgets.branches;
@@ -4672,7 +4676,7 @@ function renderAllLanes() {
       const key = b.id + ':' + n.id;
       el.dataset.id = key;
       el.dataset.branch = b.id;
-      el.setAttribute('aria-label', b.name + ' — ' + n.label + ', ' + (KIND_LABEL[n.kind] || n.kind));
+      el.setAttribute('aria-label', b.name + ' - ' + n.label + ', ' + (KIND_LABEL[n.kind] || n.kind));
       gn.appendChild(el);
       nodeEls.set(key, el);
       allNodes.push({ id: key, zone: b.id });
@@ -4708,7 +4712,7 @@ function renderAllLanes() {
 }
 
 /* ============================================================
-   TEXT ALTERNATIVE — the same graph as an ordered list, so the
+   TEXT ALTERNATIVE - the same graph as an ordered list, so the
    flow is readable by screen readers and indexable by crawlers.
    ============================================================ */
 function textAlt(rawNodes, rawEdges) {
@@ -4886,7 +4890,7 @@ function useTweaks(defaults) {
 
 // ── TweaksPanel ─────────────────────────────────────────────────────────────
 // Floating shell. Registers the protocol listener BEFORE announcing
-// availability — if the announce ran first, the host's activate could land
+// availability - if the announce ran first, the host's activate could land
 // before our handler exists and the toolbar toggle would silently no-op.
 // The close button posts __edit_mode_dismissed so the host's toolbar toggle
 // flips off in lockstep; the host echoes __deactivate_edit_mode back which
@@ -5032,7 +5036,7 @@ function TweakRadio({ label, value, options, onChange }) {
   const n = opts.length;
 
   // The active value is read by pointer-move handlers attached for the lifetime
-  // of a drag — ref it so a stale closure doesn't fire onChange for every move.
+  // of a drag - ref it so a stale closure doesn't fire onChange for every move.
   const valueRef = React.useRef(value);
   valueRef.current = value;
 
@@ -5160,7 +5164,7 @@ Object.assign(window, {
 
 </script>
 <script type="text/babel">
-// app.jsx — main portfolio app
+// app.jsx - main portfolio app
 const { useState, useEffect, useRef, useCallback, useMemo } = React;
 
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
@@ -5176,7 +5180,7 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
 }/*EDITMODE-END*/;
 
 const ACCENTS = {
-  signal:  '#F25450', /* tomato — Signal dark-mode primary (default) */
+  signal:  '#F25450', /* tomato - Signal dark-mode primary (default) */
   sage:    'oklch(0.74 0.05 145)',
   clay:    'oklch(0.72 0.08 45)',
   blue:    'oklch(0.72 0.08 240)',
@@ -5185,7 +5189,7 @@ const ACCENTS = {
   violet:  '#6B5FFF',
 };
 const ACCENTS_LIGHT = {
-  signal:  '#C42018', /* tomato (deepened) — Signal light-mode primary (default) */
+  signal:  '#C42018', /* tomato (deepened) - Signal light-mode primary (default) */
   sage:    'oklch(0.45 0.06 145)',
   clay:    'oklch(0.50 0.10 45)',
   blue:    'oklch(0.45 0.09 240)',
@@ -5206,7 +5210,7 @@ function CursorFilters() {
             values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 28 -14" result="g" />
           <feComposite in="SourceGraphic" in2="g" operator="atop" />
         </filter>
-        {/* Mask used by .cmyk-burst — punches the live cursor shape out of the burst.
+        {/* Mask used by .cmyk-burst - punches the live cursor shape out of the burst.
             The path runs the same puddleMorph animation, so the cutout stays in sync. */}
         <mask id="cmyk-cutout" maskUnits="objectBoundingBox" maskContentUnits="objectBoundingBox"
               x="0" y="0" width="1" height="1">
@@ -5239,7 +5243,7 @@ function BlobCursor({ enabled, style }) {
   const dotRef = useRef(null);
   const trailRef = useRef(null);
   const ringLayerRef = useRef(null);
-  /* Touch devices: matchMedia('(hover: none)') is the right detector — it
+  /* Touch devices: matchMedia('(hover: none)') is the right detector - it
      targets devices whose primary input can't hover. We skip the cursor
      element + mousemove loop entirely and bind a touchstart handler that
      fires the CMYK burst at the touch point, giving touch users the same
@@ -5250,7 +5254,7 @@ function BlobCursor({ enabled, style }) {
   );
   useEffect(() => {
     if (!enabled) return;
-    /* Shared burst spawner — used by both pointer mousedown (desktop)
+    /* Shared burst spawner - used by both pointer mousedown (desktop)
        and touchstart (mobile). On touch there's no cursor element, so it
        falls back to the explicit (x, y) we pass in. */
     const spawnCmykAt = (x, y) => {
@@ -5266,7 +5270,7 @@ function BlobCursor({ enabled, style }) {
       } else {
         burst.style.left = x + 'px';
         burst.style.top  = y + 'px';
-        /* No live cursor to size against on touch — use a fixed splat size. */
+        /* No live cursor to size against on touch - use a fixed splat size. */
         burst.style.width = '56px';
         burst.style.height = '56px';
       }
@@ -5283,7 +5287,7 @@ function BlobCursor({ enabled, style }) {
     const activeBursts = new Set();
 
     if (isTouch) {
-      /* Touch path — no cursor element, no animation loop, no cursor-on
+      /* Touch path - no cursor element, no animation loop, no cursor-on
          class (which would hide the native cursor needlessly). Just bind
          touchstart and let taps generate CMYK splats. */
       const onTouch = e => {
@@ -5396,7 +5400,7 @@ function BlobCursor({ enabled, style }) {
   if (!enabled) return null;
 
   /* Touch devices: still render CursorFilters so .cmyk-burst can use the
-     #cmyk-cutout mask and #gooey-puddle filter — just no live cursor. */
+     #cmyk-cutout mask and #gooey-puddle filter - just no live cursor. */
   if (isTouch) return <CursorFilters />;
 
   if (style === 'puddle') {
@@ -5427,7 +5431,7 @@ function BlobCursor({ enabled, style }) {
     );
   }
 
-  // default — blob
+  // default - blob
   return (
     <div ref={dotRef} className="blob-cursor">
       <svg viewBox="0 0 100 100" aria-hidden="true">
@@ -5444,7 +5448,7 @@ function Loader({ onDone }) {
   const progRef = useRef(null);
   const subRef = useRef(null);
   useEffect(() => {
-    const final = 'Raz Silberman — Portfolio';
+    const final = 'Raz Silberman - Portfolio';
     const glyphs = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789·×#@%&*';
     // Each char gets a "lock-in" frame; before that, it scrambles.
     const lockAt = final.split('').map((_, i) => 6 + i * 2 + Math.floor(Math.random() * 4));
@@ -5453,7 +5457,7 @@ function Loader({ onDone }) {
     const scrambleId = setInterval(() => {
       frame++;
       const out = final.split('').map((ch, i) => {
-        if (ch === ' ' || ch === '—') return ch;
+        if (ch === ' ' || ch === '-') return ch;
         if (frame >= lockAt[i]) return ch;
         return glyphs[Math.floor(Math.random() * glyphs.length)];
       }).join('');
@@ -5472,7 +5476,7 @@ function Loader({ onDone }) {
     <div id="loader" ref={ref}>
       <div className="loader-mark">RS<span className="accent">·</span></div>
       <div className="loader-progress" ref={progRef}></div>
-      <div className="loader-sub" ref={subRef}>Raz Silberman — Portfolio</div>
+      <div className="loader-sub" ref={subRef}>Raz Silberman - Portfolio</div>
     </div>
   );
 }
@@ -5546,7 +5550,7 @@ function Nav({ page, setPage, onCmdK, theme, toggleTheme }) {
               <ThemeIcon />
             </button>
           </div>
-          {/* Burger trigger — only visible at <960 via CSS */}
+          {/* Burger trigger - only visible at <960 via CSS */}
           <button
             className={`burger ${menuOpen ? 'open' : ''}`}
             onClick={() => setMenuOpen(o => !o)}
@@ -5559,7 +5563,7 @@ function Nav({ page, setPage, onCmdK, theme, toggleTheme }) {
         </div>
       </nav>
 
-      {/* Mobile menu — full-screen overlay. Hidden on desktop via CSS. */}
+      {/* Mobile menu - full-screen overlay. Hidden on desktop via CSS. */}
       <div
         id="mobile-menu"
         className={`mobile-menu ${menuOpen ? 'open' : ''}`}
@@ -5598,7 +5602,7 @@ function Nav({ page, setPage, onCmdK, theme, toggleTheme }) {
   );
 }
 
-/* Mini blob that stands in for the old "available" dot — same morph/spin as the cursor */
+/* Mini blob that stands in for the old "available" dot - same morph/spin as the cursor */
 function AvailBlob() {
   return (
     <span className="avail-dot" aria-hidden="true">
@@ -5637,7 +5641,7 @@ function Hero({ align }) {
       </h1>
       <div className={`hero-bottom ${up ? 'up' : ''}`}>
         <p className="hero-desc">
-          I'm Raz — a product designer working on B2B and B2B2C SaaS, knowledge management,
+          I'm Raz - a product designer working on B2B and B2B2C SaaS, knowledge management,
           and applied-AI surfaces. Six years in. Currently designing the help-center stack
           and design system at KMS Lighthouse.
         </p>
@@ -5652,7 +5656,7 @@ function Hero({ align }) {
   );
 }
 
-/* Kinds — a project may sit in more than one category (`kinds`); `kind` is the single-value fallback. */
+/* Kinds - a project may sit in more than one category (`kinds`); `kind` is the single-value fallback. */
 const kindList  = p => p.kinds && p.kinds.length ? p.kinds : [p.kind];
 const kindLabel = p => kindList(p).join(' · ');
 
@@ -5706,7 +5710,7 @@ function Home({ onOpen, tweaks, openContact }) {
       <section className="section" id="work">
         <div className="section-head">
           <h2>Selected Work</h2>
-          <span className="right">{String(window.PROJECTS.length).padStart(2, '0')} · 2024 — 2025</span>
+          <span className="right">{String(window.PROJECTS.length).padStart(2, '0')} · 2024 - 2026</span>
         </div>
         <div className={`work-grid ${tweaks.tileStyle}`}>
           {window.PROJECTS.map((p, i) => (
@@ -5718,7 +5722,7 @@ function Home({ onOpen, tweaks, openContact }) {
       <section className="about" id="about">
         <div className="about-photo-col">
           <div className="signal-tv clip-reveal" style={{'--signal-tv-img-w':'78%','--signal-tv-img-max-h':'86%'}}>
-            <img className="signal-tv__img" src="about/me.png" alt="Raz — illustrated avatar" />
+            <img className="signal-tv__img" src="about/me.png" alt="Raz - illustrated avatar" />
             <img className="signal-tv__ghost signal-tv__ghost--r" src="about/me.png" aria-hidden="true" />
             <img className="signal-tv__ghost signal-tv__ghost--c" src="about/me.png" aria-hidden="true" />
             <div className="signal-tv__grain" aria-hidden="true"></div>
@@ -5732,7 +5736,7 @@ function Home({ onOpen, tweaks, openContact }) {
           </h2>
           <p className="clip-reveal" style={{transitionDelay:'.15s'}}>
             Six years in B2B and B2B2C SaaS, on an industrial-design foundation. Currently
-            at KMS Lighthouse on the help-center stack and design system — knowledge tools,
+            at KMS Lighthouse on the help-center stack and design system - knowledge tools,
             applied-AI surfaces, and the unsexy plumbing underneath.
           </p>
           <p className="clip-reveal" style={{transitionDelay:'.2s'}}>
@@ -5764,7 +5768,7 @@ function Home({ onOpen, tweaks, openContact }) {
       </section>
 
       <footer>
-        <span>© 2025 Raz Silberman</span>
+        <span>© 2026 Raz Silberman</span>
         <span>Set in Geist + Red Hat Display</span>
       </footer>
     </div>
@@ -5790,7 +5794,7 @@ function WorkIndex({ onOpen }) {
       <section className="section" style={{paddingTop:'9rem'}}>
         <div className="section-head" style={{borderTop:'none', paddingTop:0}}>
           <h2>All Work</h2>
-          <span className="right">{window.PROJECTS.length} projects · 2024 — 2025</span>
+          <span className="right">{window.PROJECTS.length} projects · 2024 - 2026</span>
         </div>
         <div className="filters">
           {kinds.map(k => (
@@ -5809,7 +5813,7 @@ function WorkIndex({ onOpen }) {
         </div>
       </section>
       <footer>
-        <span>© 2025 Raz Silberman</span>
+        <span>© 2026 Raz Silberman</span>
         <span>{items.length} of {window.PROJECTS.length} shown</span>
       </footer>
     </div>
@@ -5823,7 +5827,7 @@ function About({ onOpen }) {
       <section className="about" style={{paddingTop:'9rem', borderTop:'none'}}>
         <div className="about-photo-col">
           <div className="signal-tv" style={{'--signal-tv-img-w':'78%','--signal-tv-img-max-h':'86%'}}>
-            <img className="signal-tv__img" src="about/me.png" alt="Raz — illustrated avatar" />
+            <img className="signal-tv__img" src="about/me.png" alt="Raz - illustrated avatar" />
             <img className="signal-tv__ghost signal-tv__ghost--r" src="about/me.png" aria-hidden="true" />
             <img className="signal-tv__ghost signal-tv__ghost--c" src="about/me.png" aria-hidden="true" />
             <div className="signal-tv__grain" aria-hidden="true"></div>
@@ -5836,7 +5840,7 @@ function About({ onOpen }) {
             Six years in. Still <em>genuinely curious</em> about the work.
           </h2>
           <p>
-            I'm Raz. I design B2B and B2B2C SaaS — knowledge tools, design systems, and the
+            I'm Raz. I design B2B and B2B2C SaaS - knowledge tools, design systems, and the
             kind of product surfaces that AI is starting to live inside. Right now I'm a
             product designer at KMS Lighthouse, leading the Help Center product and helping
             build the company's first design system.
@@ -5844,12 +5848,12 @@ function About({ onOpen }) {
           <p>
             Before KMS I was on Dropbox's S&O design team, working new features and complex
             journeys for a very established product. And before design went digital for me, I
-            spent years in industrial design — running a studio at Librus and shaping physical
+            spent years in industrial design - running a studio at Librus and shaping physical
             products before screens.
           </p>
           <p>
-            I came to UX through industrial design — a B.Design at HIT, a fine-arts exchange in
-            Lisbon, then a UX diploma — and through the Israeli Navy, where I served as an
+            I came to UX through industrial design - a B.Design at HIT, a fine-arts exchange in
+            Lisbon, then a UX diploma - and through the Israeli Navy, where I served as an
             officer and still serve as a Major in the reserves. Both taught me the same thing:
             how people actually behave, and how much a well-crafted experience rides on the
             unglamorous details. I think a lot about the difference between a product that looks
@@ -5867,7 +5871,7 @@ function About({ onOpen }) {
         </div>
       </section>
       <footer>
-        <span>© 2025 Raz Silberman</span>
+        <span>© 2026 Raz Silberman</span>
         <span>Tel Aviv · Remote-friendly</span>
       </footer>
     </div>
@@ -5965,7 +5969,7 @@ function Resume() {
         </div>
       </section>
       <footer>
-        <span>© 2025 Raz Silberman</span>
+        <span>© 2026 Raz Silberman</span>
         <a href="#" onClick={e => e.preventDefault()}>Download PDF →</a>
       </footer>
     </div>
@@ -6256,7 +6260,7 @@ function GridDemo({ caption }) {
   );
 }
 
-/* ─── Side gallery — scrollable carousel for the right column of a split section ─── */
+/* ─── Side gallery - scrollable carousel for the right column of a split section ─── */
 function SideGallery({ items }) {
   const [active, setActive] = useState(0);
   const total = items.length;
@@ -6362,7 +6366,7 @@ function HCFlowViewer({ caption }) {
                                                       one readable diagram, not a grid */
   const [view, setView]     = useState('flow');    /* flow | map | branch | all */
   const [branch, setBranch] = useState('topic');
-  /* TB. Measured against the real embed frame (~880×450 — the case-study
+  /* TB. Measured against the real embed frame (~880×450 - the case-study
      content column, not the full page) TB and LR land within a point of
      each other and TB wins 5 of the 8 graphs. In a wider frame LR pulls
      ahead, which is what the toggle (and `d`) is for. */
@@ -6408,7 +6412,7 @@ function HCFlowViewer({ caption }) {
   if (!dlgRef.current && typeof document !== 'undefined') {
     const d = document.createElement('dialog');
     d.className = 'fv-dialog';
-    d.setAttribute('aria-label', 'Help Center product flows — full screen');
+    d.setAttribute('aria-label', 'Help Center product flows - full screen');
     dlgRef.current = d;
   }
   useEffect(() => {
@@ -6543,13 +6547,13 @@ function HCFlowViewer({ caption }) {
       </div>
     );
     if (view === 'map') return (
-      <div className="fv-crumb"><span className="fv-cur">Widget customization — system map</span></div>
+      <div className="fv-crumb"><span className="fv-cur">Widget customization - system map</span></div>
     );
     if (view === 'all') return (
       <div className="fv-crumb">
         <button onClick={() => setView('map')}>Widget customization</button>
         <span className="fv-sep">/</span>
-        <span className="fv-cur">Entire flow — all components</span>
+        <span className="fv-cur">Entire flow - all components</span>
       </div>
     );
     return (
@@ -6642,11 +6646,11 @@ function HCFlowViewer({ caption }) {
                  data-zoom-armed={armed ? 'on' : 'off'}
                  onClick={() => setArmed(true)} />
             {armed
-              ? <div className="fv-armed">Wheel zooms — click outside to release</div>
+              ? <div className="fv-armed">Wheel zooms - click outside to release</div>
               : <div className="fv-armed">Click to zoom</div>}
           </>
         ) : narrow && !(flow === 'widgets' && view === 'map') ? (
-          /* a pan/zoom canvas is a bad experience on a phone — the same
+          /* a pan/zoom canvas is a bad experience on a phone - the same
              graph, as an ordered list of steps */
           flow === 'admin' ? (
             <FlowSteps cacheKey="admin" nodes={HC.FLOWS.admin.nodes} edges={HC.FLOWS.admin.edges}
@@ -6732,13 +6736,13 @@ function HCFlowViewer({ caption }) {
         </div>
       )}
 
-      {/* text alternative — every branch in rank order, always present */}
+      {/* text alternative - every branch in rank order, always present */}
       <div className="fv-sr">
         <FlowSteps cacheKey="admin" nodes={HC.FLOWS.admin.nodes} edges={HC.FLOWS.admin.edges}
                    label={HC.FLOWS.admin.name} hidden />
         {BRANCHES.map(b => (
           <FlowSteps key={b.id} cacheKey={b.id} nodes={b.nodes} edges={b.edges}
-                     label={'Homepage widget customization — ' + b.name} hidden />
+                     label={'Homepage widget customization - ' + b.name} hidden />
         ))}
       </div>
     </div>
@@ -6753,7 +6757,7 @@ function HCFlowViewer({ caption }) {
   );
 }
 
-/* ─── Project page — section media (image grid + captions) ─── */
+/* ─── Project page - section media (image grid + captions) ─── */
 function ProjectMedia({ items }) {
   if (!items || !items.length) return null;
   const allThumb = items.length > 1 && items.every(m => m.kind === 'sq');
@@ -6778,7 +6782,7 @@ function ProjectMedia({ items }) {
   );
 }
 
-/* ─── Project page — A-vs-B comparison table (built from the same tokens as outcome-grid) ─── */
+/* ─── Project page - A-vs-B comparison table (built from the same tokens as outcome-grid) ─── */
 function ProjectCompare({ data }) {
   if (!data || !data.columns || !data.rows) return null;
   const [a, b] = data.columns;
@@ -6811,7 +6815,7 @@ function ProjectCompare({ data }) {
   );
 }
 
-/* ─── Parallax section — sticky full-width header + sticky text that releases when last item reaches top ─── */
+/* ─── Parallax section - sticky full-width header + sticky text that releases when last item reaches top ─── */
 function ParallaxSection({ s, isSub }) {
   const headerRef = useRef(null);
   const textRef = useRef(null);
@@ -6829,7 +6833,7 @@ function ParallaxSection({ s, isSub }) {
 
     const update = () => {
       if (!mq.matches) {
-        /* Mobile: single-column stacked layout, no sticky behavior — clear inline styles. */
+        /* Mobile: single-column stacked layout, no sticky behavior - clear inline styles. */
         text.style.top = '';
         left.style.height = '';
         return;
@@ -6914,7 +6918,7 @@ function ParallaxSection({ s, isSub }) {
   );
 }
 
-/* ─── Project page — one section (handles every section variant) ─── */
+/* ─── Project page - one section (handles every section variant) ─── */
 function ProjectSection({ s }) {
   const isSub = !!s.group;
   if (s.parallax && !s.placeholder) return <ParallaxSection s={s} isSub={isSub} />;
@@ -7026,7 +7030,7 @@ function ProjectSection({ s }) {
                       {slots.map((src, j) => (
                         src ? (
                           <figure key={j} className="problem-img">
-                            <img src={src} alt={`${row.label} — ${j + 1}`} loading="lazy" />
+                            <img src={src} alt={`${row.label} - ${j + 1}`} loading="lazy" />
                           </figure>
                         ) : (
                           <div key={j} className="problem-placeholder">
@@ -7146,7 +7150,7 @@ function Project({ projectId, onBack, onOpen }) {
       const HOLD = ih * 0.85, RAMP = ih * 0.9;
       const ref = window.scrollY + ih * 0.5;
 
-      // Anchors: explicit `atmos` keys win (per-section, hand-placed — e.g.
+      // Anchors: explicit `atmos` keys win (per-section, hand-placed - e.g.
       // Help Center). With none, auto-distribute evenly across the content
       // span so every project page gets the same even-spread, long-hold
       // treatment for free, with the zone count scaled to page length.
@@ -7228,7 +7232,7 @@ function Project({ projectId, onBack, onOpen }) {
 
       {p.heroImage ? (
         <div className={`proj-hero-image ${p.heroBare ? 'is-bare' : ''}`}>
-          <img src={p.heroImage} alt={`${p.title} — hero`} loading="eager" />
+          <img src={p.heroImage} alt={`${p.title} - hero`} loading="eager" />
         </div>
       ) : p.heroPlaceholder ? (
         <figure className="proj-hero-image is-placeholder">
@@ -7246,7 +7250,7 @@ function Project({ projectId, onBack, onOpen }) {
             {g.src ? (
               <img className="g-img" src={g.src} alt={g.label || ''} loading="lazy" />
             ) : (
-              <div className="g-fill">— {g.label}</div>
+              <div className="g-fill">- {g.label}</div>
             )}
           </div>
         ))}
@@ -7287,7 +7291,7 @@ function Project({ projectId, onBack, onOpen }) {
         <div className="next-arrow">→</div>
       </div>
       <footer>
-        <span>© 2025 Raz Silberman</span>
+        <span>© 2026 Raz Silberman</span>
         <a href="#" onClick={e => { e.preventDefault(); onBack(); }}>← Back to work</a>
       </footer>
     </div>
@@ -7525,7 +7529,7 @@ function App() {
     return () => window.removeEventListener('scroll', onScroll);
   }, [page]);
 
-  // reveal observer (with scroll-based fallback — the IntersectionObserver
+  // reveal observer (with scroll-based fallback - the IntersectionObserver
   // was occasionally not firing for elements deeper in the page on the
   // index route, leaving the About section invisible. The scroll handler
   // belt-and-suspenders every reveal check on every scroll event.)
@@ -7543,7 +7547,7 @@ function App() {
           }
         });
       };
-      // Initial pass — any element already in view becomes visible.
+      // Initial pass - any element already in view becomes visible.
       revealInView();
       // Primary path: IntersectionObserver for smooth-as-you-scroll reveals.
       const io = new IntersectionObserver((entries) => {
@@ -7600,7 +7604,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(<App />);
      .signal-tv runtime
      -------------------------------------------------------------------------
      One SVG block + one IIFE. Auto-discovers every .signal-tv on the page
-     and drives the sparse glitch scheduler. Self-contained — no globals.
+     and drives the sparse glitch scheduler. Self-contained - no globals.
 
      To reuse: drop the .signal-tv markup anywhere. This script handles the
      rest. Multiple instances are picked from at random on each fire.
