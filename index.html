@@ -2838,8 +2838,7 @@ const PROJECTS = [
       },
       { id: 'flows', title: 'User Flows',
         body: ['I mapped admin and end-user paths in parallel — shaping an admin model that gives real power without exposing end users to its complexity.'],
-        sideMedia: { src: 'help center/8.png', caption: 'User flow — admin + end-user paths' },
-        flowViewer: { caption: 'Two of those flows, rebuilt as an explorer — admin routing, and the homepage widget model behind the customization studio' },
+        flowViewer: { caption: 'Admin access & routing, and the homepage widget model behind the customization studio — the real flows, walkable' },
       },
       { id: 'wireframing', title: 'Wireframing',
         body: ['Structure before style: density, navigation, and hierarchy resolved across both admin and end-user screens before any visual design entered.'],
@@ -6325,11 +6324,11 @@ function HCFlowViewer({ caption }) {
                                                       one readable diagram, not a grid */
   const [view, setView]     = useState('flow');    /* flow | map | branch | all */
   const [branch, setBranch] = useState('topic');
-  /* LR, not TB. The engine is direction-agnostic and TB is the better
-     default in a tall frame — but this is a section, not a page, so the
-     frame is wide and short (~1200×470). Measured against that frame LR
-     fits every graph here 20–40% larger. The toggle (and `d`) still flips. */
-  const [dir, setDir]       = useState('LR');
+  /* TB. Measured against the real embed frame (~880×450 — the case-study
+     content column, not the full page) TB and LR land within a point of
+     each other and TB wins 5 of the 8 graphs. In a wider frame LR pulls
+     ahead, which is what the toggle (and `d`) is for. */
+  const [dir, setDir]       = useState('TB');
   const [expanded, setExpanded]   = useState(false);
   const [armed, setArmed]         = useState(false);
   const [legendOpen, setLegendOpen] = useState(false);
@@ -6483,7 +6482,7 @@ function HCFlowViewer({ caption }) {
   const goFlow = id => {
     setFlow(id);
     setView(id === 'admin' ? 'flow' : 'map');
-    setDir('LR');
+    setDir('TB');
   };
   const openBranch = id => { setBranch(id); setView('branch'); };
 
