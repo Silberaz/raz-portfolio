@@ -2010,7 +2010,11 @@ footer a:hover { color: var(--accent); }
 }
 @media (min-width: 720px) {
   .proj-compare-grid { grid-template-columns: minmax(0, .8fr) 1fr 1fr; align-items: stretch; }
-  .proj-compare-corner { display: block; background: var(--ground); }
+  .proj-compare-corner {
+    display: flex; flex-direction: column;
+    background: var(--surface); padding: 1rem 1.25rem;
+  }
+  .proj-compare-corner-title { font-weight: 700; color: var(--ink); font-size: 1rem; }
   .proj-compare-colhead {
     display: flex; flex-direction: column; gap: .25rem;
     background: var(--surface); padding: 1rem 1.25rem;
@@ -3373,6 +3377,7 @@ const PROJECTS = [
           'The two concepts go head to head on the questions the wireframes raised — not which layout looks better, but whether filtering has outgrown search, and whether reusable sets speed up the recurring work.',
         ],
         compare: {
+          corner: 'How they compare',
           columns: [
             { title: 'Concept A', label: 'Filters always on' },
             { title: 'Concept B', label: 'Filter sets for repeat work' },
@@ -6747,7 +6752,9 @@ function ProjectCompare({ data }) {
   return (
     <div className="proj-compare">
       <div className="proj-compare-grid" role="table" aria-label="Concept A versus Concept B">
-        <div className="proj-compare-corner" role="columnheader" aria-hidden="true"></div>
+        <div className="proj-compare-corner" role="columnheader">
+          {data.corner && <span className="proj-compare-corner-title">{data.corner}</span>}
+        </div>
         {data.columns.map((c, i) => (
           <div key={i} className="proj-compare-colhead" role="columnheader">
             <span className="proj-compare-col-title">{c.title}</span>
