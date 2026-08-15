@@ -3355,7 +3355,8 @@ const PROJECTS = [
       },
       { id: 'stage-2-concept-b', title: 'Concept B — Condition bar',
         group: 'stage-2', groupLabel: 'Stage 2',
-        prototype: true,
+        prototype: 'advanced-search/conditionbar-demo.mp4',
+        prototypeCaption: 'Condition bar — prototype walkthrough',
         body: [
           'Search is still present but de-emphasized. Users add filters as they need them and save the combination as a named filter set to re-run later — built for the recurring, scheduled bulk work the screen is actually used for.',
         ],
@@ -6911,7 +6912,12 @@ function ProjectSection({ s }) {
       {titleBlock}
       {s.prototype && (
         <figure className="proj-media-item k-wide proj-proto-slot">
-          <div className="proj-media-placeholder"><span>Prototype · video</span></div>
+          {typeof s.prototype === 'string' ? (
+            <video src={s.prototype} autoPlay loop muted playsInline controls preload="metadata" />
+          ) : (
+            <div className="proj-media-placeholder"><span>Prototype · video</span></div>
+          )}
+          {s.prototypeCaption && <figcaption className="proj-caption">{s.prototypeCaption}</figcaption>}
         </figure>
       )}
       {s.placeholder ? (
