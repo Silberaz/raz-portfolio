@@ -1219,9 +1219,10 @@ nav.top.hidden { transform: translateY(-110%); }
   display: flex; flex-wrap: wrap; gap: .5rem;
 }
 .cap-pill {
-  font-family: var(--ff-mono); font-size: .68rem; letter-spacing: .04em;
-  color: var(--ink-dim); border: 1px solid var(--rim); border-radius: 100px;
-  padding: .4rem .85rem;
+  font-family: var(--ff-mono); font-size: .68rem; letter-spacing: .04em; line-height: 1.35;
+  color: var(--ink-dim); border: 1px solid var(--rim); border-radius: 8px;
+  padding: .55rem .85rem;
+  display: flex; align-items: center;
 }
 
 /* ─── Contact ─── */
@@ -2389,6 +2390,361 @@ footer a:hover { color: var(--accent); }
   text-transform: uppercase; color: var(--muted); margin-bottom: .9rem;
 }
 
+/* ─── Atmospheric background (project pages) ───────────────────────────
+   A single full-bleed layer behind the whole case study whose colour is
+   driven by scroll position (see the atmos effect in <Project>). As the
+   reader moves through contextual regions, the page ground blends from
+   CRT-black (or broadcast-white in light mode) toward a subtle Signal
+   hue and back — a slow, low-saturation shift, never a hard band.
+
+   It sits at z-index 0 inside the positioned .proj-page and every real
+   child is lifted to z-index 1 so content always paints above it. Opaque
+   cards / images (gallery, hero, next-project) keep their own surfaces
+   and simply occlude the atmosphere locally, which is the intended read.
+
+   No CSS transition here: the scroll handler sets the colour every frame,
+   so the blend comes from position interpolation. Theme swaps are eased
+   with a one-shot inline transition from the effect instead. */
+.page.proj-page { position: relative; z-index: 0; }
+.proj-atmos {
+  position: absolute; inset: 0; z-index: 0;
+  pointer-events: none;
+  background-color: var(--ground);
+}
+.page.proj-page > *:not(.proj-atmos) { position: relative; z-index: 1; }
+
+/* ─── Flow viewer ──────────────────────────────────────────────────────
+   The Help Center flow explorer. This is the one place in the site where
+   all six bars appear at once — a categorical encoding where six
+   distinguishable colours are the functional requirement. Kept honest by
+   two rules: bars are strokes and 3–10% tints, never filled blocks; and
+   no other section of the case study uses more than tomato + sky.
+
+   Every colour below aliases an existing Signal token, so the diagram
+   follows the mode switch for free. Butter is the single exception that
+   needs a per-mode value. */
+:root {
+  --fv-tomato:  var(--accent);
+  --fv-sky:     var(--accent-sky);
+  --fv-sage:    var(--bar-sage);
+  --fv-orchid:  var(--bar-orchid);
+  --fv-indigo:  var(--bar-indigo);
+  --fv-butter:  var(--butter-base);   /* dark: the bright butter is correct */
+  --fv-neutral: var(--muted);         /* the shared save lane — deliberately achromatic */
+
+  --fv-ink:         var(--ink);
+  --fv-ink-2:       var(--ink-dim);
+  --fv-ink-3:       var(--muted);
+  --fv-line:        var(--rim);
+  --fv-line-2:      color-mix(in oklab, var(--ink) 26%, var(--surface));
+  --fv-surface:     var(--surface-2); /* opaque — labels stay crisp over the grain */
+  --fv-surface-alt: var(--surface);
+  --fv-bg:          var(--ground);
+  --fv-edge:        var(--fv-line-2);
+  --fv-dot:         transparent;      /* a dot grid over CRT black + grain is noise */
+}
+[data-theme="light"] {
+  /* #F2D74E on broadcast white is ~1.4:1 — invisible. butter-400 clears
+     3:1 for a graphical object (WCAG 1.4.11). Don't lighten it. */
+  --fv-butter: var(--butter-400);
+  --fv-dot:    color-mix(in oklab, var(--rim) 55%, transparent);
+}
+
+.fv-wrap { margin: .5rem 0 0; }
+/* holds the section's height while the viewer is lifted into the dialog,
+   so the page doesn't jump under the reader */
+.fv-placeholder-slot {
+  height: clamp(520px, 72vh, 720px);
+  border: 1px dashed var(--fv-line); border-radius: 4px;
+}
+.fv {
+  --fv-h: clamp(520px, 72vh, 720px);
+  height: var(--fv-h);
+  display: flex; flex-direction: column;
+  border: 1px solid var(--fv-line);
+  border-radius: 4px;
+  background: transparent;            /* the grain reads through the empty space */
+  overflow: hidden;
+  margin: .5rem 0 .75rem;
+}
+.fv-bar, .fv-subbar {
+  flex: 0 0 auto; display: flex; align-items: center; gap: .75rem;
+  padding: .45rem .8rem;
+  border-bottom: 1px solid var(--fv-line);
+  background: var(--fv-surface-alt);
+}
+.fv-subbar { min-height: 40px; flex-wrap: wrap; }
+.fv-mark {
+  font-family: var(--ff-mono); font-size: .58rem; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--fv-ink-3);
+  border: 1px solid var(--fv-line-2); border-radius: 3px; padding: .25rem .45rem;
+}
+.fv-tabs { margin-left: auto; display: flex; gap: .25rem; }
+.fv-tab {
+  font-family: var(--ff-mono); font-size: .65rem; letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--fv-ink-2); background: transparent;
+  border: 1px solid transparent; border-radius: 3px;
+  padding: .45rem .7rem; cursor: pointer; transition: color .2s, background .2s;
+}
+.fv-tab:hover { color: var(--fv-ink); background: var(--rim-soft); }
+.fv-tab[aria-selected="true"] { background: var(--fv-ink); color: var(--fv-bg); }
+
+.fv-crumb {
+  display: flex; align-items: center; gap: .5rem; flex-wrap: wrap;
+  font-size: .78rem; color: var(--fv-ink-2);
+}
+.fv-crumb button {
+  font: inherit; color: var(--fv-ink-2); background: none; border: none;
+  padding: 0; cursor: pointer;
+}
+.fv-crumb button:hover { color: var(--fv-ink); text-decoration: underline; }
+.fv-crumb .fv-sep { color: var(--fv-ink-3); }
+.fv-crumb .fv-cur { color: var(--fv-ink); display: flex; align-items: center; gap: .45rem; }
+.fv-crumb .fv-sub { color: var(--fv-ink-3); font-size: .72rem; }
+.fv-dot-sw { width: 8px; height: 8px; border-radius: 2px; display: inline-block; }
+
+.fv-pills { display: flex; gap: .2rem; flex-wrap: wrap; }
+.fv-pill {
+  display: inline-flex; align-items: center; gap: .4rem;
+  font-size: .7rem; color: var(--fv-ink-2);
+  background: transparent; border: 1px solid var(--fv-line);
+  border-radius: 20px; padding: .3rem .6rem; cursor: pointer;
+  transition: border-color .2s, color .2s;
+}
+.fv-pill:hover { border-color: var(--fv-line-2); color: var(--fv-ink); }
+.fv-pill[aria-current="true"] { border-color: var(--fv-ink); color: var(--fv-ink); background: var(--rim-soft); }
+.fv-pill i { width: 7px; height: 7px; border-radius: 2px; display: block; }
+.fv-select {
+  display: none; font-family: var(--ff-body); font-size: .75rem;
+  color: var(--fv-ink); background: var(--fv-surface);
+  border: 1px solid var(--fv-line); border-radius: 4px; padding: .35rem .5rem;
+}
+
+.fv-tools { margin-left: auto; display: flex; align-items: center; gap: .35rem; }
+.fv-tool {
+  min-width: 28px; height: 28px; display: grid; place-items: center;
+  border: 1px solid var(--fv-line); background: var(--fv-surface);
+  border-radius: 4px; cursor: pointer; color: var(--fv-ink-2);
+  font-family: var(--ff-body); font-size: .8rem; line-height: 1;
+  transition: border-color .2s, color .2s;
+}
+.fv-tool:hover { border-color: var(--fv-line-2); color: var(--fv-ink); }
+.fv-tool.is-wide { padding: 0 .55rem; font-size: .65rem; font-family: var(--ff-mono); letter-spacing: .06em; }
+.fv-zoomval {
+  font-family: var(--ff-mono); font-size: .65rem; color: var(--fv-ink-3);
+  min-width: 40px; text-align: center;
+}
+.fv-divider { width: 1px; height: 18px; background: var(--fv-line); display: block; }
+
+.fv-stage { flex: 1 1 auto; min-height: 0; position: relative; overflow: hidden; }
+.fv-canvas { position: absolute; inset: 0; }
+.fv-canvas svg { display: block; width: 100%; height: 100%; }
+.fv-grid {
+  position: absolute; inset: 0; pointer-events: none;
+  background-image: radial-gradient(circle, var(--fv-dot) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+/* ─── diagram primitives ─── */
+.fv-node-shape { stroke-width: 1.25; vector-effect: non-scaling-stroke; }
+.fv-node-label { font: 500 12px var(--ff-body); fill: var(--fv-ink); pointer-events: none; }
+.fv-edge-path  { fill: none; stroke: var(--fv-edge); stroke-width: 1.25; vector-effect: non-scaling-stroke; }
+.fv-edge-path.is-dashed { stroke-dasharray: 4 4; }
+.fv-edge-label { font: 500 9.5px var(--ff-mono); fill: var(--fv-ink-2); letter-spacing: .04em; }
+.fv-edge-label-bg, .fv-knockout { fill: var(--fv-bg); }
+.fv-arrow { fill: var(--fv-edge); }
+.fv-node { cursor: pointer; }
+.fv-node .fv-hit { fill: transparent; }
+.fv-focus-ring { fill: none; stroke: none; pointer-events: none; }
+.fv-node:focus { outline: none; }
+.fv-node:focus-visible .fv-focus-ring { stroke: var(--focus-ring); stroke-width: 2; vector-effect: non-scaling-stroke; }
+.fv-zone-label {
+  font: 500 10px var(--ff-mono); letter-spacing: .1em; text-transform: uppercase;
+  opacity: .85; pointer-events: none;
+}
+/* hover / focus trace — the active path restrokes to ink, which reads as
+   "ink" in both modes and stays out of the bar palette's way */
+.fv-diagram.is-focused .fv-node { opacity: .18; }
+.fv-diagram.is-focused .fv-edge { opacity: .08; }
+.fv-diagram.is-focused .fv-zone,
+.fv-diagram.is-focused .fv-lane { opacity: .25; }
+.fv-diagram.is-focused .fv-node.is-on,
+.fv-diagram.is-focused .fv-edge.is-on { opacity: 1; }
+.fv-diagram.is-focused .fv-edge.is-on .fv-edge-path { stroke: var(--fv-ink); stroke-width: 1.75; }
+.fv-diagram.is-focused .fv-edge.is-on .fv-arrow { fill: var(--fv-ink); }
+.fv-node.is-seed .fv-node-shape { stroke-width: 2.25; }
+.fv-diagram .fv-node, .fv-diagram .fv-edge,
+.fv-diagram .fv-zone, .fv-diagram .fv-lane { transition: opacity .12s ease; }
+
+/* ─── system map ─── */
+.fv-map { position: absolute; inset: 0; overflow: auto; padding: 1.5rem 1.25rem 2.25rem; }
+.fv-map-inner { max-width: 1320px; margin: 0 auto; }
+.fv-map-head { display: flex; align-items: flex-end; gap: 1.25rem; margin-bottom: 1.25rem; }
+.fv-map-head h3 {
+  font-family: var(--ff-display); font-weight: var(--ff-display-weight, 900);
+  font-size: 1.15rem; letter-spacing: -.015em; color: var(--fv-ink); margin: 0 0 .3rem;
+}
+.fv-map-head p { font-size: .8rem; color: var(--fv-ink-2); margin: 0; line-height: 1.5; }
+.fv-map-stats { margin-left: auto; display: flex; gap: 1.4rem; text-align: right; }
+.fv-stat b {
+  display: block; font-family: var(--ff-display);
+  font-weight: var(--ff-display-weight, 900); font-size: 1.35rem;
+  letter-spacing: -.02em; color: var(--fv-ink); line-height: 1.1;
+}
+.fv-stat span {
+  font-family: var(--ff-mono); font-size: .58rem; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--fv-ink-3);
+}
+.fv-entry {
+  display: flex; align-items: center; gap: .75rem;
+  padding: .8rem 1rem; margin-bottom: .25rem;
+  border: 1.5px solid var(--fv-ink); border-radius: 4px;
+  background: var(--fv-surface); font-weight: 600; font-size: .85rem; color: var(--fv-ink);
+}
+.fv-entry .fv-tag {
+  font-family: var(--ff-mono); font-size: .55rem; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--fv-ink-3);
+  border: 1px solid var(--fv-line-2); padding: .18rem .4rem; border-radius: 3px;
+}
+.fv-stem { height: 20px; border-left: 1.5px dashed var(--fv-line-2); margin-left: 26px; }
+.fv-cards { display: grid; gap: .9rem; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); }
+/* A card carries a colour bar, a name, and an honest silhouette. Nothing
+   else. The map is where a reader decides whether to engage at all, and
+   they are scanning, not reading — the hover is the whole affordance. */
+.fv-card {
+  position: relative; text-align: left; cursor: pointer;
+  background: var(--fv-surface); border: 1px solid var(--fv-line);
+  border-radius: 4px; padding: 0; overflow: hidden; font-family: inherit;
+  transition: border-color .14s ease, transform .14s ease, box-shadow .14s ease;
+}
+.fv-card:hover { border-color: var(--fv-line-2); transform: translateY(-3px); }
+.fv-card .fv-accent { height: 3px; width: 100%; display: block; transition: height .14s ease; }
+.fv-card:hover .fv-accent { height: 5px; }
+.fv-card-body { padding: .85rem 1rem .6rem; display: flex; align-items: center; gap: .5rem; }
+.fv-card h4 {
+  font-family: var(--ff-display); font-weight: var(--ff-display-weight, 900);
+  font-size: .95rem; letter-spacing: -.015em; color: var(--fv-ink); margin: 0;
+  display: flex; align-items: center; gap: .5rem;
+}
+.fv-badge {
+  font-family: var(--ff-mono); font-size: .5rem; letter-spacing: .08em;
+  text-transform: uppercase; border: 1px solid var(--fv-line-2);
+  color: var(--fv-ink-3); padding: .12rem .3rem; border-radius: 3px; font-weight: 400;
+}
+.fv-thumb {
+  height: 150px; border-top: 1px solid var(--fv-line);
+  background: var(--fv-surface-alt); padding: .6rem .5rem;
+}
+.fv-thumb svg { display: block; width: 100%; height: 100%; opacity: .72; transition: opacity .14s ease; }
+.fv-card:hover .fv-thumb svg { opacity: 1; }
+.fv-map-foot { margin-top: 1.4rem; display: flex; gap: .6rem; align-items: center; flex-wrap: wrap; }
+.fv-ghost {
+  font-family: var(--ff-mono); font-size: .65rem; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--fv-ink-2);
+  border: 1px solid var(--fv-line-2); background: var(--fv-surface);
+  padding: .55rem .8rem; border-radius: 4px; cursor: pointer;
+  transition: border-color .2s, color .2s;
+}
+.fv-ghost:hover { border-color: var(--fv-ink-3); color: var(--fv-ink); }
+
+/* ─── legend + hint ───
+   Both live in a footer strip rather than floating over the canvas: an
+   overlay legend this wide occludes the bottom rank of the diagram, and
+   the fit() padding then has to guess at its height. */
+.fv-foot {
+  flex: 0 0 auto; display: flex; align-items: center; gap: .75rem;
+  flex-wrap: wrap; padding: .3rem .8rem;
+  border-top: 1px solid var(--fv-line); background: var(--fv-surface-alt);
+}
+.fv-legend { display: flex; gap: .55rem; align-items: center; flex-wrap: wrap; }
+.fv-legend .fv-lg { display: flex; align-items: center; gap: .28rem; font-size: .6rem; color: var(--fv-ink-2); }
+.fv-legend svg { display: block; }
+.fv-legend .fv-divider { height: 16px; }
+.fv-legend .fv-ttl {
+  font-family: var(--ff-mono); font-size: .53rem; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--fv-ink-3);
+}
+.fv-legend-toggle { display: none; }
+.fv-hint {
+  margin-left: auto; font-size: .6rem; color: var(--fv-ink-3);
+  white-space: nowrap;
+}
+.fv-hint kbd {
+  font-family: var(--ff-mono); font-size: .58rem;
+  border: 1px solid var(--fv-line-2); border-bottom-width: 2px;
+  border-radius: 3px; padding: 0 .2rem; color: var(--fv-ink-2);
+}
+.fv-armed {
+  position: absolute; left: 50%; top: 12px; transform: translateX(-50%); z-index: 5;
+  font-family: var(--ff-mono); font-size: .58rem; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--fv-ink-3);
+  background: color-mix(in oklab, var(--fv-bg) 90%, transparent);
+  border: 1px solid var(--fv-line); border-radius: 20px; padding: .25rem .6rem;
+  pointer-events: none;
+}
+
+/* ─── step list (small screens + the text alternative) ─── */
+.fv-steps { position: absolute; inset: 0; overflow: auto; padding: 1.25rem 1.1rem 2rem; }
+.fv-steps ol { list-style: none; counter-reset: fv; max-width: 46rem; margin: 0 auto; }
+.fv-steps li {
+  counter-increment: fv; position: relative;
+  padding: .6rem 0 .6rem 2.2rem; border-bottom: 1px solid var(--rim-soft);
+}
+.fv-steps li::before {
+  content: counter(fv); position: absolute; left: 0; top: .65rem;
+  font-family: var(--ff-mono); font-size: .6rem; color: var(--fv-ink-3);
+}
+.fv-steps .fv-step-label { font-size: .85rem; color: var(--fv-ink); }
+.fv-steps .fv-step-kind {
+  font-family: var(--ff-mono); font-size: .55rem; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--fv-ink-3); margin-left: .5rem;
+}
+.fv-steps .fv-step-out { display: block; font-size: .72rem; color: var(--fv-ink-2); margin-top: .2rem; }
+.fv-sr {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* ─── full-viewport dialog ─── */
+dialog.fv-dialog {
+  width: 100vw; max-width: 100vw; height: 100vh; max-height: 100vh;
+  padding: 0; border: none; background: var(--fv-bg); color: var(--ink);
+}
+dialog.fv-dialog::backdrop { background: color-mix(in oklab, var(--ground) 88%, transparent); }
+dialog.fv-dialog .fv { --fv-h: 100vh; border: none; border-radius: 0; margin: 0; }
+
+.fv-caption {
+  font-family: var(--ff-mono); font-size: .65rem; letter-spacing: .06em;
+  color: var(--muted); margin-top: .65rem;
+}
+
+/* 768–1023px — cards two-up, pills collapse to a select, legend folds away */
+@media (max-width: 1023px) {
+  .fv-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .fv-pills { display: none; }
+  .fv-select { display: block; }
+  .fv-legend { display: none; }
+  .fv-legend.is-open { display: flex; }
+  .fv-legend-toggle { display: inline-grid; }
+  .fv-hint { display: none; }
+  .fv-foot:not(:has(.fv-legend.is-open)) { padding: 0; border-top: none; }
+}
+/* <768px — a pan/zoom canvas is a bad experience on a phone. The map still
+   ships with real thumbnails; the detail view becomes the step list. */
+@media (max-width: 767px) {
+  .fv { --fv-h: clamp(440px, 78vh, 620px); }
+  .fv-cards { grid-template-columns: 1fr; }
+  .fv-map-stats { display: none; }
+  .fv-map-head { flex-direction: column; align-items: flex-start; }
+  .fv-tools .fv-tool.fv-zoom-tool, .fv-zoomval { display: none; }
+  .fv-legend-toggle { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fv-diagram .fv-node, .fv-diagram .fv-edge,
+  .fv-diagram .fv-zone, .fv-diagram .fv-lane,
+  .fv-card, .fv-card .fv-accent, .fv-thumb svg { transition: none; }
+}
 
 </style>
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
@@ -2452,7 +2808,7 @@ const PROJECTS = [
       { id: 'role', title: 'Role & Approach', body: [
         'Sole designer across research, IA, flows, UI, and design-system work, partnering with PMs and engineers over multiple phases. The core challenge: serve two audiences in one product — the admin configuring the site, and the end user trying to find an answer fast.',
       ]},
-      { id: 'problem', title: 'The Problem',
+      { id: 'problem', title: 'The Problem', atmos: 'orchid',
         list: [
           { label: 'No admin control.', text: 'Every change — copy, layout, branding — went through a specialized dev team. Admins couldn\'t touch their own site.' },
           { label: 'Not built for mobile.', text: 'Most users seek help on their phone; the legacy product wasn\'t responsive, answers were hard to find, and tickets went up.' },
@@ -2481,12 +2837,13 @@ const PROJECTS = [
       { id: 'flows', title: 'User Flows',
         body: ['I mapped admin and end-user paths in parallel — shaping an admin model that gives real power without exposing end users to its complexity.'],
         sideMedia: { src: 'help center/8.png', caption: 'User flow — admin + end-user paths' },
+        flowViewer: { caption: 'Two of those flows, rebuilt as an explorer — admin routing, and the homepage widget model behind the customization studio' },
       },
       { id: 'wireframing', title: 'Wireframing',
         body: ['Structure before style: density, navigation, and hierarchy resolved across both admin and end-user screens before any visual design entered.'],
         sideMedia: { src: 'help center/9.png', caption: 'Wireframe grid' },
       },
-      { id: 'admin', title: 'The Admin Experience',
+      { id: 'admin', title: 'The Admin Experience', atmos: 'sky',
         body: [
           'Where the product earns its keep. If admins can\'t run the Help Center themselves, nothing else matters. I designed it as focused, self-serve settings — configuration, localization, content, and a dedicated customization studio.',
         ],
@@ -2541,7 +2898,7 @@ const PROJECTS = [
           },
         ],
       },
-      { id: 'enduser', title: 'The End-User Experience',
+      { id: 'enduser', title: 'The End-User Experience', atmos: 'sage',
         body: [
           'For end users, success is one thing: the right answer, fast. A hero search anchored in the brand\'s own identity, category cards mapped to the most common tasks, and clean article pages with related links, helpful/not-helpful feedback, and step-by-step guides. An AI Answer feature streams a direct response above the results, closing with the sources it drew on and a plain caveat that it isn\'t infallible.',
         ],
@@ -3049,57 +3406,83 @@ const PROJECTS = [
 const RESUME = {
   name: 'Raz Silberman',
   title: 'Product Designer',
-  blurb: 'Six years designing B2B and B2B2C SaaS products end-to-end — research, structure, interaction, visual, and the unglamorous follow-through that makes work actually ship.',
+  blurb: 'A product designer with an industrial-design foundation and a naval officer\'s read on people and teams. I design B2B and B2B2C SaaS end-to-end — research, structure, interaction, and visual — with a fast, design-thinking-led process and a stubborn focus on the details that make work actually ship.',
   contact: [
-    { k: 'Email', v: 'hello@razsilberman.com' },
-    { k: 'Location', v: 'Tel Aviv · remote-friendly' },
-    { k: 'Read.cv', v: 'read.cv/raz' },
-    { k: 'LinkedIn', v: 'linkedin.com/in/raz' },
+    { k: 'Location', v: 'Tel Aviv · Israel' },
   ],
   experience: [
     {
-      role: 'Senior Product Designer',
-      org: 'Quill (knowledge management)',
+      role: 'Product Designer',
+      org: 'KMS Lighthouse (B2B SaaS)',
       when: '2023 — Present',
-      where: 'Tel Aviv · hybrid',
+      where: 'Tel Aviv',
       notes: [
-        'Lead designer on the help center product (~3M monthly readers).',
-        'Built and shipped the company\'s first design system; migrated four products onto it.',
-        'Owned applied-AI navigation work — wrote the team\'s principles for AI surfaces.',
+        'Led the redesign of a B2B2C Help Center — admin, customization studio, and end-user surfaces — with accessibility built in.',
+        'Helped drive the company\'s first design system, emphasizing consistency and usability across the whole product.',
+        'Ran a comprehensive product redesign, pairing the new system with feature work that lifted the overall experience.',
+        'Grounded features in research — brainstorming sessions, user interviews, and iterative wireframing.',
       ],
     },
     {
-      role: 'Product Designer',
-      org: 'Northbeam (B2B2C platform)',
-      when: '2021 — 2023',
+      role: 'Product Designer · S&O design team',
+      org: 'Dropbox',
+      when: '2021 — 2022',
       where: 'Remote',
       notes: [
-        'Redesigned first-run for a two-audience SaaS; admin completion 78% → 94%.',
-        'Embedded with the analytics squad for a year — owned all dashboard surfaces.',
+        'Contributed across the product lifecycle with designers, engineers, and PMs, untangling complex user journeys for new features.',
+        'Initiated a new feature to boost product adoption and partnered with engineering on a proof of concept.',
+        'Research, A/B testing, user interviews, and wireframing.',
       ],
     },
     {
-      role: 'Product Designer',
-      org: 'Studio Faun (agency)',
-      when: '2019 — 2021',
-      where: 'Berlin',
+      role: 'Acting Studio Manager & Senior Designer',
+      org: 'Librus Product Solution Center',
+      when: '2019 — 2020',
+      where: 'Israel',
       notes: [
-        'Lead designer on six client engagements across fintech, climate, and healthcare.',
-        'Founded the studio\'s component library practice.',
+        'Managed a team of designers and oversaw their projects end-to-end.',
+        'Owned client relationships — outreach, consultation meetings, and new business.',
+      ],
+    },
+    {
+      role: 'Industrial Designer',
+      org: 'Product & industrial design',
+      when: '2017 — 2020',
+      where: 'Israel',
+      notes: [
+        'Product and industrial design work — the craft foundation the rest of my practice is built on.',
       ],
     },
   ],
   education: [
-    { role: 'BFA, Visual Communication', org: 'Bezalel Academy of Arts and Design', when: '2015 — 2019' },
+    { role: 'Diploma, User Experience Design', org: 'Create Future School', when: '2019 — 2020' },
+    { role: 'B.Design, Industrial Design', org: 'HIT — Holon Institute of Technology', when: '2012 — 2016' },
+    { role: 'Exchange, Faculty of Fine Arts', org: 'Lisbon University', when: '2014 — 2015' },
   ],
-  speaking: [
-    { role: 'Designing for AI uncertainty', org: 'Config (Figma) · panel', when: '2025' },
-    { role: 'Tokens before components', org: 'Friends of Figma TLV', when: '2024' },
+  military: [
+    { role: 'Major (reserves)', org: 'Israeli Navy', when: '2005 — 2012' },
   ],
   capabilities: [
-    'Product strategy', 'Information architecture', 'Interaction design', 'Visual design',
-    'Design systems', 'Prototyping (React)', 'User research (mod. + unmod.)', 'Applied AI surfaces',
-    'Design ops', 'Cross-functional facilitation',
+    'Product design', 'UX / UI design', 'Design systems', 'User research', 'Interaction design',
+    'Wireframing & prototyping', 'Information architecture', 'Industrial & 3D design',
+    'Design thinking', 'Cross-functional collaboration',
+  ],
+  tools: [
+    'Figma', 'Sketch', 'Axure', 'Photoshop', 'Illustrator', 'InDesign', 'Procreate',
+    'SolidWorks', 'Keyshot', 'Fusion 360', 'Onshape', 'Elementor',
+  ],
+  ai: [
+    'Claude Code — coded prototypes & UI',
+    'Design-to-code with Claude + Figma MCP',
+    'AI design systems & token pipelines',
+    'Rapid prototyping (flows, modals, components)',
+    'Prompt-driven UI iteration',
+    'In-browser design QA & accessibility',
+    'Cowork & Claude chat for ideation',
+  ],
+  languages: [
+    { lang: 'Hebrew', level: 'Native' },
+    { lang: 'English', level: 'Native' },
   ],
 };
 
@@ -3108,6 +3491,1211 @@ window.COMPANIES = COMPANIES;
 window.RESUME = RESUME;
 
 </script>
+<script>
+/* ============================================================
+   HELP CENTER FLOW ENGINE — data + layered layout + SVG builders
+   ------------------------------------------------------------
+   Plain JS (no JSX) so it stays out of Babel's way. Everything
+   here is presentation-neutral: colours are passed in as CSS
+   custom-property references (var(--fv-*)), never as hex, so the
+   diagram follows the Signal light/dark switch for free.
+   ============================================================ */
+(function () {
+'use strict';
+
+const NS = 'http://www.w3.org/2000/svg';
+const S = (tag, attrs) => {
+  const el = document.createElementNS(NS, tag);
+  if (attrs) for (const k in attrs) el.setAttribute(k, attrs[k]);
+  return el;
+};
+/* colour helper — tints are always derived, never literal */
+const tint = (c, pct) => `color-mix(in oklab, ${c} ${pct}%, transparent)`;
+
+/* Bar tokens. These are the only colour identifiers the data carries;
+   each resolves to a Signal bar in both modes (see the --fv-* block). */
+const BAR = {
+  tomato:  'var(--fv-tomato)',
+  sage:    'var(--fv-sage)',
+  orchid:  'var(--fv-orchid)',
+  sky:     'var(--fv-sky)',
+  butter:  'var(--fv-butter)',
+  indigo:  'var(--fv-indigo)',
+  neutral: 'var(--fv-neutral)'
+};
+
+/* ============================================================
+   FLOW DATA — rebuilt from two FigJam boards
+   node: [id, label, kind, zone?]   edge: [from, to, label?, soft?]
+   kind: entry | screen | action | decision | dialog | state | terminal
+   ============================================================ */
+const FLOWS = {};
+
+/* ---- FLOW A — Admin access & routing ---- */
+FLOWS.admin = {
+  id: 'admin',
+  name: 'Admin access & routing',
+  subtitle: 'Login → role resolution → destination panel',
+  zones: [
+    { id: 'auth',  name: 'Authentication',              color: BAR.neutral },
+    { id: 'route', name: 'Role & site routing',         color: BAR.sky },
+    { id: 'kms',   name: 'KMS admin — customers panel',  color: BAR.tomato },
+    { id: 'hc',    name: 'HC site admin panel',          color: BAR.orchid }
+  ],
+  nodes: [
+    ['start',    'Start',                      'terminal', 'auth'],
+    ['login',    'Admin login',                'screen',   'auth'],
+    ['valid',    'Credentials valid?',         'decision', 'auth'],
+    ['isCust',   'Customer admin?',            'decision', 'route'],
+    ['isKms',    'KMS admin?',                 'decision', 'route'],
+    ['kPanel',   'KMS customers panel',        'screen',   'kms'],
+    ['kAdd',     'Add customer',               'screen',   'kms'],
+    ['kDel',     'Delete customer',            'screen',   'kms'],
+    ['kRen',     'Rename customer',            'screen',   'kms'],
+    ['kMan',     'Manage customer site',       'screen',   'kms'],
+    ['kReset',   'Reset customer admin password', 'screen','kms'],
+    ['kLogout',  'Log out',                    'action',   'kms'],
+    ['kEnd',     'End',                        'terminal', 'kms'],
+    ['oneSite',  'Only one HC site?',          'decision', 'route'],
+    ['siteList', 'Site selection screen',      'screen',   'route'],
+    ['pickSite', 'Site selected?',             'decision', 'route'],
+    ['hPanel',   'HC site admin panel',        'screen',   'hc'],
+    ['hPreview', 'End-user interface preview', 'screen',   'hc'],
+    ['hWidget',  'Widget management',          'screen',   'hc'],
+    ['hSettings','HC settings',                'screen',   'hc'],
+    ['hBrand',   'Branding customization',     'screen',   'hc'],
+    ['hLogout',  'Log out',                    'action',   'hc'],
+    ['hEnd',     'End',                        'terminal', 'hc']
+  ],
+  edges: [
+    ['start', 'login'],
+    ['login', 'valid'],
+    ['valid', 'login', 'No'],
+    ['valid', 'isCust', 'Yes'],
+    ['isCust', 'oneSite', 'Yes'],
+    ['isCust', 'isKms',   'No'],
+    ['isKms', 'kPanel', 'Yes'],
+    ['kPanel', 'kAdd'],
+    ['kPanel', 'kDel'],
+    ['kPanel', 'kRen'],
+    ['kPanel', 'kMan'],
+    ['kPanel', 'kReset'],
+    ['kAdd',   'kLogout'],
+    ['kDel',   'kLogout'],
+    ['kRen',   'kLogout'],
+    ['kReset', 'kLogout'],
+    ['kMan',   'kLogout'],
+    ['kLogout', 'kEnd'],
+    /* inferred: a KMS admin entering a customer's site. Drawn dashed +
+       soft so it can't drag the HC sub-tree out of position. */
+    ['kMan', 'oneSite', 'Enter site', true],
+    ['oneSite', 'siteList', 'No'],
+    ['siteList', 'pickSite'],
+    ['pickSite', 'siteList', 'No'],
+    ['oneSite',  'hPanel', 'Yes'],
+    ['pickSite', 'hPanel', 'Yes'],
+    ['hPanel', 'hPreview'],
+    ['hPanel', 'hWidget'],
+    ['hPanel', 'hSettings'],
+    ['hPanel', 'hBrand'],
+    ['hPreview',  'hLogout'],
+    ['hWidget',   'hLogout'],
+    ['hSettings', 'hLogout'],
+    ['hBrand',    'hLogout'],
+    ['hLogout',  'hEnd']
+  ]
+};
+
+/* ---- FLOW B — Homepage widget customization ---- */
+FLOWS.widgets = {
+  id: 'widgets',
+  name: 'Homepage widget customization',
+  subtitle: 'Add a component to the help-center homepage → configure → save',
+  rootLabel: 'Add component to homepage',
+  branches: [
+    {
+      id: 'topic', name: 'Topic cards', color: BAR.tomato,
+      note: 'Richest component — card CRUD wraps a full article picker',
+      nodes: [
+        ['root',       'Topic cards',                  'entry'],
+        ['add',        'Add a card',                   'action'],
+        ['existing',   'Existing card',                'screen'],
+        ['empty',      'Empty state — no topic cards', 'state'],
+        ['plus',       'Click ‘+’ button',             'action'],
+        ['edit',       'Card editor',                  'screen'],
+        ['drag',       'Drag & drop to reorder',       'action'],
+        ['delcard',    'Delete card',                  'action'],
+        ['confirm',    '“Are you sure?” dialog',       'dialog'],
+        ['maxart',     'Max articles in card reached', 'state'],
+        ['noplus',     '‘+’ button hidden',            'state'],
+        ['title',      'Title',                        'screen'],
+        ['pen',        'Click pen icon',               'action'],
+        ['typing',     'Type title',                   'action'],
+        ['enter',      'Enter to save',                'action'],
+        ['image',      'Image',                        'screen'],
+        ['upload',     'Upload an image',              'action'],
+        ['repos',      'Reposition',                   'action'],
+        ['saveimg',    'Save',                         'action'],
+        ['remove',     'Remove',                       'action'],
+        ['replaceimg', 'Replace',                      'action'],
+        ['titleonly',  'Card shows title only',        'state'],
+        ['addart',     'Add article',                  'action'],
+        ['existart',   'Existing article',             'screen'],
+        ['replaceart', 'Replace article',              'action'],
+        ['list',       'Article list',                 'screen'],
+        ['inother',    'Already used in another card', 'state'],
+        ['disabled',   'Shown disabled in list',       'state'],
+        ['incurrent',  'Already in this card',         'state'],
+        ['checked',    'Shown checked in list',        'state'],
+        ['addsel',     'Add selected article',         'action'],
+        ['delart',     'Delete article',               'action'],
+        ['lastart',    'Deleting last article in card','state'],
+        ['plusagain',  '‘+’ button shown again',       'state']
+      ],
+      edges: [
+        ['root','add'], ['root','existing'],
+        ['add','empty'], ['add','edit'],
+        ['empty','plus'], ['plus','edit'],
+        ['existing','edit'], ['existing','drag'], ['existing','delcard'],
+        ['delcard','confirm'],
+        ['edit','title'], ['edit','image'], ['edit','addart'],
+        ['edit','existart'], ['edit','delart'], ['edit','maxart'],
+        ['maxart','noplus'], ['noplus','delart'],
+        ['title','pen'], ['pen','typing'], ['typing','enter'],
+        ['image','upload'], ['upload','repos'], ['repos','saveimg'],
+        ['saveimg','remove'], ['saveimg','replaceimg'], ['remove','titleonly'],
+        ['addart','list'],
+        ['list','inother'], ['inother','disabled'],
+        ['list','incurrent'], ['incurrent','checked'],
+        ['list','addsel'],
+        ['existart','replaceart'], ['replaceart','list'],
+        ['existart','delart'],
+        ['delart','lastart'],
+        ['lastart','confirm'], ['lastart','plusagain']
+      ]
+    },
+    {
+      id: 'popular', name: 'Most popular', color: BAR.sage,
+      note: 'Article-picker pattern (shared with Article)',
+      nodes: [
+        ['root',      'Most popular',                      'entry'],
+        ['addnew',    'Add new article',                   'action'],
+        ['existing',  'Existing article',                  'screen'],
+        ['maxart',    'Max articles reached',              'state'],
+        ['delcomp',   'Delete component',                  'action'],
+        ['confirm',   '“Are you sure?” dialog',            'dialog'],
+        ['noplus',    '‘+’ button hidden',                 'state'],
+        ['replace',   'Replace article',                   'action'],
+        ['select',    'Select article from list',          'screen'],
+        ['already',   'Already in this component',         'state'],
+        ['checked',   'Shown checked in list',             'state'],
+        ['added',     'Article added',                     'state'],
+        ['delart',    'Delete article',                    'action'],
+        ['trash',     'Click trash icon',                  'action'],
+        ['plusagain', '‘+’ button shown again',            'state'],
+        ['lastart',   'Deleting only article in component','state']
+      ],
+      edges: [
+        ['root','addnew'], ['root','existing'], ['root','maxart'], ['root','delcomp'],
+        ['delcomp','confirm'],
+        ['maxart','noplus'], ['maxart','delart'],
+        ['addnew','select'],
+        ['existing','replace'], ['replace','select'], ['existing','delart'],
+        ['select','already'], ['already','checked'],
+        ['select','added'], ['added','delart'],
+        ['delart','trash'], ['trash','plusagain'],
+        ['delart','lastart'], ['lastart','confirm']
+      ]
+    },
+    {
+      id: 'banner', name: 'Banner', color: BAR.orchid,
+      note: 'Only component with an image + description pair',
+      nodes: [
+        ['root',      'Banner',                 'entry'],
+        ['add',       'Add banner',             'action'],
+        ['existing',  'Existing banner',        'screen'],
+        ['title',     'Title',                  'screen'],
+        ['desc',      'Short description',      'screen'],
+        ['connect',   'Connect article',        'action'],
+        ['list',      'Article list',           'screen'],
+        ['defimg',    'Default image',          'state'],
+        ['replaceimg','Replace default image',  'action'],
+        ['repos',     'Reposition',             'action'],
+        ['delimg',    'Delete image',           'action']
+      ],
+      edges: [
+        ['root','add'], ['root','existing'],
+        ['add','title'], ['add','desc'], ['add','connect'], ['add','defimg'],
+        ['connect','list'],
+        ['defimg','replaceimg'], ['replaceimg','repos'], ['repos','delimg'],
+        ['delimg','defimg'],
+        ['existing','title'], ['existing','desc'], ['existing','list']
+      ]
+    },
+    {
+      id: 'categories', name: 'Categories', color: BAR.sky,
+      note: 'Superset: title + icon + article list, so it carries every validation rule',
+      nodes: [
+        ['root',        'Categories',                          'entry'],
+        ['addcat',      'Add category',                        'action'],
+        ['existing',    'Existing category',                   'screen'],
+        ['maxcat',      'Max categories reached',              'state'],
+        ['delcomp',     'Delete component',                    'action'],
+        ['confirm',     '“Are you sure?” dialog',              'dialog'],
+        ['title',       'Write title',                         'action'],
+        ['icon',        'Upload icon',                         'action'],
+        ['addarts',     'Add articles',                        'action'],
+        ['list',        'Article list',                        'screen'],
+        ['incat',       'Already in this category',            'state'],
+        ['checked',     'Shown checked in list',               'state'],
+        ['inother',     'Already in another category',         'state'],
+        ['disabled',    'Shown disabled in list',              'state'],
+        ['replacearts', 'Replace articles',                    'action'],
+        ['replaceicon', 'Replace icon',                        'action'],
+        ['delcat',      'Delete category',                     'action'],
+        ['noplus',      '‘+’ button hidden',                   'state'],
+        ['trash',       'Click trash icon',                    'action'],
+        ['plusagain',   '‘+’ button shown again',              'state'],
+        ['lastcat',     'Deleting last category in component', 'state']
+      ],
+      edges: [
+        ['root','addcat'], ['root','existing'], ['root','maxcat'], ['root','delcomp'],
+        ['delcomp','confirm'],
+        ['addcat','title'], ['addcat','icon'], ['addcat','addarts'],
+        ['addarts','list'],
+        ['list','incat'], ['incat','checked'],
+        ['list','inother'], ['inother','disabled'],
+        ['existing','replacearts'], ['replacearts','list'],
+        ['existing','replaceicon'], ['existing','delcat'],
+        ['maxcat','noplus'], ['maxcat','delcat'],
+        ['delcat','trash'], ['trash','plusagain'],
+        ['delcat','lastcat'], ['lastcat','confirm']
+      ]
+    },
+    {
+      id: 'article', name: 'Article', color: BAR.butter,
+      note: 'Article-picker pattern (shared with Most popular)',
+      nodes: [
+        ['root',      'Article',                             'entry'],
+        ['existing',  'Existing article',                    'screen'],
+        ['adding',    'Add article',                         'action'],
+        ['maxart',    'Max articles reached',                'state'],
+        ['delcomp',   'Delete component',                    'action'],
+        ['confirm',   '“Are you sure?” dialog',              'dialog'],
+        ['edit',      'Edit article',                        'action'],
+        ['select',    'Select article from list',            'screen'],
+        ['incomp',    'Already in this component',           'state'],
+        ['checked',   'Shown checked in list',               'state'],
+        ['inother',   'Used in another component',           'state'],
+        ['disabled',  'Shown disabled in list',              'state'],
+        ['noplus',    '‘+’ button hidden',                   'state'],
+        ['delart',    'Delete article',                      'action'],
+        ['trash',     'Click trash icon',                    'action'],
+        ['plusagain', '‘+’ button shown again',              'state'],
+        ['lastart',   'Deleting last article in component',  'state']
+      ],
+      edges: [
+        ['root','existing'], ['root','adding'], ['root','maxart'], ['root','delcomp'],
+        ['delcomp','confirm'],
+        ['adding','select'],
+        ['existing','edit'], ['edit','select'], ['existing','delart'],
+        ['maxart','noplus'], ['maxart','delart'],
+        ['select','incomp'], ['incomp','checked'],
+        ['select','inother'], ['inother','disabled'],
+        ['delart','trash'], ['trash','plusagain'],
+        ['delart','lastart'], ['lastart','confirm']
+      ]
+    },
+    {
+      id: 'footer', name: 'Footer', color: BAR.indigo,
+      note: 'Simplest component — links only, no article picker',
+      nodes: [
+        ['root',      'Footer',                  'entry'],
+        ['addlink',   'Add link',                'action'],
+        ['dellink',   'Delete link',             'action'],
+        ['url',       'Add link URL',            'screen'],
+        ['title',     'Add title',               'screen'],
+        ['maxlinks',  'Max links reached',       'state'],
+        ['noplus',    '‘+’ button hidden',       'state'],
+        ['trash',     'Click trash icon',        'action'],
+        ['plusagain', '‘+’ button shown again',  'state']
+      ],
+      edges: [
+        ['root','addlink'], ['root','dellink'],
+        ['addlink','url'], ['addlink','title'],
+        ['url','maxlinks'], ['title','maxlinks'],
+        ['maxlinks','noplus'], ['noplus','dellink'],
+        ['dellink','trash'], ['trash','plusagain']
+      ]
+    },
+    {
+      /* deliberately achromatic — the shared lane every component funnels
+         into, so it reads as a different kind of thing, not a 7th sibling */
+      id: 'save', name: 'Save & validation', color: BAR.neutral,
+      shared: true,
+      note: 'Consolidated from two duplicate clusters in the source board — applies to every component',
+      nodes: [
+        ['root',      'Save & validation',                       'entry'],
+        ['save',      'Save changes',                            'action'],
+        ['valid',     'All required fields filled?',             'decision'],
+        ['saved',     'Changes saved',                           'state'],
+        ['notitle',   'No title',                                'state'],
+        ['noicon',    'No icon',                                 'state'],
+        ['nofolder',  'No folder connected',                     'state'],
+        ['noart',     'No article connected',                    'state'],
+        ['belowmin',  'Fewer than minimum articles',             'state'],
+        ['combonote', 'Validation note in combo',                'state'],
+        ['dialog',    'Dialog — add what’s missing, then save',  'dialog'],
+        ['fielderr',  'Offending field marked red',              'state']
+      ],
+      edges: [
+        ['root','save'], ['save','valid'],
+        ['valid','saved','Yes'],
+        ['valid','notitle','No'], ['valid','noicon','No'],
+        ['valid','nofolder','No'], ['valid','noart','No'],
+        ['valid','belowmin','No'],
+        ['belowmin','combonote'],
+        ['notitle','dialog'], ['noicon','dialog'], ['nofolder','dialog'],
+        ['noart','dialog'], ['combonote','dialog'],
+        ['dialog','fielderr']
+      ]
+    }
+  ]
+};
+
+const KIND_LABEL = {
+  entry:    'Component',
+  screen:   'Screen / surface',
+  action:   'User action',
+  decision: 'Decision',
+  dialog:   'Dialog',
+  state:    'System state / rule',
+  terminal: 'Start / end'
+};
+
+/* ============================================================
+   TYPE — resolved from the live stack, never declared here.
+   The layout measures real text, so this has to be the same
+   font the diagram actually renders in.
+   ============================================================ */
+let _fontCache = null;
+function resolveFonts() {
+  if (_fontCache) return _fontCache;
+  const probe = document.createElement('div');
+  probe.style.cssText = 'position:absolute;visibility:hidden;pointer-events:none';
+  document.body.appendChild(probe);
+  probe.style.fontFamily = 'var(--ff-body)';
+  const body = getComputedStyle(probe).fontFamily;
+  probe.style.fontFamily = 'var(--ff-mono)';
+  const mono = getComputedStyle(probe).fontFamily;
+  probe.remove();
+  _fontCache = { node: '500 12px ' + body, mono: '500 10px ' + mono, edge: '500 9.5px ' + mono };
+  return _fontCache;
+}
+function resetFonts() { _fontCache = null; }
+
+/* ============================================================
+   LAYERED FLOW LAYOUT (Sugiyama-lite)
+   rank -> order -> position -> route. Direction-agnostic: computed
+   in (u = along flow, v = across), mapped to x/y last.
+   ============================================================ */
+const _measureCanvas = document.createElement('canvas');
+const _ctx = _measureCanvas.getContext('2d');
+function measure(text, font) { _ctx.font = font; return _ctx.measureText(text).width; }
+
+function wrapText(text, maxWidth, font) {
+  const words = String(text).split(/\s+/);
+  const lines = [];
+  let line = '';
+  for (const w of words) {
+    const test = line ? line + ' ' + w : w;
+    if (measure(test, font) <= maxWidth || !line) line = test;
+    else { lines.push(line); line = w; }
+  }
+  if (line) lines.push(line);
+  return lines;
+}
+
+const LAYOUT_DEFAULTS = {
+  direction: 'TB',
+  nodeWidth: 164,
+  rankGap: 54,     // between ranks (along flow)
+  crossGap: 24,    // between siblings (across flow)
+  minHeight: 44,
+  lineHeight: 15,
+  padY: 26
+};
+
+function layoutFlow(rawNodes, rawEdges, opts) {
+  const O = Object.assign({}, LAYOUT_DEFAULTS, opts || {});
+  if (!O.font) O.font = resolveFonts().node;
+  const TB = O.direction === 'TB';
+
+  /* ---------- 1. nodes ---------- */
+  const nodes = rawNodes.map(([id, label, kind, zone]) => {
+    const innerW = O.nodeWidth - 26;
+    const lines = wrapText(label, innerW, O.font);
+    let h = Math.max(O.minHeight, lines.length * O.lineHeight + O.padY);
+    if (kind === 'decision') h += 12;
+    if (kind === 'terminal') h = Math.max(40, lines.length * O.lineHeight + 20);
+    return {
+      id, label, kind: kind || 'screen', zone: zone || null,
+      lines, w: O.nodeWidth, h,
+      x: 0, y: 0, rank: 0, order: 0
+    };
+  });
+  const byId = new Map(nodes.map(n => [n.id, n]));
+  const rankExtent  = n => (TB ? n.h : n.w);
+  const crossExtent = n => (TB ? n.w : n.h);
+
+  /* ---------- 2. edges ---------- */
+  // a 4th element marks a "soft" reference link: drawn, but excluded from
+  // ranking so it can't drag a whole sub-tree out of position
+  const edges = rawEdges
+    .filter(([f, t]) => byId.has(f) && byId.has(t))
+    .map(([from, to, label, soft], i) =>
+      ({ id: 'e' + i, from, to, label: label || '', soft: !!soft, back: false }));
+
+  const out = new Map(nodes.map(n => [n.id, []]));
+  const inn = new Map(nodes.map(n => [n.id, []]));
+  edges.forEach(e => { out.get(e.from).push(e); inn.get(e.to).push(e); });
+
+  // a decision that fans out to N siblings with the same answer only needs
+  // that answer written once — keep the middle one, blank the rest
+  out.forEach(list => {
+    const byLabel = new Map();
+    list.forEach(e => {
+      if (!e.label) return;
+      if (!byLabel.has(e.label)) byLabel.set(e.label, []);
+      byLabel.get(e.label).push(e);
+    });
+    byLabel.forEach(group => {
+      if (group.length < 2) return;
+      const keep = group[Math.floor((group.length - 1) / 2)];
+      group.forEach(e => { if (e !== keep) e.label = ''; });
+    });
+  });
+
+  /* ---------- 3. back edges ---------- */
+  const WHITE = 0, GREY = 1, BLACK = 2;
+  const color = new Map(nodes.map(n => [n.id, WHITE]));
+  const roots = nodes.filter(n => inn.get(n.id).length === 0).map(n => n.id);
+  const seeds = roots.length ? roots : [nodes[0].id];
+  const stack = [];
+  function dfs(start) {
+    stack.length = 0;
+    stack.push({ id: start, i: 0 });
+    color.set(start, GREY);
+    while (stack.length) {
+      const fr = stack[stack.length - 1];
+      const list = out.get(fr.id);
+      if (fr.i < list.length) {
+        const e = list[fr.i++];
+        const c = color.get(e.to);
+        if (c === GREY) e.back = true;
+        else if (c === WHITE) { color.set(e.to, GREY); stack.push({ id: e.to, i: 0 }); }
+      } else {
+        color.set(fr.id, BLACK);
+        stack.pop();
+      }
+    }
+  }
+  seeds.forEach(id => { if (color.get(id) === WHITE) dfs(id); });
+  nodes.forEach(n => { if (color.get(n.id) === WHITE) dfs(n.id); });
+
+  const fwd = edges.filter(e => !e.back && !e.soft);
+  const fout = new Map(nodes.map(n => [n.id, []]));
+  const finn = new Map(nodes.map(n => [n.id, []]));
+  fwd.forEach(e => { fout.get(e.from).push(e); finn.get(e.to).push(e); });
+
+  /* ---------- 4. rank = longest path ---------- */
+  const indeg = new Map(nodes.map(n => [n.id, finn.get(n.id).length]));
+  const q = nodes.filter(n => indeg.get(n.id) === 0).map(n => n.id);
+  const topo = [];
+  const seen = new Set();
+  while (q.length) {
+    const id = q.shift();
+    topo.push(id); seen.add(id);
+    for (const e of fout.get(id)) {
+      indeg.set(e.to, indeg.get(e.to) - 1);
+      if (indeg.get(e.to) === 0) q.push(e.to);
+    }
+  }
+  nodes.forEach(n => { if (!seen.has(n.id)) topo.push(n.id); });
+  topo.forEach(id => {
+    const n = byId.get(id);
+    let r = 0;
+    for (const e of finn.get(id)) r = Math.max(r, byId.get(e.from).rank + 1);
+    n.rank = r;
+  });
+
+  const maxRank = Math.max.apply(null, nodes.map(n => n.rank));
+  const ranks = Array.from({ length: maxRank + 1 }, () => []);
+  nodes.forEach(n => ranks[n.rank].push(n));
+
+  /* ---------- 5. ordering (barycenter) ---------- */
+  ranks.forEach(r => r.forEach((n, i) => n.order = i));
+  function bary(node, side) {
+    const list = side === 'in' ? finn.get(node.id) : fout.get(node.id);
+    if (!list.length) return null;
+    let s = 0;
+    for (const e of list) s += byId.get(side === 'in' ? e.from : e.to).order;
+    return s / list.length;
+  }
+  // optional grouping constraint: keep same-zone nodes in a contiguous band
+  const groupIndex = new Map((O.groupOrder || []).map((z, i) => [z, i]));
+  const gk = n => (groupIndex.has(n.zone) ? groupIndex.get(n.zone) : -1);
+
+  for (let pass = 0; pass < 10; pass++) {
+    const down = pass % 2 === 0;
+    const idxs = Array.from({ length: ranks.length }, (_, i) => down ? i : ranks.length - 1 - i);
+    for (const ri of idxs) {
+      const keyed = ranks[ri].map(n => {
+        const b = bary(n, down ? 'in' : 'out');
+        return { n, k: b === null ? n.order : b, g: gk(n) };
+      });
+      keyed.sort((a, b) => (a.g - b.g) || (a.k - b.k) || (a.n.order - b.n.order));
+      keyed.forEach((o, i) => o.n.order = i);
+      ranks[ri] = keyed.map(o => o.n);
+    }
+  }
+
+  /* ---------- 6. rank-axis position (u) ---------- */
+  let cum = 0;
+  ranks.forEach(r => {
+    const band = Math.max.apply(null, r.map(rankExtent));
+    r.forEach(n => { n.u = cum + (band - rankExtent(n)) / 2; n.band = band; });
+    cum += band + O.rankGap;
+  });
+
+  /* ---------- 7. cross-axis position (v) ---------- */
+  ranks.forEach(r => {
+    let v = 0;
+    r.forEach(n => { n.v = v; v += crossExtent(n) + O.crossGap; });
+  });
+  function pack(r) {
+    r.sort((a, b) => (gk(a) - gk(b)) || (a._d - b._d));
+    let cursor = -Infinity;
+    r.forEach(n => {
+      let top = n._d - crossExtent(n) / 2;
+      if (top < cursor) top = cursor;
+      n.v = top;
+      cursor = top + crossExtent(n) + O.crossGap;
+    });
+    const wanted = r.reduce((s, n) => s + n._d, 0) / r.length;
+    const actual = r.reduce((s, n) => s + (n.v + crossExtent(n) / 2), 0) / r.length;
+    const shift = wanted - actual;
+    r.forEach(n => { n.v += shift; });
+  }
+  for (let iter = 0; iter < 14; iter++) {
+    const down = iter % 2 === 0;
+    const idxs = Array.from({ length: ranks.length }, (_, i) => down ? i : ranks.length - 1 - i);
+    for (const ri of idxs) {
+      const r = ranks[ri];
+      r.forEach(n => {
+        const list = down ? finn.get(n.id) : fout.get(n.id);
+        if (!list.length) { n._d = n.v + crossExtent(n) / 2; return; }
+        let s = 0;
+        for (const e of list) {
+          const o = byId.get(down ? e.from : e.to);
+          s += o.v + crossExtent(o) / 2;
+        }
+        n._d = s / list.length;
+      });
+      pack(r);
+    }
+  }
+  const minV = Math.min.apply(null, nodes.map(n => n.v));
+  nodes.forEach(n => { n.v -= minV; });
+
+  /* ---------- 8. map to x/y ---------- */
+  nodes.forEach(n => {
+    if (TB) { n.x = n.v; n.y = n.u; }
+    else    { n.x = n.u; n.y = n.v; }
+    n.cx = n.x + n.w / 2;
+    n.cy = n.y + n.h / 2;
+    n.uc = n.u + rankExtent(n) / 2;
+    n.vc = n.v + crossExtent(n) / 2;
+  });
+
+  /* ---------- 9. routing ---------- */
+  const pt = TB ? ((u, v) => `${v} ${u}`) : ((u, v) => `${u} ${v}`);
+  const xy = TB ? ((u, v) => [v, u]) : ((u, v) => [u, v]);
+
+  const outSlots = new Map(), inSlots = new Map();
+  edges.forEach(e => {
+    if (!outSlots.has(e.from)) outSlots.set(e.from, []);
+    if (!inSlots.has(e.to)) inSlots.set(e.to, []);
+    outSlots.get(e.from).push(e);
+    inSlots.get(e.to).push(e);
+  });
+  outSlots.forEach(l => l.sort((a, b) => byId.get(a.to).vc - byId.get(b.to).vc));
+  inSlots.forEach(l => l.sort((a, b) => byId.get(a.from).vc - byId.get(b.from).vc));
+
+  function anchor(node, list, e, spread) {
+    const i = list.indexOf(e), n = list.length;
+    if (n === 1) return node.vc;
+    const usable = Math.min(crossExtent(node) - 18, (n - 1) * spread);
+    return node.vc - usable / 2 + i * (usable / (n - 1));
+  }
+
+  const vMax = Math.max.apply(null, nodes.map(n => n.v + crossExtent(n)));
+
+  edges.forEach(e => {
+    const s = byId.get(e.from), t = byId.get(e.to);
+    const sv = anchor(s, outSlots.get(e.from), e, 13);
+    const tv = anchor(t, inSlots.get(e.to), e, 13);
+    const span = t.rank - s.rank;
+
+    if (e.back || span <= 0) {
+      const su = s.u, tu = t.u + rankExtent(t);
+      const side = Math.max(s.v + crossExtent(s), t.v + crossExtent(t)) + 30;
+      const dip = Math.min(side, vMax + 30);
+      e.path =
+        `M ${pt(su, s.vc)} C ${pt(su - 34, s.vc)} ${pt(su - 34, dip)} ${pt((su + tu) / 2, dip)}` +
+        ` C ${pt(tu + 34, dip)} ${pt(tu + 34, t.vc)} ${pt(tu, t.vc)}`;
+      e.arrow = arrowPoly(xy, tu, t.vc, -1);
+      e.labelAt = xy((su + tu) / 2, dip + 11);
+      e.dashed = true;
+      return;
+    }
+
+    const su = s.u + rankExtent(s);
+    const tu = t.u;
+    const du = tu - su;
+
+    if (span === 1 && Math.abs(sv - tv) < 1.5) {
+      e.path = `M ${pt(su, sv)} L ${pt(tu, tv)}`;
+    } else if (span === 1) {
+      const r = Math.max(2, Math.min(12, Math.abs(tv - sv) / 2, du / 2));
+      const mu = su + du / 2;
+      const dir = tv > sv ? 1 : -1;
+      e.path =
+        `M ${pt(su, sv)} L ${pt(mu - r, sv)}` +
+        ` Q ${pt(mu, sv)} ${pt(mu, sv + dir * r)}` +
+        ` L ${pt(mu, tv - dir * r)}` +
+        ` Q ${pt(mu, tv)} ${pt(mu + r, tv)}` +
+        ` L ${pt(tu, tv)}`;
+    } else {
+      const c = Math.min(du * 0.45, 110);
+      e.path = `M ${pt(su, sv)} C ${pt(su + c, sv)} ${pt(tu - c, tv)} ${pt(tu, tv)}`;
+      e.dashed = true;
+    }
+    e.arrow = arrowPoly(xy, tu, tv, 1);
+    // anchor the label just before the arrowhead so it never sits on a shared trunk
+    e.labelAt = span === 1
+      ? xy(tu - 15, tv - (TB ? 0 : 8))
+      : xy(su + du * 0.3, sv - (TB ? 0 : 8));
+  });
+
+  const width  = Math.max.apply(null, nodes.map(n => n.x + n.w));
+  const height = Math.max.apply(null, nodes.map(n => n.y + n.h));
+  return { nodes, edges, width, height, ranks, byId, direction: O.direction };
+}
+
+function arrowPoly(xy, u, v, dir) {
+  const tip = xy(u, v);
+  const b1  = xy(u - dir * 7.5, v - 3.8);
+  const b2  = xy(u - dir * 7.5, v + 3.8);
+  return `${tip[0]},${tip[1]} ${b1[0]},${b1[1]} ${b2[0]},${b2[1]}`;
+}
+
+/* ============================================================
+   SHAPES — the type of a step is carried by its silhouette,
+   so the diagram survives greyscale and colour-blind viewing.
+   ============================================================ */
+function shapeFor(n, color, opts) {
+  opts = opts || {};
+  const { w, h } = n;
+  const g = S('g');
+  const put = (tag, attrs, style) => {
+    const el = S(tag, attrs);
+    el.setAttribute('class', 'fv-node-shape');
+    if (style) for (const k in style) el.style.setProperty(k, style[k]);
+    g.appendChild(el);
+    return el;
+  };
+  switch (n.kind) {
+    case 'terminal':
+      put('rect', { x: 0, y: 0, width: w, height: h, rx: h / 2, ry: h / 2 },
+          { stroke: color, fill: tint(color, 10), 'stroke-width': '1.5' });
+      break;
+    case 'entry':
+      put('rect', { x: 0, y: 0, width: w, height: h, rx: 7 },
+          { stroke: color, fill: tint(color, 8), 'stroke-width': '2' });
+      break;
+    case 'action':
+      put('rect', { x: 0, y: 0, width: w, height: h, rx: Math.min(18, h / 2) },
+          { stroke: color, fill: 'var(--fv-surface)' });
+      break;
+    case 'decision': {
+      const k = 20;
+      put('polygon', { points: `0,${h / 2} ${k},0 ${w - k},0 ${w},${h / 2} ${w - k},${h} ${k},${h}` },
+          { stroke: color, fill: 'var(--fv-surface)' });
+      break;
+    }
+    case 'dialog':
+      put('rect', { x: 0, y: 0, width: w, height: h, rx: 3 },
+          { stroke: color, fill: 'var(--fv-surface)' });
+      put('rect', { x: 4, y: 4, width: w - 8, height: h - 8, rx: 2, opacity: .55 },
+          { stroke: color, fill: 'none', 'stroke-width': '0.75' });
+      break;
+    case 'state':
+      put('rect', { x: 0, y: 0, width: w, height: h, rx: 3, 'stroke-dasharray': '4 3' },
+          { stroke: color, fill: 'var(--fv-surface-alt)' });
+      break;
+    default:
+      put('rect', { x: 0, y: 0, width: w, height: h, rx: 3 },
+          { stroke: color, fill: 'var(--fv-surface)' });
+  }
+  return g;
+}
+
+/* ============================================================
+   ZONE OUTLINE — staircase polygon over the ranks a zone occupies
+   ============================================================ */
+function zoneOutlines(members, L, pad) {
+  const TB = L.direction === 'TB';
+  const byRank = new Map();
+  members.forEach(n => {
+    if (!byRank.has(n.rank)) byRank.set(n.rank, []);
+    byRank.get(n.rank).push(n);
+  });
+  const ranks = [...byRank.keys()].sort((a, b) => a - b);
+  const runs = [];
+  let cur = [ranks[0]];
+  for (let i = 1; i < ranks.length; i++) {
+    if (ranks[i] === ranks[i - 1] + 1) cur.push(ranks[i]);
+    else { runs.push(cur); cur = [ranks[i]]; }
+  }
+  runs.push(cur);
+  const P = TB ? ((u, v) => [v, u]) : ((u, v) => [u, v]);
+  return runs.map(run => {
+    const bands = run.map(r => {
+      const m = byRank.get(r);
+      const u1 = Math.min.apply(null, m.map(n => TB ? n.y : n.x)) - pad;
+      const u2 = Math.max.apply(null, m.map(n => TB ? n.y + n.h : n.x + n.w)) + pad;
+      const v1 = Math.min.apply(null, m.map(n => TB ? n.x : n.y)) - pad;
+      const v2 = Math.max.apply(null, m.map(n => TB ? n.x + n.w : n.y + n.h)) + pad;
+      return { u1, u2, v1, v2 };
+    });
+    for (let i = 0; i < bands.length - 1; i++) {
+      const mid = (bands[i].u2 + bands[i + 1].u1) / 2;
+      bands[i].u2 = mid; bands[i + 1].u1 = mid;
+    }
+    const points = [];
+    bands.forEach(b => { points.push(P(b.u1, b.v2)); points.push(P(b.u2, b.v2)); });
+    for (let i = bands.length - 1; i >= 0; i--) {
+      points.push(P(bands[i].u2, bands[i].v1));
+      points.push(P(bands[i].u1, bands[i].v1));
+    }
+    const rects = bands.map(b => {
+      const a = P(b.u1, b.v1), c = P(b.u2, b.v2);
+      return { x1: Math.min(a[0], c[0]), y1: Math.min(a[1], c[1]),
+               x2: Math.max(a[0], c[0]), y2: Math.max(a[1], c[1]) };
+    });
+    return { points, bands: rects, head: P(bands[0].u1, bands[0].v1) };
+  });
+}
+
+/* ============================================================
+   DIAGRAM RENDERER
+   ============================================================ */
+function drawEdgeEl(e, opts) {
+  opts = opts || {};
+  const g = S('g', { class: 'fv-edge' });
+  g.dataset.from = e.from;
+  g.dataset.to = e.to;
+  g.appendChild(S('path', { class: 'fv-edge-path' + (e.dashed ? ' is-dashed' : ''), d: e.path }));
+  if (e.arrow) g.appendChild(S('polygon', { class: 'fv-arrow', points: e.arrow }));
+  if (e.label && !opts.hideLabels) {
+    const [lx, ly] = e.labelAt;
+    const tw = measure(e.label, resolveFonts().edge) + 8;
+    g.appendChild(S('rect', { class: 'fv-edge-label-bg', x: lx - tw / 2, y: ly - 8, width: tw, height: 12, rx: 2 }));
+    const t = S('text', { class: 'fv-edge-label', x: lx, y: ly + 1.5, 'text-anchor': 'middle' });
+    t.textContent = e.label;
+    g.appendChild(t);
+  }
+  return g;
+}
+
+function drawNodeEl(n, color, opts) {
+  opts = opts || {};
+  const g = S('g', { class: 'fv-node', transform: `translate(${n.x},${n.y})` });
+  g.dataset.id = n.id;
+  g.appendChild(shapeFor(n, color, opts));
+  if (!opts.hideLabels) {
+    const startY = n.h / 2 - ((n.lines.length - 1) * 15) / 2 + 4;
+    n.lines.forEach((line, i) => {
+      const t = S('text', { class: 'fv-node-label', x: n.w / 2, y: startY + i * 15, 'text-anchor': 'middle' });
+      if (n.kind === 'entry' || n.kind === 'terminal') t.setAttribute('font-weight', '600');
+      t.textContent = line;
+      g.appendChild(t);
+    });
+  }
+  g.appendChild(S('rect', { class: 'fv-hit', x: 0, y: 0, width: n.w, height: n.h }));
+  if (opts.static) {
+    g.setAttribute('aria-hidden', 'true');
+  } else {
+    /* every step is a keyboard stop with its shape named — colour is
+       never the only channel, and neither is hover */
+    g.setAttribute('tabindex', '0');
+    g.setAttribute('role', 'img');
+    g.setAttribute('aria-label', n.label + ', ' + (KIND_LABEL[n.kind] || n.kind));
+    g.appendChild(S('rect', { class: 'fv-focus-ring', x: -3, y: -3, width: n.w + 6, height: n.h + 6, rx: 5 }));
+  }
+  return g;
+}
+
+function renderDiagram(L, opts) {
+  opts = opts || {};
+  const colorFor = opts.colorFor || (() => 'var(--fv-neutral)');
+  const svg = S('svg', { xmlns: NS });
+  const viewport = S('g', { class: 'fv-diagram' });
+  svg.appendChild(viewport);
+
+  const gZones = S('g'), gEdges = S('g'), gNodes = S('g'), gZoneLabels = S('g');
+  [gZones, gEdges, gNodes, gZoneLabels].forEach(g => viewport.appendChild(g));
+
+  /* zone frames — preserve the grouping the source board expressed with colour.
+     Outlines hug the ranks the zone actually occupies (a staircase), so two
+     zones sitting diagonally from each other never swallow one another. */
+  if (opts.zones && opts.zones.length) {
+    opts.zones.forEach(z => {
+      const members = L.nodes.filter(n => n.zone === z.id);
+      if (members.length < 2) return;
+      zoneOutlines(members, L, 18).forEach(run => {
+        const intrudes = L.nodes.some(n => n.zone !== z.id && run.bands.some(b =>
+          n.x + n.w > b.x1 && n.x < b.x2 && n.y + n.h > b.y1 && n.y < b.y2));
+        if (intrudes) return;
+        const g = S('g', { class: 'fv-zone' });
+        const poly = S('polygon', {
+          points: run.points.map(p => p[0] + ',' + p[1]).join(' '),
+          'stroke-width': 1, 'stroke-dasharray': '2 5', opacity: .75, 'stroke-linejoin': 'round'
+        });
+        poly.style.setProperty('fill', tint(z.color, 4));
+        poly.style.setProperty('stroke', z.color);
+        g.appendChild(poly);
+        gZones.appendChild(g);
+
+        const label = z.name.toUpperCase();
+        const lw = measure(label, resolveFonts().mono) + 3;
+        const lg = S('g', { class: 'fv-zone' });
+        lg.appendChild(S('rect', {
+          class: 'fv-knockout',
+          x: run.head[0] + 4, y: run.head[1] - 23, width: lw + 14, height: 17, rx: 3
+        }));
+        const t = S('text', { class: 'fv-zone-label', x: run.head[0] + 11, y: run.head[1] - 11 });
+        t.style.setProperty('fill', z.color);
+        t.textContent = label;
+        lg.appendChild(t);
+        gZoneLabels.appendChild(lg);
+      });
+    });
+  }
+
+  const edgeEls = new Map();
+  const nodeEls = new Map();
+  L.edges.forEach(e => { const el = drawEdgeEl(e, opts); edgeEls.set(e.id, el); gEdges.appendChild(el); });
+  L.nodes.forEach(n => { const el = drawNodeEl(n, colorFor(n), opts); nodeEls.set(n.id, el); gNodes.appendChild(el); });
+  return { svg, viewport, edgeEls, nodeEls, L };
+}
+
+/* ============================================================
+   ZOOM / PAN
+   Plain wheel is left alone so the page scrolls; ⌘/ctrl + wheel
+   zooms, and a click on the canvas arms plain-wheel zoom until
+   the reader clicks out.
+   ============================================================ */
+function makeViewer(host, rendered, pad) {
+  const P = Object.assign({ top: 34, right: 26, bottom: 26, left: 26 }, pad || {});
+  const { svg, viewport, L } = rendered;
+  let k = 1, tx = 0, ty = 0;
+  let dragging = false, sx = 0, sy = 0, stx = 0, sty = 0, moved = false;
+  let onZoom = null;
+
+  host.innerHTML = '';
+  host.appendChild(svg);
+
+  function apply() {
+    viewport.setAttribute('transform', `translate(${tx},${ty}) scale(${k})`);
+    if (onZoom) onZoom(k);
+  }
+  function fit() {
+    const r = host.getBoundingClientRect();
+    const sw = Math.max(1, r.width - P.left - P.right);
+    const sh = Math.max(1, r.height - P.top - P.bottom);
+    k = Math.min(sw / L.width, sh / L.height, 1.15);
+    tx = P.left + (sw - L.width * k) / 2;
+    ty = P.top + (sh - L.height * k) / 2;
+    apply();
+  }
+  function zoomTo(nk, cx, cy) {
+    const r = host.getBoundingClientRect();
+    cx = cx == null ? r.width / 2 : cx;
+    cy = cy == null ? r.height / 2 : cy;
+    nk = Math.max(0.08, Math.min(3, nk));
+    tx = cx - (cx - tx) * (nk / k);
+    ty = cy - (cy - ty) * (nk / k);
+    k = nk;
+    apply();
+  }
+  function centerOn(el) {
+    if (!el) return;
+    const n = L.byId && L.byId.get(el);
+    if (!n) return;
+    const r = host.getBoundingClientRect();
+    tx = r.width / 2 - n.cx * k;
+    ty = r.height / 2 - n.cy * k;
+    apply();
+  }
+
+  svg.addEventListener('wheel', ev => {
+    // pinch-zoom arrives as ctrlKey on every platform
+    if (!ev.ctrlKey && !ev.metaKey && host.dataset.zoomArmed !== 'on') return; // page scrolls
+    ev.preventDefault();
+    const r = host.getBoundingClientRect();
+    const f = ev.deltaY < 0 ? 1.12 : 1 / 1.12;
+    zoomTo(k * f, ev.clientX - r.left, ev.clientY - r.top);
+  }, { passive: false });
+
+  svg.addEventListener('pointerdown', ev => {
+    dragging = true; moved = false;
+    try { svg.setPointerCapture(ev.pointerId); } catch (err) {}
+    sx = ev.clientX; sy = ev.clientY; stx = tx; sty = ty;
+    svg.style.cursor = 'grabbing';
+  });
+  svg.addEventListener('pointermove', ev => {
+    if (!dragging) return;
+    if (Math.abs(ev.clientX - sx) + Math.abs(ev.clientY - sy) > 3) moved = true;
+    tx = stx + (ev.clientX - sx);
+    ty = sty + (ev.clientY - sy);
+    apply();
+  });
+  const stop = () => { dragging = false; svg.style.cursor = 'grab'; };
+  svg.addEventListener('pointerup', stop);
+  svg.addEventListener('pointercancel', stop);
+  svg.style.cursor = 'grab';
+
+  return {
+    fit, centerOn,
+    zoomIn:  () => zoomTo(k * 1.25),
+    zoomOut: () => zoomTo(k / 1.25),
+    didDrag: () => moved,
+    get scale() { return k; },
+    set onZoom(fn) { onZoom = fn; }
+  };
+}
+
+/* ============================================================
+   FOCUS / HIGHLIGHT — hover, click-to-pin, and the keyboard
+   equivalent of both.
+   ============================================================ */
+function wireFocus(rendered) {
+  const { viewport, edgeEls, nodeEls, L } = rendered;
+  let pinned = null;
+
+  const adj = new Map(L.nodes.map(n => [n.id, { nodes: new Set([n.id]), edges: new Set() }]));
+  L.edges.forEach(e => {
+    if (!adj.has(e.from) || !adj.has(e.to)) return;
+    adj.get(e.from).nodes.add(e.to);
+    adj.get(e.from).edges.add(e.id);
+    adj.get(e.to).nodes.add(e.from);
+    adj.get(e.to).edges.add(e.id);
+  });
+
+  function clear() {
+    viewport.classList.remove('is-focused');
+    nodeEls.forEach(el => el.classList.remove('is-on', 'is-seed'));
+    edgeEls.forEach(el => el.classList.remove('is-on'));
+  }
+  function focus(id) {
+    clear();
+    const a = adj.get(id);
+    if (!a) return;
+    viewport.classList.add('is-focused');
+    a.nodes.forEach(nid => { const el = nodeEls.get(nid); if (el) el.classList.add('is-on'); });
+    a.edges.forEach(eid => { const el = edgeEls.get(eid); if (el) el.classList.add('is-on'); });
+    const seed = nodeEls.get(id);
+    if (seed) seed.classList.add('is-seed');
+  }
+
+  nodeEls.forEach((el, id) => {
+    el.addEventListener('mouseenter', () => { if (!pinned) focus(id); });
+    el.addEventListener('mouseleave', () => { if (!pinned) clear(); });
+    el.addEventListener('focus', () => { if (!pinned) focus(id); });
+    el.addEventListener('blur', () => { if (!pinned) clear(); });
+    el.addEventListener('click', ev => {
+      ev.stopPropagation();
+      if (pinned === id) { pinned = null; clear(); }
+      else { pinned = id; focus(id); }
+    });
+    el.addEventListener('keydown', ev => {
+      if (ev.key !== 'Enter' && ev.key !== ' ') return;
+      ev.preventDefault(); ev.stopPropagation();
+      if (pinned === id) { pinned = null; clear(); }
+      else { pinned = id; focus(id); }
+    });
+  });
+  const svg = viewport.ownerSVGElement;
+  if (svg) svg.addEventListener('click', () => { pinned = null; clear(); });
+  return { clear, unpin: () => { pinned = null; clear(); } };
+}
+
+/* ============================================================
+   THUMBNAILS — rendered from the real layout engine with labels
+   off, so a card silhouette is honest rather than decorative.
+   ============================================================ */
+const THUMB_ASPECT = 284 / 148;
+function thumbnail(b) {
+  const opts = { nodeWidth: 120, rankGap: 30, crossGap: 16 };
+  const candidates = ['TB', 'LR'].map(direction =>
+    layoutFlow(b.nodes, b.edges, Object.assign({ direction }, opts)));
+  const L = candidates.reduce((best, c) => {
+    const fit = x => Math.abs(Math.log((x.width / x.height) / THUMB_ASPECT));
+    return fit(c) < fit(best) ? c : best;
+  });
+  const r = renderDiagram(L, { colorFor: () => b.color, hideLabels: true, static: true });
+  const pad = 6;
+  r.svg.setAttribute('viewBox', `${-pad} ${-pad} ${L.width + pad * 2} ${L.height + pad * 2}`);
+  r.svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+  r.svg.setAttribute('aria-hidden', 'true');
+  r.svg.setAttribute('focusable', 'false');
+  return r.svg;
+}
+
+function legendSwatch(kind) {
+  const w = 26, h = 15;
+  const svg = S('svg', { width: w + 2, height: h + 2, viewBox: `-1 -1 ${w + 2} ${h + 2}`,
+                         'aria-hidden': 'true', focusable: 'false' });
+  svg.appendChild(shapeFor({ w, h, kind }, 'var(--fv-ink-3)'));
+  return svg;
+}
+
+/* ============================================================
+   ENTIRE-FLOW SWIMLANES — all seven branches on one canvas
+   ============================================================ */
+function renderAllLanes() {
+  const branches = FLOWS.widgets.branches;
+  const LANE_GAP = 78, ROOT_W = 196, ROOT_GAP = 104, PAD = 26;
+  const lanes = branches.map(b => ({
+    b, L: layoutFlow(b.nodes, b.edges, { direction: 'LR', rankGap: 58, crossGap: 18 })
+  }));
+  let y = PAD;
+  lanes.forEach(ln => { ln.dx = ROOT_W + ROOT_GAP; ln.dy = y; y += ln.L.height + LANE_GAP; });
+  const totalH = y - LANE_GAP + PAD;
+  const totalW = ROOT_W + ROOT_GAP + Math.max.apply(null, lanes.map(l => l.L.width)) + PAD;
+
+  const svg = S('svg', { xmlns: NS });
+  const viewport = S('g', { class: 'fv-diagram' });
+  svg.appendChild(viewport);
+  const gBands = S('g'), gLinks = S('g'), gLanes = S('g'), gLabels = S('g');
+  [gBands, gLinks, gLanes, gLabels].forEach(g => viewport.appendChild(g));
+
+  const nodeEls = new Map(), edgeEls = new Map();
+  const allNodes = [], allEdges = [];
+  const F = resolveFonts();
+
+  const rootNode = {
+    id: '__root', label: FLOWS.widgets.rootLabel, kind: 'terminal',
+    lines: wrapText(FLOWS.widgets.rootLabel, ROOT_W - 26, F.node),
+    w: ROOT_W, h: 56, x: PAD, y: 0
+  };
+  rootNode.h = Math.max(52, rootNode.lines.length * 15 + 22);
+  rootNode.y = totalH / 2 - rootNode.h / 2;
+  const rootEl = drawNodeEl(rootNode, 'var(--fv-ink)');
+  gLanes.appendChild(rootEl);
+  nodeEls.set('__root', rootEl);
+  allNodes.push({ id: '__root' });
+
+  lanes.forEach(ln => {
+    const { b, L, dx, dy } = ln;
+    const band = S('rect', {
+      class: 'fv-lane', x: PAD, y: dy - 22, width: totalW - PAD * 2, height: L.height + 44, rx: 8,
+      'stroke-width': 1, 'stroke-dasharray': '2 5', opacity: .55
+    });
+    band.style.setProperty('fill', tint(b.color, 3));
+    band.style.setProperty('stroke', b.color);
+    gBands.appendChild(band);
+
+    const g = S('g', { transform: `translate(${dx},${dy})` });
+    gLanes.appendChild(g);
+    const ge = S('g'), gn = S('g');
+    g.appendChild(ge); g.appendChild(gn);
+
+    L.edges.forEach(e => {
+      const el = drawEdgeEl(e);
+      const key = b.id + ':' + e.id;
+      el.dataset.from = b.id + ':' + e.from;
+      el.dataset.to = b.id + ':' + e.to;
+      ge.appendChild(el);
+      edgeEls.set(key, el);
+      allEdges.push({ id: key, from: b.id + ':' + e.from, to: b.id + ':' + e.to });
+    });
+    L.nodes.forEach(n => {
+      const el = drawNodeEl(n, b.color);
+      const key = b.id + ':' + n.id;
+      el.dataset.id = key;
+      el.dataset.branch = b.id;
+      el.setAttribute('aria-label', b.name + ' — ' + n.label + ', ' + (KIND_LABEL[n.kind] || n.kind));
+      gn.appendChild(el);
+      nodeEls.set(key, el);
+      allNodes.push({ id: key, zone: b.id });
+    });
+
+    const label = b.name.toUpperCase();
+    const lw = measure(label, F.mono);
+    gLabels.appendChild(S('rect', {
+      class: 'fv-knockout', x: PAD + 12, y: dy - 31, width: lw + 16, height: 17, rx: 3
+    }));
+    const t = S('text', { class: 'fv-zone-label', x: PAD + 20, y: dy - 19 });
+    t.style.setProperty('fill', b.color);
+    t.textContent = label;
+    gLabels.appendChild(t);
+
+    const head = L.byId.get('root');
+    const sx = PAD + ROOT_W, sy = rootNode.y + rootNode.h / 2;
+    const tx = dx + head.x, ty = dy + head.y + head.h / 2;
+    const c = Math.min((tx - sx) * 0.55, 90);
+    const el = S('g', { class: 'fv-edge' });
+    el.dataset.from = '__root';
+    el.dataset.to = b.id + ':root';
+    el.appendChild(S('path', { class: 'fv-edge-path', d: `M ${sx} ${sy} C ${sx + c} ${sy} ${tx - c} ${ty} ${tx} ${ty}` }));
+    el.appendChild(S('polygon', { class: 'fv-arrow', points: `${tx},${ty} ${tx - 7.5},${ty - 3.8} ${tx - 7.5},${ty + 3.8}` }));
+    gLinks.appendChild(el);
+    const key = 'root:' + b.id;
+    edgeEls.set(key, el);
+    allEdges.push({ id: key, from: '__root', to: b.id + ':root' });
+  });
+
+  const L = { nodes: allNodes, edges: allEdges, width: totalW, height: totalH, direction: 'LR' };
+  return { svg, viewport, nodeEls, edgeEls, L };
+}
+
+/* ============================================================
+   TEXT ALTERNATIVE — the same graph as an ordered list, so the
+   flow is readable by screen readers and indexable by crawlers.
+   ============================================================ */
+function textAlt(rawNodes, rawEdges) {
+  const label = new Map(rawNodes.map(([id, l]) => [id, l]));
+  const L = layoutFlow(rawNodes, rawEdges);
+  const ordered = L.nodes.slice().sort((a, b) => (a.rank - b.rank) || (a.order - b.order));
+  return ordered.map(n => {
+    const outs = rawEdges
+      .filter(e => e[0] === n.id)
+      .map(e => (e[2] ? e[2] + ' → ' : '→ ') + (label.get(e[1]) || e[1]));
+    return { label: n.label, kind: KIND_LABEL[n.kind] || n.kind, outs };
+  });
+}
+
+window.HCFlow = {
+  FLOWS, KIND_LABEL, BAR,
+  layoutFlow, renderDiagram, renderAllLanes, makeViewer, wireFocus,
+  thumbnail, legendSwatch, textAlt, resolveFonts, resetFonts
+};
+})();
+</script>
+
 <script type="text/babel">
 
 // tweaks-panel.jsx
@@ -4124,8 +5712,8 @@ function Home({ onOpen, tweaks, openContact }) {
         <h2 className="contact-headline">
           Let's connect,<br/>my rent's <em>due</em>
         </h2>
-        <a className="contact-btn" href="mailto:hello@razsilberman.com">
-          hello@razsilberman.com
+        <a className="contact-btn" href="#" onClick={e => e.preventDefault()}>
+          Get in touch
           <span>→</span>
         </a>
         <ul className="contact-links">
@@ -4209,23 +5797,28 @@ function About({ onOpen }) {
             Six years in. Still <em>genuinely curious</em> about the work.
           </h2>
           <p>
-            I'm Raz. I design B2B SaaS — knowledge tools, design systems, and the kind of
-            product surfaces that AI is starting to live inside. Currently a senior at
-            Quill, where I lead the help center product and the company's design system.
+            I'm Raz. I design B2B and B2B2C SaaS — knowledge tools, design systems, and the
+            kind of product surfaces that AI is starting to live inside. Right now I'm a
+            product designer at KMS Lighthouse, leading the Help Center product and helping
+            build the company's first design system.
           </p>
           <p>
-            Before that I was at Northbeam working on first-run experiences for
-            two-audience platforms, and at Studio Faun in Berlin doing client work
-            across fintech, climate, and healthcare.
+            Before KMS I was on Dropbox's S&O design team, working new features and complex
+            journeys for a very established product. And before design went digital for me, I
+            spent years in industrial design — running a studio at Librus and shaping physical
+            products before screens.
           </p>
           <p>
-            I studied visual communication at Bezalel. I think a lot about the
-            difference between a product that looks finished and one that <em>is</em>
-            finished. The second is harder. Both are worth doing.
+            I came to UX through industrial design — a B.Design at HIT, a fine-arts exchange in
+            Lisbon, then a UX diploma — and through the Israeli Navy, where I served as an
+            officer and still serve as a Major in the reserves. Both taught me the same thing:
+            how people actually behave, and how much a well-crafted experience rides on the
+            unglamorous details. I think a lot about the difference between a product that looks
+            finished and one that <em>is</em> finished. The second is harder. Both are worth doing.
           </p>
           <p>
-            Outside of work: long walks, slow cooking, and a stubborn analog film habit
-            that has cost me more than I'd like to admit.
+            Outside of work: drums and percussion, skateboarding, illustration, a serious
+            animated-TV habit, and an ongoing fascination with American politics and pop culture.
           </p>
           <div className="cap-list">
             {window.RESUME.capabilities.map(c => (
@@ -4292,8 +5885,8 @@ function Resume() {
         </div>
 
         <div className="resume-block">
-          <h2>Speaking</h2>
-          {r.speaking.map(s => (
+          <h2>Military</h2>
+          {r.military.map(s => (
             <div key={s.role} className="resume-row">
               <div className="when">{s.when}</div>
               <div>
@@ -4305,9 +5898,30 @@ function Resume() {
         </div>
 
         <div className="resume-block">
-          <h2>Capabilities</h2>
+          <h2>Skills</h2>
           <div className="cap-grid">
             {r.capabilities.map(c => <span key={c} className="cap-pill">{c}</span>)}
+          </div>
+        </div>
+
+        <div className="resume-block">
+          <h2>Designing with AI · Claude</h2>
+          <div className="cap-grid">
+            {r.ai.map(c => <span key={c} className="cap-pill">{c}</span>)}
+          </div>
+        </div>
+
+        <div className="resume-block">
+          <h2>Tools</h2>
+          <div className="cap-grid">
+            {r.tools.map(t => <span key={t} className="cap-pill">{t}</span>)}
+          </div>
+        </div>
+
+        <div className="resume-block">
+          <h2>Languages</h2>
+          <div className="cap-grid">
+            {r.languages.map(l => <span key={l.lang} className="cap-pill">{l.lang} · {l.level}</span>)}
           </div>
         </div>
       </section>
@@ -4641,6 +6255,461 @@ function SideGallery({ items }) {
   );
 }
 
+/* ─── Help Center flow viewer ──────────────────────────────────────────
+   An interactive flow explorer embedded as a section of the case study.
+   Two flows as tabs; the widget flow has three levels (system map →
+   branch detail → entire flow) so the reader is never shown more than
+   they can hold. Diagram geometry comes from window.HCFlow (layout
+   engine + SVG builders); this layer owns chrome, routing, and state. */
+
+const FV_STEP_CACHE = new Map();
+function fvSteps(key, nodes, edges) {
+  if (!FV_STEP_CACHE.has(key)) FV_STEP_CACHE.set(key, window.HCFlow.textAlt(nodes, edges));
+  return FV_STEP_CACHE.get(key);
+}
+const FV_THUMB_CACHE = new Map();
+function fvThumb(branch) {
+  if (!FV_THUMB_CACHE.has(branch.id)) FV_THUMB_CACHE.set(branch.id, window.HCFlow.thumbnail(branch));
+  return FV_THUMB_CACHE.get(branch.id).cloneNode(true);
+}
+function fvResetCaches() { FV_STEP_CACHE.clear(); FV_THUMB_CACHE.clear(); }
+
+function FlowThumb({ branch, tick }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    const host = ref.current;
+    if (!host) return;
+    host.innerHTML = '';
+    host.appendChild(fvThumb(branch));
+  }, [branch, tick]);
+  return <div className="fv-thumb" ref={ref} aria-hidden="true" />;
+}
+
+function FlowShapeSwatch({ kind }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    const host = ref.current;
+    if (!host) return;
+    host.innerHTML = '';
+    host.appendChild(window.HCFlow.legendSwatch(kind));
+  }, [kind]);
+  return <span ref={ref} />;
+}
+
+/* Rank-ordered list of every step and where it goes. Doubles as the
+   text alternative (visually hidden) and as the small-screen view. */
+function FlowSteps({ cacheKey, nodes, edges, label, hidden }) {
+  const items = fvSteps(cacheKey, nodes, edges);
+  return (
+    <div className={hidden ? 'fv-sr' : 'fv-steps'}>
+      <ol aria-label={label}>
+        {items.map((it, i) => (
+          <li key={i}>
+            <span className="fv-step-label">{it.label}</span>
+            <span className="fv-step-kind">{it.kind}</span>
+            {it.outs.map((o, j) => <span key={j} className="fv-step-out">{o}</span>)}
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
+}
+
+function HCFlowViewer({ caption }) {
+  const HC = window.HCFlow;
+  const BRANCHES = HC.FLOWS.widgets.branches;
+
+  const [flow, setFlow]     = useState('admin');   /* admin is the default view:
+                                                      one readable diagram, not a grid */
+  const [view, setView]     = useState('flow');    /* flow | map | branch | all */
+  const [branch, setBranch] = useState('topic');
+  const [dir, setDir]       = useState('TB');
+  const [expanded, setExpanded]   = useState(false);
+  const [armed, setArmed]         = useState(false);
+  const [legendOpen, setLegendOpen] = useState(false);
+  const [tick, setTick]     = useState(0);         /* bumps when webfonts land */
+  const [narrow, setNarrow] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches);
+
+  const rootRef   = useRef(null);
+  const canvasRef = useRef(null);
+  const viewerRef = useRef(null);
+  const zoomRef   = useRef(null);
+  const hoverRef  = useRef(false);
+  const dlgRef    = useRef(null);
+
+  const activeBranch = BRANCHES.find(b => b.id === branch) || BRANCHES[0];
+  const showsCanvas  = !narrow && !(flow === 'widgets' && view === 'map');
+
+  /* ── the layout measures real text, so re-run it once webfonts land ── */
+  useEffect(() => {
+    if (!document.fonts || !document.fonts.ready) return;
+    let alive = true;
+    document.fonts.ready.then(() => {
+      if (!alive) return;
+      HC.resetFonts();
+      fvResetCaches();
+      setTick(t => t + 1);
+    });
+    return () => { alive = false; };
+  }, []);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px)');
+    const on = () => setNarrow(mq.matches);
+    mq.addEventListener('change', on);
+    return () => mq.removeEventListener('change', on);
+  }, []);
+
+  /* ── expand into a full-viewport dialog, same component instance ── */
+  if (!dlgRef.current && typeof document !== 'undefined') {
+    const d = document.createElement('dialog');
+    d.className = 'fv-dialog';
+    d.setAttribute('aria-label', 'Help Center product flows — full screen');
+    dlgRef.current = d;
+  }
+  useEffect(() => {
+    const d = dlgRef.current;
+    if (!d) return;
+    /* esc closes the dialog before it closes a drill-down */
+    const onCancel = ev => { ev.preventDefault(); setExpanded(false); };
+    d.addEventListener('cancel', onCancel);
+    return () => d.removeEventListener('cancel', onCancel);
+  }, []);
+  useEffect(() => {
+    const d = dlgRef.current;
+    if (!d) return;
+    if (expanded) { document.body.appendChild(d); if (!d.open) d.showModal(); }
+    else { if (d.open) d.close(); if (d.parentNode) d.remove(); }
+    return () => { if (d.open) d.close(); if (d.parentNode) d.remove(); };
+  }, [expanded]);
+
+  /* ── mount the diagram ── */
+  useEffect(() => {
+    if (!showsCanvas) return;
+    const host = canvasRef.current;
+    if (!host) return;
+
+    let rendered;
+    if (flow === 'admin') {
+      const F = HC.FLOWS.admin;
+      const zoneColor = new Map(F.zones.map(z => [z.id, z.color]));
+      const L = HC.layoutFlow(F.nodes, F.edges, {
+        direction: dir, nodeWidth: 176, rankGap: 66, crossGap: 28,
+        groupOrder: ['auth', 'route', 'kms', 'hc']
+      });
+      rendered = HC.renderDiagram(L, {
+        colorFor: n => zoneColor.get(n.zone) || 'var(--fv-neutral)',
+        zones: F.zones.filter(z => z.id === 'kms' || z.id === 'hc')
+      });
+    } else if (view === 'all') {
+      rendered = HC.renderAllLanes();
+    } else {
+      const L = HC.layoutFlow(activeBranch.nodes, activeBranch.edges, { direction: dir });
+      rendered = HC.renderDiagram(L, { colorFor: () => activeBranch.color });
+    }
+
+    const v = HC.makeViewer(host, rendered);
+    viewerRef.current = v;
+    v.onZoom = k => { if (zoomRef.current) zoomRef.current.textContent = Math.round(k * 100) + '%'; };
+    HC.wireFocus(rendered);
+
+    if (flow === 'widgets' && view === 'all') {
+      rendered.nodeEls.forEach((el, id) => {
+        el.addEventListener('dblclick', () => {
+          const bid = String(id).split(':')[0];
+          if (BRANCHES.some(b => b.id === bid)) { setBranch(bid); setView('branch'); }
+        });
+      });
+    }
+
+    const raf = requestAnimationFrame(() => v.fit());
+    const onResize = () => v.fit();
+    window.addEventListener('resize', onResize);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('resize', onResize);
+      window.HCFlow && (viewerRef.current = null);
+      host.innerHTML = '';
+    };
+  }, [flow, view, branch, dir, expanded, tick, showsCanvas]);
+
+  /* ── plain-wheel zoom stays armed only while the reader is inside ── */
+  useEffect(() => {
+    if (!armed) return;
+    const off = ev => {
+      const host = canvasRef.current;
+      if (!host || !host.contains(ev.target)) setArmed(false);
+    };
+    document.addEventListener('pointerdown', off, true);
+    return () => document.removeEventListener('pointerdown', off, true);
+  }, [armed]);
+  useEffect(() => { if (!showsCanvas) setArmed(false); }, [showsCanvas, flow, view, branch]);
+
+  /* ── keyboard: only while the section has the reader's attention ── */
+  useEffect(() => {
+    const onKey = ev => {
+      const root = rootRef.current;
+      const inside = expanded || hoverRef.current ||
+        (root && root.contains(document.activeElement));
+      if (!inside) return;
+
+      if (ev.key === 'Escape') {
+        if (expanded) return;                       /* the dialog handles its own esc */
+        if (flow === 'widgets' && view !== 'map') { setView('map'); ev.preventDefault(); }
+        else if (armed) { setArmed(false); ev.preventDefault(); }
+        return;
+      }
+      if (ev.key === '0' && viewerRef.current) { viewerRef.current.fit(); ev.preventDefault(); }
+      if ((ev.key === 'd' || ev.key === 'D') && showsCanvas) {
+        setDir(d => (d === 'TB' ? 'LR' : 'TB')); ev.preventDefault();
+      }
+      if ((ev.key === 'ArrowRight' || ev.key === 'ArrowLeft') && flow === 'widgets' && view === 'branch') {
+        const i = BRANCHES.findIndex(b => b.id === branch);
+        const j = (i + (ev.key === 'ArrowRight' ? 1 : -1) + BRANCHES.length) % BRANCHES.length;
+        setBranch(BRANCHES[j].id); ev.preventDefault();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [flow, view, branch, expanded, armed, showsCanvas]);
+
+  const goFlow = id => {
+    setFlow(id);
+    setView(id === 'admin' ? 'flow' : 'map');
+    setDir('TB');
+  };
+  const openBranch = id => { setBranch(id); setView('branch'); };
+
+  /* ── legend contents follow the level ── */
+  const SHAPES = ['terminal', 'screen', 'action', 'decision', 'dialog', 'state'];
+  let colorItems = [];
+  if (flow === 'admin') colorItems = HC.FLOWS.admin.zones.map(z => ({ name: z.name, color: z.color }));
+  else if (view === 'all') colorItems = BRANCHES.map(b => ({ name: b.name, color: b.color }));
+  else if (view === 'branch') colorItems = [{ name: activeBranch.name, color: activeBranch.color }];
+
+  const totalSteps = BRANCHES.reduce((s, b) => s + b.nodes.length, 0) + 1;
+
+  /* ── chrome ── */
+  const crumb = (() => {
+    if (flow === 'admin') return (
+      <div className="fv-crumb">
+        <span className="fv-cur">{HC.FLOWS.admin.name}</span>
+        <span className="fv-sep">·</span>
+        <span className="fv-sub">{HC.FLOWS.admin.subtitle}</span>
+      </div>
+    );
+    if (view === 'map') return (
+      <div className="fv-crumb"><span className="fv-cur">Widget customization — system map</span></div>
+    );
+    if (view === 'all') return (
+      <div className="fv-crumb">
+        <button onClick={() => setView('map')}>Widget customization</button>
+        <span className="fv-sep">/</span>
+        <span className="fv-cur">Entire flow — all components</span>
+      </div>
+    );
+    return (
+      <div className="fv-crumb">
+        <button onClick={() => setView('map')}>Widget customization</button>
+        <span className="fv-sep">/</span>
+        <span className="fv-cur">
+          <span className="fv-dot-sw" style={{ background: activeBranch.color }} />
+          {activeBranch.name}
+        </span>
+        {/* the metrics live here, one level down, where someone who has
+            already chosen to engage can find them */}
+        <span className="fv-sub">
+          {activeBranch.nodes.length} steps · {activeBranch.edges.length} paths
+        </span>
+      </div>
+    );
+  })();
+
+  const body = (
+    <div
+      className={`fv ${expanded ? 'is-expanded' : ''}`}
+      ref={rootRef}
+      onMouseEnter={() => { hoverRef.current = true; }}
+      onMouseLeave={() => { hoverRef.current = false; }}
+    >
+      <div className="fv-bar">
+        <span className="fv-mark">Product flows</span>
+        <div className="fv-tabs" role="tablist" aria-label="Help Center flows">
+          {[['admin', 'Admin access'], ['widgets', 'Widget customization']].map(([id, label]) => (
+            <button key={id} className="fv-tab" role="tab"
+                    aria-selected={flow === id ? 'true' : 'false'}
+                    onClick={() => goFlow(id)}>{label}</button>
+          ))}
+        </div>
+      </div>
+
+      <div className="fv-subbar">
+        {crumb}
+        {flow === 'widgets' && view === 'branch' && (
+          <>
+            <div className="fv-pills">
+              {BRANCHES.map(b => (
+                <button key={b.id} className="fv-pill"
+                        aria-current={b.id === branch ? 'true' : 'false'}
+                        onClick={() => openBranch(b.id)}>
+                  <i style={{ background: b.color }} />
+                  <span>{b.name}</span>
+                </button>
+              ))}
+            </div>
+            <select className="fv-select" value={branch} aria-label="Component"
+                    onChange={e => openBranch(e.target.value)}>
+              {BRANCHES.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
+            </select>
+          </>
+        )}
+        <div className="fv-tools">
+          {showsCanvas && (
+            <>
+              <button className="fv-tool is-wide" title="Flip orientation (D)"
+                      onClick={() => setDir(d => (d === 'TB' ? 'LR' : 'TB'))}>
+                {dir === 'TB' ? '⇄ Across' : '⇅ Down'}
+              </button>
+              <span className="fv-divider" />
+              <button className="fv-tool fv-zoom-tool" title="Zoom out"
+                      onClick={() => viewerRef.current && viewerRef.current.zoomOut()}>−</button>
+              <span className="fv-zoomval" ref={zoomRef}>100%</span>
+              <button className="fv-tool fv-zoom-tool" title="Zoom in"
+                      onClick={() => viewerRef.current && viewerRef.current.zoomIn()}>+</button>
+              <button className="fv-tool is-wide" title="Fit to frame (0)"
+                      onClick={() => viewerRef.current && viewerRef.current.fit()}>Fit</button>
+              <button className="fv-tool fv-legend-toggle" title="Legend"
+                      aria-expanded={legendOpen}
+                      onClick={() => setLegendOpen(o => !o)}>?</button>
+            </>
+          )}
+          <button className="fv-tool is-wide" onClick={() => setExpanded(e => !e)}
+                  title={expanded ? 'Close full screen' : 'Open full screen'}>
+            {expanded ? 'Close' : 'Expand'}
+          </button>
+        </div>
+      </div>
+
+      <div className="fv-stage">
+        {showsCanvas ? (
+          <>
+            <div className="fv-grid" />
+            <div className="fv-canvas" ref={canvasRef}
+                 data-zoom-armed={armed ? 'on' : 'off'}
+                 onClick={() => setArmed(true)} />
+            {armed
+              ? <div className="fv-armed">Wheel zooms — click outside to release</div>
+              : <div className="fv-armed">Click to zoom</div>}
+          </>
+        ) : narrow && !(flow === 'widgets' && view === 'map') ? (
+          /* a pan/zoom canvas is a bad experience on a phone — the same
+             graph, as an ordered list of steps */
+          flow === 'admin' ? (
+            <FlowSteps cacheKey="admin" nodes={HC.FLOWS.admin.nodes} edges={HC.FLOWS.admin.edges}
+                       label={HC.FLOWS.admin.name} />
+          ) : (
+            <FlowSteps cacheKey={activeBranch.id} nodes={activeBranch.nodes} edges={activeBranch.edges}
+                       label={activeBranch.name} />
+          )
+        ) : (
+          <div className="fv-map">
+            <div className="fv-map-inner">
+              <div className="fv-map-head">
+                <div>
+                  <h3>{HC.FLOWS.widgets.name}</h3>
+                  <p>{HC.FLOWS.widgets.subtitle}</p>
+                </div>
+                <div className="fv-map-stats">
+                  <div className="fv-stat"><b>{BRANCHES.length}</b><span>Components</span></div>
+                  <div className="fv-stat"><b>{totalSteps}</b><span>Steps</span></div>
+                </div>
+              </div>
+              <div className="fv-entry">
+                <span className="fv-tag">Entry</span>
+                <span>{HC.FLOWS.widgets.rootLabel}</span>
+              </div>
+              <div className="fv-stem" />
+              <div className="fv-cards">
+                {BRANCHES.map(b => (
+                  <button key={b.id} className="fv-card" onClick={() => openBranch(b.id)}>
+                    <span className="fv-accent" style={{ background: b.color }} />
+                    <span className="fv-card-body">
+                      <h4>
+                        <span>{b.name}</span>
+                        {b.shared && <span className="fv-badge">Shared</span>}
+                      </h4>
+                    </span>
+                    <FlowThumb branch={b} tick={tick} />
+                  </button>
+                ))}
+              </div>
+              <div className="fv-map-foot">
+                {!narrow && (
+                  <button className="fv-ghost" onClick={() => setView('all')}>
+                    View the entire flow on one canvas →
+                  </button>
+                )}
+                <button className="fv-ghost" onClick={() => setExpanded(true)}>Open full screen</button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {showsCanvas && (
+        <div className="fv-foot">
+          {/* six shapes with no key is a puzzle */}
+          <div className={`fv-legend ${legendOpen ? 'is-open' : ''}`}>
+            <span className="fv-ttl">Shape</span>
+            {SHAPES.map(k => (
+              <span className="fv-lg" key={k}>
+                <FlowShapeSwatch kind={k} />
+                <span>{HC.KIND_LABEL[k]}</span>
+              </span>
+            ))}
+            {colorItems.length > 0 && (
+              <>
+                <span className="fv-divider" />
+                <span className="fv-ttl">Colour</span>
+                {colorItems.map(c => (
+                  <span className="fv-lg" key={c.name}>
+                    <i className="fv-dot-sw" style={{ background: c.color }} />
+                    <span>{c.name}</span>
+                  </span>
+                ))}
+              </>
+            )}
+          </div>
+          <div className="fv-hint">
+            <kbd>⌘</kbd>+scroll zooms · <kbd>0</kbd> fit · <kbd>d</kbd> flip
+            {flow === 'widgets' && view === 'branch' && <> · <kbd>←</kbd><kbd>→</kbd> component · <kbd>esc</kbd> back</>}
+            {flow === 'widgets' && view === 'all' && <> · double-click a lane to open it</>}
+          </div>
+        </div>
+      )}
+
+      {/* text alternative — every branch in rank order, always present */}
+      <div className="fv-sr">
+        <FlowSteps cacheKey="admin" nodes={HC.FLOWS.admin.nodes} edges={HC.FLOWS.admin.edges}
+                   label={HC.FLOWS.admin.name} hidden />
+        {BRANCHES.map(b => (
+          <FlowSteps key={b.id} cacheKey={b.id} nodes={b.nodes} edges={b.edges}
+                     label={'Homepage widget customization — ' + b.name} hidden />
+        ))}
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="fv-wrap">
+      {expanded ? <div className="fv-placeholder-slot" /> : body}
+      {expanded && dlgRef.current && ReactDOM.createPortal(body, dlgRef.current)}
+      {caption && !expanded && <p className="fv-caption">{caption}</p>}
+    </div>
+  );
+}
+
 /* ─── Project page — section media (image grid + captions) ─── */
 function ProjectMedia({ items }) {
   if (!items || !items.length) return null;
@@ -4895,6 +6964,7 @@ function ProjectSection({ s }) {
             </>
           )}
           {s.inlineDemo === 'grid' && <GridDemo caption={s.inlineDemoCaption} />}
+          {s.flowViewer && <HCFlowViewer caption={s.flowViewer.caption} />}
           {s.problemRows && (
             <div className="problem-rows">
               {s.problemRows.map((row, i) => {
@@ -4970,6 +7040,7 @@ function Project({ projectId, onBack, onOpen }) {
   const p = window.PROJECTS.find(x => x.id === projectId) || window.PROJECTS[0];
   const next = window.PROJECTS[(window.PROJECTS.indexOf(p) + 1) % window.PROJECTS.length];
   const [activeSection, setActiveSection] = useState(p.sections[0].id);
+  const atmosRef = useRef(null);
   useEffect(() => {
     const onScroll = () => {
       let cur = p.sections[0].id;
@@ -4982,8 +7053,105 @@ function Project({ projectId, onBack, onOpen }) {
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, [p]);
+
+  /* ─── Atmospheric background ────────────────────────────────────────
+     Blend the page ground toward a subtle Signal hue as the reader
+     passes contextual regions (sections carrying an `atmos` key), then
+     back to ground. The colour is a live interpolation between section
+     centres, so it tracks lazy-loaded layout shifts and reads as one
+     slow, full-width wash rather than discrete bands. Mode-aware: each
+     hue and the ground have a dark + light value; the mix strength is
+     kept low for subtlety (a touch stronger in dark, where near-black
+     hides colour). */
+  useEffect(() => {
+    const el = atmosRef.current;
+    if (!el) return;
+    const GROUND = { dark: [20, 19, 26], light: [244, 242, 236] };
+    const HUE = {
+      tomato: { dark: [242, 84, 80],  light: [196, 32, 24] },
+      sky:    { dark: [91, 196, 232], light: [19, 107, 146] },
+      sage:   { dark: [54, 150, 104],  light: [26, 96, 68] },
+      orchid: { dark: [176, 91, 168], light: [96, 48, 150] },
+      indigo: { dark: [122, 146, 224], light: [42, 63, 133] },
+    };
+    const STRENGTH = { dark: 0.22, light: 0.14 };
+    const mix = (a, b, t) => a.map((v, i) => Math.round(v + (b[i] - v) * t));
+    const smooth = t => t * t * (3 - 2 * t);
+    let raf = 0, lastMode = null;
+    const compute = () => {
+      raf = 0;
+      const mode = document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';
+      if (lastMode !== null && mode !== lastMode) {
+        // ease the whole wash across a theme swap, then hand back to scroll
+        el.style.transition = 'background-color .6s var(--expo)';
+        clearTimeout(compute._t);
+        compute._t = setTimeout(() => { el.style.transition = 'none'; }, 640);
+      }
+      lastMode = mode;
+      // Each tinted section owns a wash centred on the section: full tint
+      // while the viewport centre is within HOLD of it, then a gradual RAMP
+      // back to ground. Spans scale to viewport height, so a shift lasts a
+      // long, even stretch of scrolling with neutral gaps between zones.
+      const ih = window.innerHeight || 800;
+      const HOLD = ih * 0.85, RAMP = ih * 0.9;
+      const ref = window.scrollY + ih * 0.5;
+
+      // Anchors: explicit `atmos` keys win (per-section, hand-placed — e.g.
+      // Help Center). With none, auto-distribute evenly across the content
+      // span so every project page gets the same even-spread, long-hold
+      // treatment for free, with the zone count scaled to page length.
+      const anchors = [];
+      for (const s of p.sections) {
+        if (!s.atmos || !HUE[s.atmos]) continue;
+        const node = document.getElementById('s-' + s.id);
+        if (!node) continue;
+        const r = node.getBoundingClientRect();
+        anchors.push({ center: r.top + window.scrollY + r.height / 2, hue: HUE[s.atmos][mode] });
+      }
+      if (!anchors.length) {
+        const first = document.getElementById('s-' + p.sections[0].id);
+        const last = document.getElementById('s-' + p.sections[p.sections.length - 1].id);
+        if (first && last) {
+          const fr = first.getBoundingClientRect(), lr = last.getBoundingClientRect();
+          const top = fr.top + window.scrollY;
+          const span = (lr.top + window.scrollY + lr.height) - top;
+          const SEQ = ['orchid', 'sky', 'sage', 'indigo'];
+          const N = Math.max(1, Math.min(4, Math.round(span / (ih * 4.5))));
+          for (let i = 0; i < N; i++) {
+            anchors.push({ center: top + span * (i + 0.5) / N, hue: HUE[SEQ[i % SEQ.length]][mode] });
+          }
+        }
+      }
+
+      let bestW = 0, bestHue = null;
+      for (const a of anchors) {
+        const d = Math.abs(ref - a.center);
+        const w = d <= HOLD ? 1 : d >= HOLD + RAMP ? 0 : 1 - smooth((d - HOLD) / RAMP);
+        if (w > bestW) { bestW = w; bestHue = a.hue; }
+      }
+      const g = GROUND[mode];
+      const color = bestHue ? mix(g, bestHue, STRENGTH[mode] * bestW) : g;
+      el.style.backgroundColor = `rgb(${color.join(',')})`;
+    };
+    const schedule = () => { if (!raf) raf = requestAnimationFrame(compute); };
+    compute();
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule);
+    const mo = new MutationObserver(schedule);
+    mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    const ro = new ResizeObserver(schedule);
+    if (el.parentElement) ro.observe(el.parentElement);
+    return () => {
+      window.removeEventListener('scroll', schedule);
+      window.removeEventListener('resize', schedule);
+      mo.disconnect(); ro.disconnect();
+      if (raf) cancelAnimationFrame(raf);
+      clearTimeout(compute._t);
+    };
+  }, [p]);
   return (
-    <div className="page active">
+    <div className="page active proj-page">
+      <div className="proj-atmos" aria-hidden="true" ref={atmosRef} />
       <a className="back-btn" href="#" onClick={e => { e.preventDefault(); onBack(); }}>
         <span>←</span> All work
       </a>
@@ -5085,8 +7253,6 @@ function CmdK({ open, onClose, setPage, openProject, toggleTheme }) {
       action: () => openProject(p.id),
     })),
     { group: 'Actions', label: 'Toggle theme', sub: '⇧⌘L', action: toggleTheme },
-    { group: 'Actions', label: 'Email Raz',    sub: '↵',
-      action: () => window.location.href = 'mailto:hello@razsilberman.com' },
   ], [setPage, openProject, toggleTheme]);
   const filtered = useMemo(() => {
     if (!q) return all;
