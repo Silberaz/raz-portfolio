@@ -1628,13 +1628,14 @@ footer a:hover { color: var(--accent); }
   transform: scale(.965); transition: transform .28s var(--expo);
 }
 .lightbox.open .lightbox-figure { transform: scale(1); }
-.lightbox img {
+.lightbox img, .lightbox video {
   display: block; max-width: 100%; max-height: 85vh;
   width: auto; height: auto; object-fit: contain;
   border-radius: 6px; border: 1px solid var(--rim-soft);
   box-shadow: 0 30px 90px rgba(0,0,0,.55);
-  cursor: zoom-out;
 }
+.lightbox img { cursor: zoom-out; }
+.lightbox video { background: #000; }
 .lightbox-cap {
   font-family: var(--ff-mono); font-size: .68rem; letter-spacing: .1em;
   text-transform: uppercase; color: var(--muted); text-align: center;
@@ -1652,6 +1653,7 @@ footer a:hover { color: var(--accent); }
 /* zoom-in affordance on the images that open in the lightbox
    (only visible when the custom blob cursor is toggled off) */
 .proj-media-item img,
+.proj-media-item video,
 .proj-hero-image img,
 .proj-side-gallery-frame img,
 .problem-img img { cursor: zoom-in; }
@@ -6942,7 +6944,7 @@ function ProjectSection({ s }) {
       {s.prototype && (
         <figure className="proj-media-item k-wide proj-proto-slot">
           {typeof s.prototype === 'string' ? (
-            <video src={s.prototype} autoPlay loop muted playsInline controls preload="metadata" />
+            <video src={s.prototype} autoPlay loop muted playsInline preload="metadata" />
           ) : (
             <div className="proj-media-placeholder"><span>Prototype · video</span></div>
           )}
@@ -7421,14 +7423,16 @@ function Lightbox() {
 
   useEffect(() => {
     const onClick = (e) => {
-      const img = e.target.closest && e.target.closest('img');
-      if (!img) return;
-      if (!img.closest(ZOOMABLE)) return;                 // only content images
-      if (img.closest('a, .tile, .signal-tv, .proj-beforeafter')) return; // skip links, tiles, TV, slider
+      const media = e.target.closest && e.target.closest('img, video');
+      if (!media) return;
+      if (!media.closest(ZOOMABLE)) return;               // only content media
+      if (media.closest('a, .tile, .signal-tv, .proj-beforeafter')) return; // skip links, tiles, TV, slider
       e.preventDefault();
-      const fig = img.closest('figure');
+      const fig = media.closest('figure');
       const capEl = fig && fig.querySelector('.proj-caption');
-      setItem({ src: img.currentSrc || img.src, cap: capEl ? capEl.textContent.trim() : (img.alt || '') });
+      const cap = capEl ? capEl.textContent.trim() : (media.getAttribute('alt') || '');
+      if (media.tagName === 'VIDEO') setItem({ videoSrc: media.currentSrc || media.getAttribute('src'), cap });
+      else setItem({ src: media.currentSrc || media.src, cap });
     };
     document.addEventListener('click', onClick);
     return () => document.removeEventListener('click', onClick);
@@ -7444,10 +7448,14 @@ function Lightbox() {
 
   return (
     <div className={`lightbox ${item ? 'open' : ''}`} onClick={() => setItem(null)}>
-      {item && <button className="lightbox-close" aria-label="Close image" onClick={() => setItem(null)}>✕</button>}
+      {item && <button className="lightbox-close" aria-label="Close" onClick={() => setItem(null)}>✕</button>}
       {item && (
         <figure className="lightbox-figure" onClick={e => e.stopPropagation()}>
-          <img src={item.src} alt={item.cap} onClick={() => setItem(null)} />
+          {item.videoSrc ? (
+            <video src={item.videoSrc} controls autoPlay loop playsInline />
+          ) : (
+            <img src={item.src} alt={item.cap} onClick={() => setItem(null)} />
+          )}
           {item.cap && <figcaption className="lightbox-cap">{item.cap}</figcaption>}
         </figure>
       )}
