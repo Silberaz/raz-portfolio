@@ -1321,6 +1321,13 @@ footer a:hover { color: var(--accent); }
   margin-top: 1.75rem; font-size: 1.1rem; color: var(--ink-dim); line-height: 1.6;
   max-width: 38rem;
 }
+/* Status note — small, muted line under the hero summary */
+.proj-status-note {
+  margin-top: .9rem;
+  font-family: var(--ff-mono); font-size: .68rem; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--muted);
+  max-width: 38rem;
+}
 .proj-meta { display: flex; flex-direction: column; gap: 1.25rem; }
 .proj-meta .row { }
 .proj-meta .k {
@@ -1852,6 +1859,23 @@ footer a:hover { color: var(--accent); }
   width: 100%; height: auto; max-height: 74vh;
   object-fit: contain; object-position: center;
   margin: 0 auto;
+}
+
+/* Hero placeholder — same slot as the hero image, awaiting a real asset */
+.proj-hero-image.is-placeholder {
+  border: none; background: transparent;
+  margin: 0;
+  padding: 2.5rem var(--pad-x) 1rem;
+  display: flex; flex-direction: column; gap: .65rem;
+}
+.proj-hero-ph {
+  width: 100%; aspect-ratio: 16 / 9; max-height: 60vh;
+  background: var(--surface);
+  border: 1px dashed var(--rim-soft); border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--muted);
+  font-family: var(--ff-mono); font-size: .65rem;
+  letter-spacing: .14em; text-transform: uppercase;
 }
 
 /* Gallery — real images replace the hatched placeholders */
@@ -2774,17 +2798,6 @@ const COMPANIES = [
     swatch: { from: '#0F5A4A', to: '#082E25', mark: '#5BCAB8' },
     projectIds: ['help-center', 'design-system', 'product-redesign'],
   },
-  {
-    id: 'northbeam',
-    name: 'Northbeam',
-    tagline: 'B2B2C platform — admins set up, employees live in it',
-    description: 'Two-audience SaaS, sold to companies and used daily by their employees. Owned the analytics squad and rebuilt first-run.',
-    role: 'Product Designer',
-    when: '2021 — 2023',
-    accent: 'blue',
-    swatch: { from: '#1A2C5C', to: '#0F1830', mark: '#6E8AC9' },
-    projectIds: ['platform-redesign'],
-  },
 ];
 
 const PROJECTS = [
@@ -2798,8 +2811,9 @@ const PROJECTS = [
     timeline: 'Ongoing, multi-phase',
     platform: 'Web — admin + end-user, responsive',
     team: 'Solo designer · PMs · engineers',
-    sector: 'B2B SaaS · Enterprise knowledge',
+    sector: 'B2B SaaS · B2B2C · Enterprise knowledge',
     kind: 'B2B SaaS',
+    kinds: ['B2B SaaS', 'B2B2C SaaS'],
     company: 'KMS Lighthouse',
     tile: 'wide',
     summary: 'A self-service Help Center that hands business admins full control of their branded support site — no developers required. Built to replace a legacy product that couldn\'t customize, couldn\'t scale, and wasn\'t winning customers.',
@@ -2945,45 +2959,90 @@ const PROJECTS = [
   {
     id: 'design-system',
     n: '02',
-    title: 'Telos Design System',
-    subtitle: 'A shared language across six product surfaces',
-    role: 'Design Systems Lead',
-    year: '2023 — 2024',
-    timeline: 'Apr 2023 — Feb 2024',
-    platform: 'Web · iOS · Android',
-    team: '2 designers, 3 engineers',
-    sector: 'Internal platform',
+    title: 'Spark',
+    subtitle: 'A design system for enterprise knowledge management',
+    role: '{{ Product Designer — sole designer on the system / lead }}',
+    year: '2025 — present',
+    timeline: '2025 — present',
     kind: 'Design system',
+    company: 'KMS Lighthouse',
+    tags: ['Design System', 'Component Library', 'Design Tokens', 'Figma'],
+    statusNote: 'In active internal rollout — not yet shipped to customers.',
     tile: 'tall',
-    summary: 'Built the company\'s first proper design system from the inside out — tokens, primitives, patterns, governance — and migrated four shipped products onto it without freezing a single feature team.',
+    summary: 'The design system behind KMS Lighthouse — tokens, components, and documentation serving two very different surfaces: a dense authoring environment for knowledge managers, and a fast lookup experience for agents.',
     swatch: { from: '#553A0E', to: '#2B1D05', mark: '#F4D06F' },
+    heroPlaceholder: { label: 'IMG-1', caption: 'Spark — the component library at a glance' },
     sections: [
       { id: 'context', title: 'Context', body: [
-        'Six product teams, three platforms, and exactly one shared component: the company logo. Buttons came in 14 visually distinct flavors. Spacing followed nobody\'s scale.',
-        'Leadership wanted "a design system." What that meant in practice was the much harder thing: a way for six teams to agree without anyone losing autonomy.',
+        'KMS Lighthouse builds enterprise knowledge management software — the tool support agents, banks, and telcos use to find a verified answer in seconds. That means two very different surfaces in one product: a dense authoring and admin environment for knowledge managers, and a fast, low-friction lookup experience for agents under time pressure.',
+        'Spark is the design system that holds both together.',
       ]},
-      { id: 'tokens', title: 'Tokens first', body: [
-        'I started at the bottom — a single source of truth for color, spacing, type, and motion, exported to CSS variables, Swift, and Compose from one JSON spec.',
-        'Tokens shipped before any components did. That decision made the rest of the project possible: teams could adopt the new visual language gradually, one variable at a time, without waiting for a button.',
-      ]},
-      { id: 'primitives', title: 'Primitives, not pages', body: [
-        'Resisted the temptation to ship a "card component" or a "form component." Instead: layout primitives (Stack, Cluster, Grid), surface primitives (Box, Sheet, Divider), and a small set of true components (Button, Field, Menu, Toast).',
-        'Pages and patterns live in product repos — not in the system. The system is the floor; product teams build the building.',
-      ]},
-      { id: 'governance', title: 'Governance', body: [
-        'Weekly office hours, a public Linear board for requests, and a clear rule: anything used in 3+ products gets promoted to the system; anything in 1 stays local.',
-        'The hardest part wasn\'t the components — it was teaching everyone that "this should be in the system" is a question, not a demand.',
-      ]},
-      { id: 'outcomes', title: 'What changed', kind: 'outcomes', items: [
-        { num: '4 → 1', label: 'Button implementations' },
-        { num: '−68%', label: 'Time to ship new screens' },
-        { num: '0', label: 'Frozen feature teams during migration' },
-      ]},
-    ],
-    gallery: [
-      { kind: 'wide', label: 'Token spec', tone: '#15110C' },
-      { kind: 'sq', label: 'Primitives', tone: '#13100B' },
-      { kind: 'sq', label: 'Components', tone: '#16120D' },
+      { id: 'problem', title: 'The problem',
+        list: [
+          { label: 'Drift.', text: 'Years of features shipped by different hands meant {{ N }} button styles, inconsistent spacing, and no shared source of truth.' },
+          { label: 'Slow handoff.', text: 'Every screen was rebuilt from scratch; specs were re-litigated in every dev ticket.' },
+          { label: 'No accessibility floor.', text: 'Contrast and target sizes were decided per-screen, which is a liability for enterprise and public-sector buyers.' },
+        ],
+        media: [
+          { placeholder: true, label: 'IMG-2', kind: 'wide',
+            caption: 'The audit — every button, input, and card in production before Spark' },
+        ],
+      },
+      /* Principles — Raz edits these by hand. Starting points to rewrite in his own words:
+         "Density is a setting, not a default" (authoring vs. agent surfaces) ·
+         "Answer-first" (the content is the interface) ·
+         "Accessible by construction, not by review." */
+      { id: 'principles', title: 'Principles',
+        list: [
+          { label: '{{ Principle 1 }} —', text: '{{ one line }}' },
+          { label: '{{ Principle 2 }} —', text: '{{ one line }}' },
+          { label: '{{ Principle 3 }} —', text: '{{ one line }}' },
+        ],
+      },
+      { id: 'foundations', title: 'Foundations',
+        body: [
+          'Tokens first: color, type, spacing, radius, elevation — defined once, named semantically, and mirrored 1:1 between Figma variables and code.',
+        ],
+        media: [
+          { placeholder: true, label: 'IMG-3', kind: 'wide',
+            caption: 'Semantic color and type tokens, mirrored between Figma and code' },
+        ],
+      },
+      { id: 'components', title: 'Components',
+        body: [
+          '{{ N }} components covering the {{ authoring console and agent workspace }}, each with defined variants, states, and responsive behavior.',
+        ],
+        media: [
+          { placeholder: true, label: 'IMG-4', kind: 'sq',
+            caption: 'One component, fully specified — variants, states, and usage rules' },
+          { placeholder: true, label: 'IMG-5', kind: 'wide',
+            caption: 'The same screen, before and after Spark' },
+        ],
+      },
+      { id: 'documentation', title: 'Documentation & governance',
+        body: [
+          'Spark ships with usage documentation, contribution guidelines, and a review path — so the system stays alive after I stop maintaining it personally.',
+        ],
+        media: [
+          { placeholder: true, label: 'IMG-6', kind: 'wide',
+            caption: 'Usage docs and contribution guidelines' },
+        ],
+      },
+      { id: 'status', title: 'Where it stands',
+        body: [
+          'Spark is in internal rollout across {{ N }} product teams. {{ First surface adopted / what\'s live in Figma vs. code }}. Customer-facing release is planned for {{ timeline }}, and I\'ll update this page with adoption and velocity numbers once we have them.',
+          'What I\'d measure at launch: time from design to shipped screen, share of UI built from Spark components, and accessibility defects caught before QA.',
+        ],
+      },
+      /* What I'd do differently — Raz edits by hand. Example of the register to aim for:
+         "I built the component library before I built the contribution path — which meant early
+         adopters had no way to give the system back what they learned. I'd write the governance
+         model first next time." */
+      { id: 'differently', title: 'What I\'d do differently',
+        body: [
+          '{{ Two sentences, max — one honest reflection on running the system, not just drawing it. }}',
+        ],
+      },
     ],
   },
   {
@@ -3195,43 +3254,8 @@ const PROJECTS = [
     ],
   },
   {
-    id: 'platform-redesign',
-    n: '04',
-    title: 'Platform Onboarding',
-    subtitle: 'First-run experience for a B2B2C SaaS',
-    role: 'Product Designer',
-    year: '2022 — 2023',
-    timeline: 'Oct 2022 — Mar 2023',
-    platform: 'Web',
-    team: '1 designer, 3 engineers',
-    sector: 'B2B2C SaaS',
-    kind: 'B2B2C SaaS',
-    tile: 'sq',
-    summary: 'Designed the first-run experience for a platform with two audiences — the admin who configures it and the end user who lives in it — and found a way to serve both without forking the product.',
-    swatch: { from: '#1A2C5C', to: '#0F1830', mark: '#6E8AC9' },
-    sections: [
-      { id: 'context', title: 'Context', body: [
-        'A platform sold to companies but used by their employees. Admins set it up once a quarter. End users open it every day. Both groups had been getting the same tour.',
-        'Admin completion was 78%, which sounded fine until you looked at the sub-step where they\'re asked to invite their team — only 31% finished that.',
-      ]},
-      { id: 'split', title: 'A two-track first run', body: [
-        'Forked the experience at the door: admins land on a configuration view, end users on a "what is this product even for" view. Each track is short — 4 steps for admin, 2 for end user.',
-        'Crucially, end users can be productive before their admin finishes setup. The product degrades gracefully into a personal mode.',
-      ]},
-      { id: 'outcomes', title: 'What changed', kind: 'outcomes', items: [
-        { num: '94%', label: 'Admin completion' },
-        { num: '78%', label: 'Team-invite completion' },
-        { num: '11d → 2d', label: 'Time to first end-user value' },
-      ]},
-    ],
-    gallery: [
-      { kind: 'wide', label: 'Admin setup', tone: '#101315' },
-      { kind: 'sq', label: 'End-user welcome', tone: '#0E1112' },
-    ],
-  },
-  {
     id: 'advanced-search',
-    n: '05',
+    n: '04',
     title: 'Advanced Search',
     subtitle: 'Redesigning search and filtering in an enterprise knowledge management system',
     role: 'Lead Designer',
@@ -5624,6 +5648,10 @@ function Hero({ align }) {
   );
 }
 
+/* Kinds — a project may sit in more than one category (`kinds`); `kind` is the single-value fallback. */
+const kindList  = p => p.kinds && p.kinds.length ? p.kinds : [p.kind];
+const kindLabel = p => kindList(p).join(' · ');
+
 /* ─── Work tile ─── */
 function Tile({ p, idx, onOpen, style }) {
   return (
@@ -5641,14 +5669,14 @@ function Tile({ p, idx, onOpen, style }) {
       {style !== 'index' && style !== 'fullbleed' && (
         <div className="tile-meta">
           <span className="tile-name">{p.title}</span>
-          <span className="tile-tags">{p.kind} · {p.year}</span>
+          <span className="tile-tags">{kindLabel(p)} · {p.year}</span>
         </div>
       )}
       {style === 'fullbleed' && (
         <>
           <span className="tile-num">{p.n}</span>
           <span className="tile-name">{p.title}</span>
-          <span className="tile-tags">{p.kind}</span>
+          <span className="tile-tags">{kindLabel(p)}</span>
           <span className="tile-arrow">→</span>
         </>
       )}
@@ -5656,7 +5684,7 @@ function Tile({ p, idx, onOpen, style }) {
         <>
           <span className="tile-num">{p.n}</span>
           <span className="tile-name">{p.title}</span>
-          <span className="tile-tags">{p.kind}</span>
+          <span className="tile-tags">{kindLabel(p)}</span>
           <span className="tile-year">{p.year}</span>
           <span className="tile-arrow">→</span>
         </>
@@ -5674,7 +5702,7 @@ function Home({ onOpen, tweaks, openContact }) {
       <section className="section" id="work">
         <div className="section-head">
           <h2>Selected Work</h2>
-          <span className="right">05 · 2022 — 2025</span>
+          <span className="right">{String(window.PROJECTS.length).padStart(2, '0')} · 2024 — 2025</span>
         </div>
         <div className={`work-grid ${tweaks.tileStyle}`}>
           {window.PROJECTS.map((p, i) => (
@@ -5744,11 +5772,11 @@ function WorkIndex({ onOpen }) {
   const [filter, setFilter] = useState('all');
   const [sort, setSort]     = useState('recent');
   const kinds = useMemo(() => {
-    const set = new Set(window.PROJECTS.map(p => p.kind));
+    const set = new Set(window.PROJECTS.flatMap(kindList));
     return ['all', ...Array.from(set)];
   }, []);
   const items = useMemo(() => {
-    let list = window.PROJECTS.filter(p => filter === 'all' || p.kind === filter);
+    let list = window.PROJECTS.filter(p => filter === 'all' || kindList(p).includes(filter));
     if (sort === 'recent') list = [...list].sort((a, b) => b.year.localeCompare(a.year));
     if (sort === 'name')   list = [...list].sort((a, b) => a.title.localeCompare(b.title));
     return list;
@@ -5758,7 +5786,7 @@ function WorkIndex({ onOpen }) {
       <section className="section" style={{paddingTop:'9rem'}}>
         <div className="section-head" style={{borderTop:'none', paddingTop:0}}>
           <h2>All Work</h2>
-          <span className="right">{window.PROJECTS.length} projects · 2022 — 2025</span>
+          <span className="right">{window.PROJECTS.length} projects · 2024 — 2025</span>
         </div>
         <div className="filters">
           {kinds.map(k => (
@@ -6733,7 +6761,7 @@ function ProjectMedia({ items }) {
           {m.diagram === 'user-flow' ? (
             <UserFlowDiagram />
           ) : m.placeholder ? (
-            <div className="proj-media-placeholder"><span>Image placeholder</span></div>
+            <div className="proj-media-placeholder"><span>{m.label || 'Image placeholder'}</span></div>
           ) : isVideo(m.src) ? (
             <video src={m.src} autoPlay loop muted playsInline preload="metadata" />
           ) : (
@@ -6850,7 +6878,7 @@ function ParallaxSection({ s, isSub }) {
           {s.sideMedia && (
             <figure className="proj-parallax-item">
               {s.sideMedia.placeholder ? (
-                <div className="proj-media-placeholder"><span>Image placeholder</span></div>
+                <div className="proj-media-placeholder"><span>{s.sideMedia.label || 'Image placeholder'}</span></div>
               ) : s.sideMedia.diagram === 'user-flow' ? (
                 <UserFlowDiagram />
               ) : /\.(mp4|mov|webm|ogg)$/i.test(s.sideMedia.src || '') ? (
@@ -6942,7 +6970,7 @@ function ProjectSection({ s }) {
               </div>
               <figure className="proj-split-media proj-media-item k-wide">
                 {s.sideMedia.placeholder ? (
-                  <div className="proj-media-placeholder"><span>Image placeholder</span></div>
+                  <div className="proj-media-placeholder"><span>{s.sideMedia.label || 'Image placeholder'}</span></div>
                 ) : s.sideMedia.diagram === 'user-flow' ? (
                   <UserFlowDiagram />
                 ) : /\.(mp4|mov|webm|ogg)$/i.test(s.sideMedia.src || '') ? (
@@ -7178,28 +7206,37 @@ function Project({ projectId, onBack, onOpen }) {
         <div className="proj-hero-inner">
           <div>
             <div className="proj-eyebrow">
-              {p.company ? `${p.company} · ` : ''}{p.kind} · {p.year}
+              {p.company ? `${p.company} · ` : ''}{kindLabel(p)} · {p.year}
             </div>
             <h1 className="proj-hero-title">{p.title}<br/><em>{p.subtitle}</em></h1>
             <p className="proj-summary">{p.summary}</p>
+            {p.statusNote && <p className="proj-status-note">{p.statusNote}</p>}
           </div>
           <div className="proj-meta">
-            <div className="row"><div className="k">Role</div><div className="v">{p.role}</div></div>
-            <div className="row"><div className="k">Timeline</div><div className="v">{p.timeline}</div></div>
-            <div className="row"><div className="k">Platform</div><div className="v">{p.platform}</div></div>
-            <div className="row"><div className="k">Team</div><div className="v">{p.team}</div></div>
+            {p.role && <div className="row"><div className="k">Role</div><div className="v">{p.role}</div></div>}
+            {p.timeline && <div className="row"><div className="k">Timeline</div><div className="v">{p.timeline}</div></div>}
+            {p.platform && <div className="row"><div className="k">Platform</div><div className="v">{p.platform}</div></div>}
+            {p.team && <div className="row"><div className="k">Team</div><div className="v">{p.team}</div></div>}
+            {p.tags && <div className="row"><div className="k">Tags</div><div className="v">{p.tags.join(' · ')}</div></div>}
           </div>
         </div>
       </section>
 
-      {p.heroImage && (
+      {p.heroImage ? (
         <div className={`proj-hero-image ${p.heroBare ? 'is-bare' : ''}`}>
           <img src={p.heroImage} alt={`${p.title} — hero`} loading="eager" />
         </div>
-      )}
+      ) : p.heroPlaceholder ? (
+        <figure className="proj-hero-image is-placeholder">
+          <div className="proj-hero-ph"><span>{p.heroPlaceholder.label || 'Image placeholder'}</span></div>
+          {p.heroPlaceholder.caption && (
+            <figcaption className="proj-caption">{p.heroPlaceholder.caption}</figcaption>
+          )}
+        </figure>
+      ) : null}
 
       <div className="proj-gallery">
-        {p.gallery.map((g, i) => (
+        {(p.gallery || []).map((g, i) => (
           <div key={i} className={`g-cell ${g.kind} ${g.src ? 'has-img' : ''}`}
                style={!g.src ? { background: g.tone } : undefined}>
             {g.src ? (
@@ -7267,7 +7304,7 @@ function CmdK({ open, onClose, setPage, openProject, toggleTheme }) {
     { group: 'Pages', label: 'About',  sub: '↵', action: () => setPage('about') },
     { group: 'Pages', label: 'Resume', sub: '↵', action: () => setPage('resume') },
     ...window.PROJECTS.map(p => ({
-      group: 'Projects', label: p.title, sub: p.kind,
+      group: 'Projects', label: p.title, sub: kindLabel(p),
       action: () => openProject(p.id),
     })),
     { group: 'Actions', label: 'Toggle theme', sub: '⇧⌘L', action: toggleTheme },
