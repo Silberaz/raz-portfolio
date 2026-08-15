@@ -900,10 +900,6 @@ nav.top.hidden { transform: translateY(-110%); }
 }
 
 /* tile-img inner (polaroid) */
-.tile-thumb {
-  position: absolute; inset: 0; width: 100%; height: 100%;
-  object-fit: cover; object-position: center; display: block;
-}
 .tile-img-bg {
   position: absolute; inset: 0;
   display: flex; align-items: center; justify-content: center;
@@ -2831,7 +2827,6 @@ const PROJECTS = [
     heroImage: 'help center/v2/homepage-devices.png',
     heroBare: true,
     swatch: { from: '#0F5A4A', to: '#082E25', mark: '#5BCAB8' },
-    thumb: 'help center/hc-project-head.png',
     sections: [
       { id: 'context', title: 'Context', body: [
         'KMS Lighthouse is an enterprise knowledge platform behind the call centers and self-service portals of companies like DHL, GE Healthcare, and Allianz.',
@@ -5673,14 +5668,8 @@ function Tile({ p, idx, onOpen, style }) {
          onClick={() => onOpen(p.id)} data-hover>
       <div className="tile-img"
            style={{ background: `linear-gradient(135deg, ${p.swatch.from} 0%, ${p.swatch.to} 100%)` }}>
-        {p.thumb ? (
-          <img className="tile-thumb" src={p.thumb} alt={`${p.title} - preview`} loading="lazy" />
-        ) : (
-          <>
-            <div className="tile-img-mark">{p.n}</div>
-            <div className="tile-img-bg" style={{ color: p.swatch.mark }}>{p.n}</div>
-          </>
-        )}
+        <div className="tile-img-mark">{p.n}</div>
+        <div className="tile-img-bg" style={{ color: p.swatch.mark }}>{p.n}</div>
         <div className="tile-overlay"></div>
         <div className="tile-label">View case study →</div>
         <div className="tile-arrow-corner">→</div>
