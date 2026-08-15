@@ -2675,8 +2675,10 @@ footer a:hover { color: var(--accent); }
   border: 1px solid var(--fv-line-2); border-bottom-width: 2px;
   border-radius: 3px; padding: 0 .2rem; color: var(--fv-ink-2);
 }
+/* top-right, not centred — a centred chip lands on the first rank of an
+   LR graph and reads as part of the diagram */
 .fv-armed {
-  position: absolute; left: 50%; top: 12px; transform: translateX(-50%); z-index: 5;
+  position: absolute; right: 12px; top: 10px; z-index: 5;
   font-family: var(--ff-mono); font-size: .58rem; letter-spacing: .08em;
   text-transform: uppercase; color: var(--fv-ink-3);
   background: color-mix(in oklab, var(--fv-bg) 90%, transparent);
@@ -5604,11 +5606,11 @@ function Hero({ align }) {
         <p className="hero-desc">
           I'm Raz — a product designer working on B2B SaaS, knowledge management, and
           applied-AI surfaces. Six years in. Currently designing the help-center stack
-          and design system at Quill.
+          and design system at KMS Lighthouse.
         </p>
         <div className="hero-meta">
           <div><b>Currently</b></div>
-          <div>Senior at Quill</div>
+          <div>Product Designer · KMS Lighthouse</div>
           <div style={{marginTop:'.4rem'}}><b>Based</b></div>
           <div>Tel Aviv · Remote-friendly</div>
         </div>
@@ -5692,9 +5694,9 @@ function Home({ onOpen, tweaks, openContact }) {
             I design products for <em>a living and want you to employ me.</em>
           </h2>
           <p className="clip-reveal" style={{transitionDelay:'.15s'}}>
-            Six years in B2B SaaS. Currently at Quill on the help-center stack and
-            design system — knowledge tools, applied-AI surfaces, and the unsexy
-            plumbing underneath.
+            Six years in B2B SaaS, on an industrial-design foundation. Currently at
+            KMS Lighthouse on the help-center stack and design system — knowledge tools,
+            applied-AI surfaces, and the unsexy plumbing underneath.
           </p>
           <p className="clip-reveal" style={{transitionDelay:'.2s'}}>
             The longer version is available over coffee.
@@ -6323,7 +6325,11 @@ function HCFlowViewer({ caption }) {
                                                       one readable diagram, not a grid */
   const [view, setView]     = useState('flow');    /* flow | map | branch | all */
   const [branch, setBranch] = useState('topic');
-  const [dir, setDir]       = useState('TB');
+  /* LR, not TB. The engine is direction-agnostic and TB is the better
+     default in a tall frame — but this is a section, not a page, so the
+     frame is wide and short (~1200×470). Measured against that frame LR
+     fits every graph here 20–40% larger. The toggle (and `d`) still flips. */
+  const [dir, setDir]       = useState('LR');
   const [expanded, setExpanded]   = useState(false);
   const [armed, setArmed]         = useState(false);
   const [legendOpen, setLegendOpen] = useState(false);
@@ -6477,7 +6483,7 @@ function HCFlowViewer({ caption }) {
   const goFlow = id => {
     setFlow(id);
     setView(id === 'admin' ? 'flow' : 'map');
-    setDir('TB');
+    setDir('LR');
   };
   const openBranch = id => { setBranch(id); setView('branch'); };
 
