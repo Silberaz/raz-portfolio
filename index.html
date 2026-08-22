@@ -1211,6 +1211,14 @@ nav.top.hidden { transform: translateY(-110%); }
   text-wrap: balance;
 }
 .about-headline em { font-style: italic; color: var(--ink-dim); }
+.about .about-subhead {
+  font-family: var(--ff-body);
+  font-size: clamp(1.15rem, 1.9vw, 1.45rem);
+  font-weight: 400; line-height: 1.55; letter-spacing: -.01em;
+  color: var(--ink-dim);
+  max-width: 34rem; margin: -1rem 0 2rem;
+  text-wrap: pretty;
+}
 .about p {
   font-size: 1rem; color: var(--ink-dim); line-height: 1.85; margin-bottom: 1.1rem;
   max-width: 38rem;
@@ -1317,7 +1325,14 @@ footer a:hover { color: var(--accent); }
   font-size: clamp(2.6rem, 6vw, 6rem);
   line-height: .94; letter-spacing: -.025em; color: var(--ink);
 }
-.proj-hero-title em { font-style: italic; color: var(--accent); }
+.proj-hero-title em {
+  font-style: italic; color: var(--accent);
+  /* Subtitle reads as a note on the work - deliberately smaller than the
+     project name so the two don't compete at hero scale. */
+  font-size: clamp(1.7rem, 3.6vw, 3.4rem);
+  line-height: 1.06; letter-spacing: -.015em;
+  display: inline-block; margin-top: .18em;
+}
 .proj-summary {
   margin-top: 1.75rem; font-size: 1.1rem; color: var(--ink-dim); line-height: 1.6;
   max-width: 38rem;
@@ -1946,6 +1961,79 @@ footer a:hover { color: var(--accent); }
 .proj-media-item.k-sq   .proj-media-placeholder { aspect-ratio: 4 / 3; }
 .proj-media-item.k-tall .proj-media-placeholder { aspect-ratio: 3 / 4; }
 .proj-media-item.k-half { width: calc(50% - 1.25rem); align-self: flex-end; }
+
+/* Media rows - one row per group (e.g. one wireframe concept). Every row
+   shares the column count of the LONGEST row, so a screen is the same size
+   everywhere and a short row simply ends early instead of scaling up. */
+.proj-media-rows { margin: 2rem 0 2.5rem; display: flex; flex-direction: column; gap: 2.25rem; }
+.proj-media-row-label {
+  font-family: var(--ff-mono); font-weight: var(--fw-mono); font-size: .68rem;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--accent);
+  margin: 0 0 .85rem;
+}
+.proj-media-row-grid { display: grid; gap: 1rem; grid-template-columns: 1fr; }
+.proj-media-rows .proj-media-item img { aspect-ratio: 16 / 9; object-fit: cover; object-position: top; }
+@media (min-width: 720px) {
+  .proj-media-row-grid { grid-template-columns: repeat(var(--mr-cols, 3), 1fr); }
+}
+
+/* Annotated screenshots - a "+" pinned over each highlighted region that
+   opens a short note on hover or keyboard focus. The layer is click-through
+   so the image underneath still opens in the lightbox. */
+.proj-hot-frame { position: relative; display: block; container-type: inline-size; }
+.proj-hot-layer { position: absolute; inset: 0; pointer-events: none; }
+.proj-hot { position: absolute; transform: translate(-50%, -50%); pointer-events: auto; }
+.proj-hot-dot {
+  width: 1.75rem; height: 1.75rem; padding: 0; border: 0; border-radius: 50%;
+  display: grid; place-items: center; cursor: help;
+  font-family: var(--ff-mono); font-weight: var(--fw-mono);
+  font-size: .95rem; line-height: 1;
+  color: var(--accent-text-on); background: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-lo), 0 2px 8px rgba(0,0,0,.35);
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.proj-hot:hover .proj-hot-dot,
+.proj-hot:focus-within .proj-hot-dot {
+  transform: scale(1.15); box-shadow: 0 0 0 6px var(--accent-lo), 0 2px 10px rgba(0,0,0,.4);
+}
+.proj-hot-pop {
+  position: absolute; top: calc(100% + .55rem); z-index: 4;
+  width: min(20rem, 94cqw);
+  background: var(--surface); border: 1px solid var(--rim);
+  border-radius: 4px; padding: .8rem .9rem;
+  opacity: 0; pointer-events: none; transform: translateY(-.3rem);
+  transition: opacity .18s ease, transform .18s ease;
+}
+/* invisible bridge across the gap to the marker, so the pointer can travel
+   onto the note without hover being lost (WCAG 1.4.13 "hoverable") */
+.proj-hot-pop::before { content: ''; position: absolute; left: 0; right: 0; height: .8rem; }
+.proj-hot.is-down .proj-hot-pop::before { top: -.8rem; }
+.proj-hot.is-up   .proj-hot-pop::before { bottom: -.8rem; }
+.proj-hot.is-right .proj-hot-pop { left:  -.75rem; }
+.proj-hot.is-left  .proj-hot-pop { right: -.75rem; }
+/* markers low in the frame open upward so the note can't spill past the
+   image and collide with the caption */
+.proj-hot.is-up .proj-hot-pop { top: auto; bottom: calc(100% + .55rem); transform: translateY(.3rem); }
+.proj-hot.is-up:hover .proj-hot-pop,
+.proj-hot.is-up:focus-within .proj-hot-pop { transform: translateY(0); }
+.proj-hot:hover .proj-hot-pop,
+.proj-hot:focus-within .proj-hot-pop { opacity: 1; pointer-events: auto; transform: translateY(0); }
+/* Escape closes the note without moving the pointer (WCAG 1.4.13 "dismissible");
+   it re-arms as soon as the pointer or focus leaves the marker. */
+.proj-hot.is-dismissed:hover .proj-hot-pop,
+.proj-hot.is-dismissed:focus-within .proj-hot-pop { opacity: 0; pointer-events: none; }
+.proj-hot-title {
+  display: block; font-family: var(--ff-mono); font-weight: var(--fw-mono);
+  font-size: .58rem; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: .4rem;
+}
+.proj-hot-pop p {
+  margin: 0; max-width: none;
+  font-size: .8rem; line-height: 1.6; color: var(--ink-dim);
+}
+@media (prefers-reduced-motion: reduce) {
+  .proj-hot-dot, .proj-hot-pop { transition: none; }
+}
 /* Concept prototype/video slot - full-width blank hero above the screen gallery */
 .proj-proto-slot { margin: 1.75rem 0 2.25rem; }
 .proj-proto-slot .proj-media-placeholder { aspect-ratio: 16 / 9; }
@@ -2812,7 +2900,7 @@ const PROJECTS = [
     id: 'help-center',
     n: '01',
     title: 'Help Center',
-    subtitle: 'A customizable B2B2C Help Center',
+    subtitle: 'A customizable B2B2C Help Center to help clients help themselves help their users help themselves',
     role: 'Lead Designer (solo)',
     year: '2024 - ongoing',
     timeline: 'Ongoing, multi-phase',
@@ -2966,8 +3054,8 @@ const PROJECTS = [
   {
     id: 'design-system',
     n: '02',
-    title: 'Spark',
-    subtitle: 'A design system for enterprise knowledge management',
+    title: 'Spark design system',
+    subtitle: 'A design system for, well, designing a system, an enterprise knowledge management system',
     role: '{{ Product Designer - sole designer on the system / lead }}',
     year: '2025 - present',
     timeline: '2025 - present',
@@ -3056,7 +3144,7 @@ const PROJECTS = [
     id: 'product-redesign',
     n: '03',
     title: 'Product Redesign',
-    subtitle: 'A full redesign that pivoted mid-project',
+    subtitle: 'A full redesign that got redesigned all over again',
     role: 'Senior Designer',
     year: '2024 - ongoing',
     timeline: '2024 - ongoing',
@@ -3264,7 +3352,7 @@ const PROJECTS = [
     id: 'advanced-search',
     n: '04',
     title: 'Advanced Search',
-    subtitle: 'Redesigning search and filtering in an enterprise knowledge management system',
+    subtitle: 'Rethinking a filtering tool that grew a search tool that became a bulk edit feature but was never designed to be one and now needs to scale up and can\'t',
     role: 'Lead Designer',
     year: '2026',
     timeline: '2026',
@@ -3290,7 +3378,21 @@ const PROJECTS = [
           { label: 'Limited accessibility -', text: 'nested dropdowns and icon-only buttons blocked keyboard and screen reader users.' },
           { label: 'High cognitive load -', text: 'users combined filters manually with no visible logic, causing frequent mistakes.' },
         ],
-        sideMedia: { src: 'advanced-search/filters-00-legacy-zone.png', caption: 'The legacy filtering area targeted in stage 2' },
+        /* Two separate features, in the order they appeared: the original
+           filtering tool, then the keyword search that grew out of it and
+           became the screen stage 1 rebuilt. Row 1 sets the column width. */
+        mediaRows: [
+          { label: 'First - the original filtering tool', items: [
+            { src: 'advanced-search/og-01-empty.png',           caption: 'One control - pick an item type, then search' },
+            { src: 'advanced-search/og-02-item-type-list.png',   caption: 'Every item type in a single flat list' },
+            { src: 'advanced-search/og-03-results.png',          caption: 'Results by type - title and dates, nothing to narrow by' },
+          ] },
+          { label: 'Then - the keyword search users asked for instead', items: [
+            { src: 'advanced-search/before-01-empty-state.png?v=2', caption: 'A keyword field becomes the entry point' },
+            { src: 'advanced-search/old-02-template-picker.png',    caption: 'Filtering bolted back on as nested dropdowns' },
+            { src: 'advanced-search/before-03-results-table.png?v=2', caption: 'Results grow a versions tab and a second filter set' },
+          ] },
+        ],
       },
       { id: 'stage-1', title: 'Stage 1 - Spark UI translation',
         body: [
@@ -3301,17 +3403,19 @@ const PROJECTS = [
           { label: 'Introduced clear hierarchy and grouping', text: 'so controls can be scanned rather than read.' },
           { label: 'Improved responsive and mobile behaviour.', text: '' },
         ],
+        /* ?v=N on these srcs: the screens were re-exported under the same
+           filenames, and the host sends no cache headers - bump N on re-export. */
         beforeAfterPairs: [
-          { before: { src: 'advanced-search/before-01-empty-state.png', label: 'No search entered' },
-            after:  { src: 'advanced-search/after-01-empty-state.png',  label: 'No search entered' } },
-          { before: { src: 'advanced-search/before-02-nested-dropdown.png', label: 'Nested filter dropdown' },
-            after:  { src: 'advanced-search/after-02-search-parameters.png', label: 'Search parameters menu' } },
-          { before: { src: 'advanced-search/before-03-results-table.png', label: 'Results table' },
-            after:  { src: 'advanced-search/after-04-results-table.png',  label: 'Results table' } },
+          { before: { src: 'advanced-search/before-01-empty-state.png?v=2', label: 'No search entered' },
+            after:  { src: 'advanced-search/after-01-empty-state.png?v=2',  label: 'No search entered' } },
+          { before: { src: 'advanced-search/before-02-search-options.png', label: 'Search options menu' },
+            after:  { src: 'advanced-search/after-02-search-parameters.png?v=2', label: 'Search parameters menu' } },
+          { before: { src: 'advanced-search/before-03-results-table.png?v=2', label: 'Results table' },
+            after:  { src: 'advanced-search/after-04-results-table.png?v=2',  label: 'Results table' } },
         ],
         media: [
-          { src: 'advanced-search/after-03-folder-picker.png',   caption: 'Redesigned folder picker', kind: 'wide' },
-          { src: 'advanced-search/after-05-results-scrolled.png', caption: 'Redesigned results, filter row in use', kind: 'wide' },
+          { src: 'advanced-search/after-03-folder-picker.png?v=2',   caption: 'Redesigned folder picker', kind: 'wide' },
+          { src: 'advanced-search/after-05-results-scrolled.png?v=2', caption: 'Redesigned results, filter row in use', kind: 'wide' },
         ],
       },
       { id: 'stage-2', title: 'Scalable filtering',
@@ -3326,6 +3430,29 @@ const PROJECTS = [
           { label: 'Design for keyboard and screen readers first -', text: 'treat WCAG compliance as the baseline, not a pass at the end.' },
           { label: 'Optimise for time-to-filter -', text: 'raise search success rates, and measure against usage analytics.' },
         ],
+        /* The legacy filtering areas stage 2 targeted, spotlit on the live screens. */
+        mediaRows: [
+          { items: [
+            { src: 'advanced-search/legacy-01-empty-state.png',
+              caption: 'Empty state - the legacy search and filter block',
+              /* x/y are the marker centre as a % of the image, pinned to the
+                 top-right of each spotlit region. */
+              hotspots: [
+                { x: 78.5, y: 27.0, title: 'Wasted empty state',
+                  body: 'The default view hands the largest area on the page to an illustration and an instruction to start typing. No recent searches, no saved filter sets, no way into the data. The space costs a lot and returns nothing.' },
+              ] },
+            { src: 'advanced-search/legacy-02-search-results.png',
+              caption: 'Search results - the same block plus the results filter row',
+              hotspots: [
+                { x: 68.9, y: 11.2, title: 'Two search bars, one job',
+                  body: 'The product-wide search sits directly above the advanced search, and both end at the same items. The only real difference is that this page returns them as a table with actions attached, which is the actual value here. Doubling the search obscures it.' },
+                { x: 78.3, y: 27.6, title: 'Scattered search settings',
+                  body: 'Preferences are split across a parameters control, the template and folder pickers, and a pair of checkboxes, with nothing grouping them. They read as unrelated controls rather than one set of choices, and there is nowhere for them to go once the filter list grows.' },
+                { x: 10.4, y: 59.6, title: 'Filters that appear late',
+                  body: 'A second, different set of filters shows up only after a search returns results. It is a legacy split: the items table and the versions table were each given their own filters, leaving the page with two filtering models that share no logic.' },
+              ] },
+          ] },
+        ],
       },
       { id: 'stage-2-wireframes', title: 'Ideation',
         group: 'stage-2', groupLabel: 'Stage 2',
@@ -3336,17 +3463,29 @@ const PROJECTS = [
         outro: [
           'The wireframes didn\'t crown a layout. They surfaced two realizations that reframed the brief - search might no longer be the main event, and the screen\'s real job is bulk operating on groups, not single lookups.',
         ],
-        media: [
-          { src: 'advanced-search/wireframes/wireframe-concept-A-drawer.png',            caption: 'Concept 1 - side panel', kind: 'sq' },
-          { src: 'advanced-search/wireframes/wireframe-concept-B-filter-bar.png',         caption: 'Concept 2 - filter bar', kind: 'sq' },
-          { src: 'advanced-search/wireframes/wireframe-concept-C-two-pane.png',           caption: 'Concept 3 - two-pane', kind: 'sq' },
-          { src: 'advanced-search/wireframes/wireframe-concept-D-conditions.png',         caption: 'Concept 4 - conditions', kind: 'sq' },
-          { src: 'advanced-search/wireframes/wireframe-state-A-drawer-collapsed.png',     caption: 'Concept 1 - collapsed rail', kind: 'sq' },
-          { src: 'advanced-search/wireframes/wireframe-state-B-filter-menu-open.png',     caption: 'Concept 2 - filter menu open', kind: 'sq' },
-          { src: 'advanced-search/wireframes/wireframe-state-B-more-filters-overlay.png', caption: 'Concept 2 - more-filters drawer', kind: 'sq' },
-          { src: 'advanced-search/wireframes/wireframe-state-D-add-filter-menu.png',      caption: 'Concept 4 - add-filter menu', kind: 'sq' },
-          { src: 'advanced-search/wireframes/wireframe-state-empty.png',                  caption: 'Empty state - suggested searches', kind: 'sq' },
-          { src: 'advanced-search/wireframes/wireframe-state-row-expanded.png',           caption: 'Row expanded - version matches', kind: 'sq' },
+        /* One row per concept, in screen order. Concept 2 is the longest at
+           three screens, so it sets the column width for all four rows. */
+        mediaRows: [
+          { label: 'Concept 1 - Side panel', items: [
+            { src: 'advanced-search/wireframes/wireframe-concept-A-drawer.png',            caption: 'Filter panel open, groups collapsed' },
+            { src: 'advanced-search/wireframes/wireframe-state-A-drawer-collapsed.png',    caption: 'Panel collapsed to a rail' },
+          ] },
+          { label: 'Concept 2 - Filter bar', items: [
+            { src: 'advanced-search/wireframes/wireframe-concept-B-filter-bar.png',         caption: 'Filter bar with applied chips' },
+            { src: 'advanced-search/wireframes/wireframe-state-B-filter-menu-open.png',     caption: 'Filter menu open' },
+            { src: 'advanced-search/wireframes/wireframe-state-B-more-filters-overlay.png', caption: 'More-filters drawer' },
+          ] },
+          { label: 'Concept 3 - Two-pane', items: [
+            { src: 'advanced-search/wireframes/wireframe-concept-C-two-pane.png',           caption: 'Category rail with a detail pane' },
+          ] },
+          { label: 'Concept 4 - Condition builder', items: [
+            { src: 'advanced-search/wireframes/wireframe-concept-D-conditions.png',         caption: 'Conditions built as explicit rows' },
+            { src: 'advanced-search/wireframes/wireframe-state-D-add-filter-menu.png',      caption: 'Add-filter menu' },
+          ] },
+          { label: 'Shared across concepts', items: [
+            { src: 'advanced-search/wireframes/wireframe-state-empty.png',                  caption: 'Empty state - suggested searches' },
+            { src: 'advanced-search/wireframes/wireframe-state-row-expanded.png',           caption: 'Row expanded - version matches' },
+          ] },
         ],
       },
       { id: 'stage-2-decision', title: 'The decision point',
@@ -3433,11 +3572,11 @@ const PROJECTS = [
       },
     ],
     gallery: [
-      { src: 'advanced-search/after-04-results-table.png',       label: 'Redesigned results table', kind: 'wide' },
-      { src: 'advanced-search/after-01-empty-state.png',         label: 'Redesigned empty state',    kind: 'sq'   },
+      { src: 'advanced-search/after-04-results-table.png?v=2',       label: 'Redesigned results table', kind: 'wide' },
+      { src: 'advanced-search/after-01-empty-state.png?v=2',         label: 'Redesigned empty state',    kind: 'sq'   },
       { src: 'advanced-search/filters-03-high-level-filters.png', label: 'High level filters',        kind: 'sq'   },
       { src: 'advanced-search/filters-01-panel-collapsed.png',   label: 'Filter panel',              kind: 'tall' },
-      { src: 'advanced-search/before-03-results-table.png',      label: 'Legacy results table',      kind: 'tall' },
+      { src: 'advanced-search/before-03-results-table.png?v=2',      label: 'Legacy results table',      kind: 'tall' },
     ],
   },
 ];
@@ -5837,8 +5976,12 @@ function About({ onOpen }) {
         <div className="about-text">
           <div className="about-eyebrow">About</div>
           <h2 className="about-headline">
-            Six years in. Still <em>genuinely curious</em> about the work.
+            Six years in. Still <em>genuinely curious</em> about pizza.
           </h2>
+          <p className="about-subhead">
+            I mean, it's round, but it comes in a square box, and we eat it in triangles..
+            like, what's up with that?
+          </p>
           <p>
             I'm Raz. I design B2B and B2B2C SaaS - knowledge tools, design systems, and the
             kind of product surfaces that AI is starting to live inside. Right now I'm a
@@ -5860,8 +6003,10 @@ function About({ onOpen }) {
             finished and one that <em>is</em> finished. The second is harder. Both are worth doing.
           </p>
           <p>
-            Outside of work: drums and percussion, skateboarding, illustration, a serious
-            animated-TV habit, and an ongoing fascination with American politics and pop culture.
+            Outside of work: I have a beautiful wife and son who deserve all of my
+            attention, but other than that - drums and percussion, skateboarding,
+            illustration, a serious animated-TV habit, and an ongoing fascination with
+            American politics.
           </p>
           <div className="cap-list">
             {window.RESUME.capabilities.map(c => (
@@ -6782,6 +6927,64 @@ function ProjectMedia({ items }) {
   );
 }
 
+/* One "+" pinned over a highlighted region of a screenshot. The note is tied
+   to the button with aria-describedby so screen readers get the explanation,
+   not just the title, and Escape dismisses it for pointer users. */
+function Hotspot({ h, id }) {
+  const [dismissed, setDismissed] = useState(false);
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') setDismissed(true); };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, []);
+  const rearm = () => setDismissed(false);
+  return (
+    <div className={`proj-hot ${h.x > 50 ? 'is-left' : 'is-right'} ${h.y > 55 ? 'is-up' : 'is-down'}${dismissed ? ' is-dismissed' : ''}`}
+         style={{ left: `${h.x}%`, top: `${h.y}%` }}
+         onMouseEnter={rearm} onMouseLeave={rearm} onFocus={rearm} onBlur={rearm}>
+      <button type="button" className="proj-hot-dot"
+              aria-describedby={id} aria-label={`Problem: ${h.title}`}>+</button>
+      <div className="proj-hot-pop" id={id} role="note">
+        <span className="proj-hot-title">{h.title}</span>
+        <p>{h.body}</p>
+      </div>
+    </div>
+  );
+}
+
+function ProjectMediaRows({ rows, idBase = 'mr' }) {
+  if (!rows || !rows.length) return null;
+  /* The longest row sets the column count for every row, so all screens
+     render at one size and shorter rows leave their trailing cells empty. */
+  const cols = rows.reduce((n, r) => Math.max(n, (r.items || []).length), 1);
+  return (
+    <div className="proj-media-rows" style={{ '--mr-cols': cols }}>
+      {rows.map((row, i) => (
+        <div key={i} className="proj-media-row">
+          {row.label && <h3 className="proj-media-row-label">{row.label}</h3>}
+          <div className="proj-media-row-grid">
+            {(row.items || []).map((m, j) => (
+              <figure key={j} className="proj-media-item k-wide">
+                <div className="proj-hot-frame">
+                  <img src={m.src} alt={m.caption || row.label || ''} loading="lazy" />
+                  {m.hotspots && (
+                    <div className="proj-hot-layer">
+                      {m.hotspots.map((h, k) => (
+                        <Hotspot key={k} h={h} id={`hot-${idBase}-${i}-${j}-${k}`} />
+                      ))}
+                    </div>
+                  )}
+                </div>
+                {m.caption && <figcaption className="proj-caption">{m.caption}</figcaption>}
+              </figure>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 /* ─── Project page - A-vs-B comparison table (built from the same tokens as outcome-grid) ─── */
 function ProjectCompare({ data }) {
   if (!data || !data.columns || !data.rows) return null;
@@ -7045,6 +7248,7 @@ function ProjectSection({ s }) {
             </div>
           )}
           {s.media && <ProjectMedia items={s.media} />}
+          {s.mediaRows && <ProjectMediaRows rows={s.mediaRows} idBase={s.id} />}
           {s.compare && <ProjectCompare data={s.compare} />}
           {s.subsections?.map((sub, i) => (
             <div key={sub.id || i}
