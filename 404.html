@@ -5,9 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>404 — No Signal · Raz Silberman</title>
 <meta name="robots" content="noindex">
+<!-- Montserrat as a variable face (wght 100..900) - the single family the
+     whole site is set in. Only the roman is needed here. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap" rel="stylesheet">
 <style>
 :root {
   /* Signal palette — dark "Signal lost" tokens */
@@ -25,8 +27,21 @@
   --bar-tomato:  #F25450;
   --bar-indigo:  #3A52A0;
 
-  --ff-body: 'Inter', system-ui, -apple-system, sans-serif;
-  --ff-mono: 'JetBrains Mono', ui-monospace, monospace;
+  /* One family in both roles, matching index.html and the reference:
+     Montserrat everywhere, separated by nothing but leading. */
+  --ff-body: 'Montserrat', system-ui, -apple-system, sans-serif;
+  --ff-mono: 'Montserrat', system-ui, -apple-system, sans-serif;
+
+  --fw-light:    300;
+  --fw-regular:  400;
+
+  /* Same reference values as index.html: one size, two leadings,
+     one tracking, no uppercase. */
+  --fs-base:    0.9rem;        /* 14.4px */
+  --fs-display: var(--fs-base);
+  --lh-tight:   0.9;
+  --lh-text:    1.5;
+  --ls-base:    0.0556em;
   --expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -40,9 +55,19 @@ html, body {
   -webkit-font-smoothing: antialiased;
   overflow: hidden;
 }
+/* One size, one tracking, one leading, inherited by everything - without
+   these, anything with no explicit rule falls back to the UA default and
+   breaks the single-size system. Deliberately on `body`, NOT `html`:
+   --fs-base is in rem, so setting it on the root would make rem compound
+   and every size would land at 0.9 x 0.9. */
+body {
+  font-size: var(--fs-base);
+  letter-spacing: var(--ls-base);
+  line-height: var(--lh-text);
+}
 
 a { color: inherit; text-decoration: none; }
-button { font-family: inherit; }
+button { font-family: inherit; font-size: inherit; line-height: inherit; letter-spacing: inherit; }
 
 /* ─── Stage ─── */
 .stage {
@@ -254,32 +279,32 @@ button { font-family: inherit; }
     0 0 0 1px rgba(236,233,240,.08),
     0 30px 80px rgba(0,0,0,.6);
   text-align: center;
-  letter-spacing: 0.18em;
+  letter-spacing: var(--ls-base);
   font-family: var(--ff-mono);
   user-select: none;
 }
 .label__error {
   display: block;
-  font-size: clamp(2.4rem, 7vw, 5.2rem);
-  font-weight: 700;
-  line-height: 0.95;
-  letter-spacing: 0.04em;
+  font-size: var(--fs-display);
+  font-weight: var(--fw-regular);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-base);
   position: relative;
 }
 .label__signal {
   display: block;
-  font-size: clamp(1rem, 2.2vw, 1.8rem);
-  font-weight: 500;
+  font-size: var(--fs-display);
+  font-weight: var(--fw-regular);
   margin-top: .55em;
-  letter-spacing: 0.42em;
+  letter-spacing: var(--ls-base);
 }
 .label__sub {
   display: block;
   margin-top: 1.1em;
-  font-size: clamp(.7rem, 1vw, .85rem);
-  letter-spacing: 0.3em;
+  font-size: var(--fs-display);
+  letter-spacing: var(--ls-base);
   color: var(--text-muted);
-  text-transform: uppercase;
+  text-transform: none;
 }
 
 /* Chroma-fringe layers — driven by glitch-split keyframes above */
@@ -301,13 +326,13 @@ button { font-family: inherit; }
   left: clamp(1rem, 3vw, 2rem);
   z-index: 6;
   font-family: var(--ff-mono);
-  font-size: .72rem;
-  letter-spacing: 0.32em;
+  font-size: var(--fs-base);
+  letter-spacing: var(--ls-base);
   color: var(--broadcast-white);
   background: rgba(20,19,26,.7);
   border: 1px solid rgba(236,233,240,.2);
   padding: .55em .9em;
-  text-transform: uppercase;
+  text-transform: none;
   display: flex;
   align-items: center;
   gap: .6em;
@@ -323,13 +348,16 @@ button { font-family: inherit; }
   right: clamp(1rem, 3vw, 2rem);
   z-index: 6;
   font-family: var(--ff-mono);
-  font-size: .72rem;
-  letter-spacing: 0.32em;
+  /* Montserrat isn't monospaced, and this clock reticks every second -
+     tabular figures keep the digits from shuffling on each tick. */
+  font-variant-numeric: tabular-nums;
+  font-size: var(--fs-base);
+  letter-spacing: var(--ls-base);
   color: var(--broadcast-white);
   background: rgba(20,19,26,.7);
   border: 1px solid rgba(236,233,240,.2);
   padding: .55em .9em;
-  text-transform: uppercase;
+  text-transform: none;
 }
 
 .actions {
@@ -342,9 +370,9 @@ button { font-family: inherit; }
   gap: 1rem;
   align-items: center;
   font-family: var(--ff-mono);
-  font-size: .78rem;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
+  font-size: var(--fs-base);
+  letter-spacing: var(--ls-base);
+  text-transform: none;
 }
 .btn {
   background: var(--crt-black);
@@ -380,8 +408,8 @@ button { font-family: inherit; }
 }
 
 @media (max-width: 480px) {
-  .channel, .timestamp { font-size: .62rem; padding: .45em .7em; }
-  .label__signal { letter-spacing: 0.32em; }
+  .channel, .timestamp { font-size: var(--fs-base); padding: .45em .7em; }
+  .label__signal { letter-spacing: var(--ls-base); }
 }
 </style>
 </head>
