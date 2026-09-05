@@ -972,6 +972,12 @@ nav.top.hidden { transform: translateY(-110%); }
   transition: opacity .6s ease;
 }
 .tile-img-bg { opacity: 0; }
+/* Real artwork in a tile (replaces the numbered placeholder) */
+.tile-photo {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; object-position: center; display: block;
+  transition: transform .8s var(--expo);
+}
 
 .tile-overlay {
   position: absolute; inset: 0;
@@ -1008,6 +1014,7 @@ nav.top.hidden { transform: translateY(-110%); }
   .tile:hover .tile-img-mark { opacity: 0; }
   .tile:hover .tile-img-bg { opacity: 1; }
   .tile:hover .tile-overlay { opacity: 1; }
+  .tile:hover .tile-photo { transform: scale(1.03); }
   .tile:hover .tile-label { opacity: 1; transform: translateY(0); }
   .tile:hover .tile-arrow-corner { opacity: 1; transform: scale(1); }
   .tile:hover .tile-name { color: var(--accent); }
@@ -2110,7 +2117,7 @@ footer a:hover { color: var(--accent); }
 .proj-parallax-header {
   position: static;
   z-index: 2;
-  background: var(--ground);
+  background: var(--atmos, var(--ground)); /* tracks the atmospheric wash */
   margin-bottom: 1.5rem;
   padding-bottom: 1.25rem;
   border-bottom: 1px solid var(--rim-soft);
@@ -2123,7 +2130,7 @@ footer a:hover { color: var(--accent); }
   left: 0; right: 0;
   bottom: 100%;
   height: 5rem;
-  background: var(--ground);
+  background: var(--atmos, var(--ground));
   pointer-events: none;
 }
 .proj-parallax-row {
@@ -2289,7 +2296,11 @@ footer a:hover { color: var(--accent); }
 .uf-dot.uf-on  { fill: var(--accent); }
 .uf-dot.uf-off { fill: var(--muted); }
 
-/* Inline interactive grid demo - styled with portfolio tokens */
+/* Inline interactive grid demo - styled with portfolio tokens.
+   Model: five breakpoints, a grid capped at 1920, left panels that either
+   overlay (Agent view) or push (CM view), and a right panel with rail /
+   hover / pinned states. Everything on the stage is laid out in % of the
+   simulated viewport so it stays responsive at any column width. */
 #proj-grid-demo {
   font-family: var(--ff-body);
   color: var(--ink);
@@ -2302,56 +2313,109 @@ footer a:hover { color: var(--accent); }
 #proj-grid-demo * { box-sizing: border-box; }
 
 #proj-grid-demo .grid-stats {
-  display: grid; grid-template-columns: repeat(6, minmax(0,1fr));
-  gap: .75rem; margin-bottom: 1.5rem;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(92px, 1fr));
+  gap: .5rem; margin-bottom: 1.5rem;
 }
 #proj-grid-demo .grid-stat {
-  padding: .75rem 1rem;
+  padding: .7rem .75rem;
   border: 1px solid var(--rim-soft);
   border-radius: 4px;
   background: var(--surface-2);
+  min-width: 0;
 }
 #proj-grid-demo .grid-stat-label {
   font-family: var(--ff-mono); font-weight: var(--fw-mono); font-size: var(--fs-base);
   letter-spacing: var(--ls-base); text-transform: none;
-  color: var(--muted); margin: 0 0 .4rem;
+  color: var(--muted); margin: 0 0 .4rem; white-space: nowrap;
 }
 #proj-grid-demo .grid-stat-val {
   font-family: var(--ff-mono); font-weight: var(--fw-mono); font-size: var(--fs-base);
-  color: var(--ink); margin: 0;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink); margin: 0; white-space: nowrap;
 }
+#proj-grid-demo .grid-stat-val small { color: var(--muted); font-size: .85em; }
 
+/* Stage */
 #proj-grid-demo .grid-stage {
-  width: 100%; max-width: 800px; margin: 0 auto 1.5rem;
+  width: 100%; max-width: 800px; margin: 0 auto 1.25rem;
   border: 1px solid var(--rim-soft); border-radius: 4px;
   background: var(--surface-2); overflow: hidden;
 }
 #proj-grid-demo .grid-header {
-  height: 28px; background: var(--rim);
+  position: relative; height: 26px; background: var(--rim);
   border-bottom: 1px solid var(--rim-soft);
 }
-#proj-grid-demo .grid-body { position: relative; height: 220px; background: var(--surface-2); }
-#proj-grid-demo .grid-container { position: absolute; top: 0; height: 100%; background: var(--surface); }
-#proj-grid-demo .grid-margin {
-  background: color-mix(in oklab, var(--accent) 18%, transparent);
-  height: 100%; position: absolute; top: 0;
+#proj-grid-demo .grid-header::before, #proj-grid-demo .grid-header::after {
+  content: ''; position: absolute; top: 9px; height: 8px; border-radius: 2px;
+  background: color-mix(in oklab, var(--ink) 22%, transparent);
 }
-#proj-grid-demo .grid-cols { position: absolute; top: 0; height: 100%; display: flex; }
-#proj-grid-demo .grid-col { background: var(--rim-soft); height: 100%; }
-#proj-grid-demo .grid-gutter { height: 100%; }
-#proj-grid-demo .grid-right-panel {
-  position: absolute; top: 0; right: 0; height: 100%;
-  background: var(--accent-lo);
-  border-left: 1.5px solid var(--accent-md);
-  z-index: 1;
-}
-#proj-grid-demo .grid-left-panel {
-  position: absolute; top: 0; height: 100%;
-  background: var(--accent-md);
-  border-right: 1.5px solid var(--accent);
-  z-index: 2;
+#proj-grid-demo .grid-header::before { left: 3.3%; width: 9%; }
+#proj-grid-demo .grid-header::after  { right: 3.3%; width: 14%; }
+#proj-grid-demo .grid-body { position: relative; height: 240px; background: var(--surface-2); overflow: hidden; }
+#proj-grid-demo .grid-body > * { position: absolute; top: 0; height: 100%; }
+
+/* Empty margin beyond the 1920 cap */
+#proj-grid-demo .gd-cap {
+  background: repeating-linear-gradient(-45deg, transparent 0 7px, var(--rim-soft) 7px 8px);
+  transition: left .45s var(--expo), width .45s var(--expo);
 }
 
+/* Grid container (centred inside the content area) */
+#proj-grid-demo .grid-container {
+  background: var(--surface);
+  transition: left .45s var(--expo), width .45s var(--expo);
+}
+#proj-grid-demo .grid-container > * { position: absolute; top: 0; height: 100%; }
+#proj-grid-demo .grid-margin { background: color-mix(in oklab, var(--accent) 18%, transparent); }
+#proj-grid-demo .grid-cols { display: flex; }
+#proj-grid-demo .grid-col { background: var(--rim-soft); height: 100%; flex: none; }
+#proj-grid-demo .grid-gutter { height: 100%; flex: none; }
+
+/* Content skeleton - what the article/page occupies inside the grid */
+#proj-grid-demo .gd-content { pointer-events: none; }
+#proj-grid-demo .gd-content i {
+  position: absolute; left: 0; display: block; border-radius: 2px;
+  background: color-mix(in oklab, var(--ink) 9%, transparent);
+}
+#proj-grid-demo .gd-content .gd-title { top: 14px; height: 9px; width: 28%; }
+#proj-grid-demo .gd-content .gd-line  { top: 31px; height: 5px; width: 62%; opacity: .7; }
+#proj-grid-demo .gd-content .gd-block { top: 50px; bottom: 16px; width: 100%; }
+
+/* Panels - left = accent family, right = sky family */
+#proj-grid-demo .gd-panel span {
+  position: absolute; top: 6px; left: 6px; max-width: calc(100% - 12px);
+  font-family: var(--ff-mono); font-weight: var(--fw-mono); font-size: 10px; line-height: 1.3;
+  letter-spacing: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  color: var(--ink-dim);
+}
+#proj-grid-demo .gd-left.gd-push {
+  background: color-mix(in oklab, var(--accent) 30%, var(--surface));
+  border-right: 1.5px solid var(--accent);
+  transition: width .45s var(--expo);
+  z-index: 1;
+}
+#proj-grid-demo .gd-left.gd-overlay {
+  background: color-mix(in oklab, var(--accent) 34%, var(--surface));
+  border-right: 1px solid color-mix(in oklab, var(--accent) 70%, transparent);
+  box-shadow: 10px 0 28px rgba(0,0,0,.28);
+  opacity: .94;
+  z-index: 4;
+}
+#proj-grid-demo .gd-right {
+  background: color-mix(in oklab, var(--accent-sky) 24%, var(--surface));
+  border-left: 1px solid color-mix(in oklab, var(--accent-sky) 60%, transparent);
+}
+#proj-grid-demo .gd-right.gd-push {
+  z-index: 1;
+  transition: left .45s var(--expo), width .45s var(--expo);
+}
+#proj-grid-demo .gd-right.gd-overlay {
+  z-index: 4; opacity: .94;
+  box-shadow: -10px 0 28px rgba(0,0,0,.28);
+}
+#proj-grid-demo .gd-right.gd-full { z-index: 4; border-left: none; }
+
+/* Controls */
 #proj-grid-demo .bp-pill {
   display: inline-flex; align-items: center;
   padding: .35rem .9rem;
@@ -2362,22 +2426,27 @@ footer a:hover { color: var(--accent); }
   color: var(--ink-dim);
   border: 1px solid var(--rim-soft);
 }
-
 #proj-grid-demo .controls-row {
   display: flex; gap: 1.25rem; align-items: center; flex-wrap: wrap;
-  margin-top: 1.5rem;
+  margin-top: 1.1rem;
 }
+#proj-grid-demo .controls-row.sub { margin-top: .6rem; }
 #proj-grid-demo .controls-row label {
   font-family: var(--ff-mono); font-weight: var(--fw-mono); font-size: var(--fs-base);
   letter-spacing: var(--ls-base); text-transform: none;
   color: var(--muted); min-width: 100px;
 }
+#proj-grid-demo .controls-row.sub label { color: var(--ink-dim); padding-left: 1rem; }
 #proj-grid-demo input[type="range"] {
   flex: 1 1 200px; min-width: 200px;
   accent-color: var(--accent);
 }
-#proj-grid-demo #g-vp-out {
+#proj-grid-demo .gd-out {
   font-family: var(--ff-mono); font-weight: var(--fw-mono); font-size: var(--fs-base); color: var(--ink-dim);
+  font-variant-numeric: tabular-nums; min-width: 56px; text-align: right;
+}
+#proj-grid-demo .gd-hint {
+  font-family: var(--ff-mono); font-weight: var(--fw-mono); font-size: var(--fs-base); color: var(--muted);
 }
 
 #proj-grid-demo .pill-toggle { display: inline-flex; gap: .6rem; flex-wrap: wrap; }
@@ -2390,13 +2459,14 @@ footer a:hover { color: var(--accent); }
   color: var(--ink-dim);
   transition: color .2s, border-color .2s, background .2s;
 }
-#proj-grid-demo .pill-toggle button:hover:not(.active) {
+#proj-grid-demo .pill-toggle button:hover:not(.active):not(:disabled) {
   background: var(--surface-2); color: var(--ink);
 }
 #proj-grid-demo .pill-toggle button.active {
   color: var(--ink); border-color: var(--accent);
   background: var(--accent-lo);
 }
+#proj-grid-demo .pill-toggle button:disabled { opacity: .4; cursor: not-allowed; }
 
 #proj-grid-demo .bp-jump { display: inline-flex; gap: .6rem; flex-wrap: wrap; }
 #proj-grid-demo .bp-jump button.bp-pill {
@@ -2413,6 +2483,15 @@ footer a:hover { color: var(--accent); }
   color: var(--ink); border-color: var(--accent);
   background: var(--accent-lo);
 }
+
+/* Live explanation of the rule in effect */
+#proj-grid-demo .gd-readout {
+  margin: 1.25rem 0 0; padding-top: 1rem; border-top: 1px solid var(--rim-soft);
+  font-family: var(--ff-mono); font-weight: var(--fw-mono); font-size: var(--fs-base);
+  letter-spacing: var(--ls-base); line-height: 1.6; color: var(--ink-dim);
+  min-height: 3.2em;
+}
+#proj-grid-demo .gd-readout b { color: var(--ink); font-weight: var(--fw-mono); }
 .grid-demo-figure { margin: 2rem 0 2.5rem; }
 
 /* Split layout - body text next to a single image (e.g. Responsive Grid section) */
@@ -2975,6 +3054,7 @@ const PROJECTS = [
     summary: 'A self-service Help Center that hands business admins full control of their branded support site - no developers required. Built to replace a legacy product that couldn\'t customize, couldn\'t scale, and wasn\'t winning customers.',
     heroImage: 'help center/v2/homepage-devices.png',
     heroBare: true,
+    tileImage: 'help center/Help Center — hero.png',
     swatch: { from: '#0F5A4A', to: '#082E25', mark: '#5BCAB8' },
     sections: [
       { id: 'context', title: 'Context', body: [
@@ -3340,10 +3420,11 @@ const PROJECTS = [
         body: [
           'I co-designed the responsive grid system that became the foundation for the redesign - and the basis for the design system going forward.',
           'The grid handles the full range of platform states: no side panels, left side panel, right side panel, both side panels - each across five breakpoints. It\'s the first time the product has had a unified spatial system that designers and engineers can both work from.',
+          'Two rules hold it together. The grid never grows past 1920 - above that only the header keeps stretching and the content stays capped and centred. And a panel that is part of the working context pushes the grid, while one opened to make a single choice sits above it: the content manager\'s tree pushes, the agent\'s browse panels overlay, and the right panel - never part of the grid - takes its own space, so the grid recalculates from what is left and drops a breakpoint when it has to.',
         ],
         sideMedia: { src: 'redesign/responsive-grid.png' },
         inlineDemo: 'grid',
-        inlineDemoCaption: 'Responsive grid - panel states × breakpoints (interactive)',
+        inlineDemoCaption: 'Layout rules - breakpoints, the 1920 cap, and panel behaviour (interactive)',
       },
       { id: 'facelift-consolidation', title: 'Consolidating the Editing Experience',
         group: 'facelift', groupLabel: 'The Facelift',
@@ -5877,8 +5958,14 @@ function Tile({ p, idx, onOpen, style }) {
          onClick={() => onOpen(p.id)} data-hover>
       <div className="tile-img"
            style={{ background: `linear-gradient(135deg, ${p.swatch.from} 0%, ${p.swatch.to} 100%)` }}>
-        <div className="tile-img-mark">{p.n}</div>
-        <div className="tile-img-bg" style={{ color: p.swatch.mark }}>{p.n}</div>
+        {p.tileImage ? (
+          <img className="tile-photo" src={p.tileImage} alt={`${p.title} - preview`} loading="lazy" />
+        ) : (
+          <>
+            <div className="tile-img-mark">{p.n}</div>
+            <div className="tile-img-bg" style={{ color: p.swatch.mark }}>{p.n}</div>
+          </>
+        )}
         <div className="tile-overlay"></div>
         <div className="tile-label">View case study →</div>
         <div className="tile-arrow-corner">→</div>
@@ -6299,176 +6386,285 @@ function UserFlowDiagram() {
   );
 }
 
-/* ─── Inline interactive grid demo (Responsive Grid System section) ─── */
+/* ─── Inline interactive grid demo (Responsive Grid System section) ───
+   Interactive model of the Lighthouse layout rules. Sources: the grid
+   layouts board (columns / gutters / margins per breakpoint, and the right
+   panel: 460 at LG/XL and 360 at MD pushing the grid, 360 over the grid at
+   SM, the screen at XS), the layout-patterns board (grid capped at 1920,
+   header full width, grid recalculates from the effective content width,
+   collapsed right panel 56 on desktop) and the panels board (left panel
+   overlays in Agent view and pushes in CM view). All maths in design px. */
+const GRID_BPS = [
+  { name: 'XS', min: 0,    max: 599,      columns: 4,  gutter: 16, margin: 16 },
+  { name: 'SM', min: 600,  max: 1023,     columns: 8,  gutter: 16, margin: 24 },
+  { name: 'MD', min: 1024, max: 1439,     columns: 12, gutter: 24, margin: 32 },
+  { name: 'LG', min: 1440, max: 1919,     columns: 12, gutter: 24, margin: 48 },
+  { name: 'XL', min: 1920, max: Infinity, columns: 12, gutter: 32, margin: 64 },
+];
+const GRID_CAP = 1920;
+const gridBp = (w) => GRID_BPS.find(b => w >= b.min && w <= b.max) || GRID_BPS[0];
+/* Left panel per viewport breakpoint: opening share of the screen, drag
+   range for a tree list, and how many regular-list panels fit side by side
+   (together they fill the screen exactly). SM is a fixed 480; XS is the
+   screen. */
+const GRID_LEFT = {
+  XL: { share: 0.20, min: 300, max: 640, panels: 5 },
+  LG: { share: 0.25, min: 300, max: 640, panels: 4 },
+  MD: { share: 0.33, min: 300, max: 480, panels: 3 },
+  SM: { fixed: 480, panels: 1 },
+  XS: { full: true, panels: 1 },
+};
+/* Right (article) panel per viewport breakpoint. It is not part of the
+   grid: on MD and up it takes its own space and the grid recalculates from
+   what is left; at SM it sits over the grid; at XS it is the screen.
+   Collapsed (56) exists on desktop only. */
+const GRID_RIGHT = {
+  XL: { w: 460, push: true, collapsed: 56 },
+  LG: { w: 460, push: true, collapsed: 56 },
+  MD: { w: 360, push: true },
+  SM: { w: 360, push: false },
+  XS: { full: true, push: false },
+};
+const GRID_COLLAPSED = 48;
+
+function computeGridLayout(s) {
+  const vp = s.vp;
+  const vbp = gridBp(vp);
+  const rule = GRID_LEFT[vbp.name];
+  const cmAllowed = vbp.name !== 'XS' && vbp.name !== 'SM';   // CM view is desktop-only
+  const view = cmAllowed ? s.view : 'agent';
+  const shareW = rule.full ? vp : rule.fixed ? rule.fixed : Math.round(vp * rule.share);
+  const resizable = !!rule.share;
+  const treeW = resizable
+    ? Math.min(rule.max, Math.max(rule.min, s.treeW == null ? shareW : s.treeW))
+    : shareW;
+  const maxPanels = rule.panels;
+  const listN = Math.min(maxPanels, Math.max(1, s.listN));
+
+  let left = { mode: 'off', w: 0, push: false, panels: [] };
+  if (view === 'cm') {
+    if (s.leftCM === 'open')      left = { mode: 'cm-open',      w: treeW,          push: true, panels: [treeW] };
+    if (s.leftCM === 'collapsed') left = { mode: 'cm-collapsed', w: GRID_COLLAPSED, push: true, panels: [GRID_COLLAPSED] };
+  } else {
+    if (s.leftAgent === 'tree') left = { mode: 'tree', w: treeW,          push: false, panels: [treeW] };
+    if (s.leftAgent === 'list') left = { mode: 'list', w: shareW * listN, push: false, panels: Array(listN).fill(shareW) };
+  }
+
+  const rr = GRID_RIGHT[vbp.name];
+  const rightCollapsible = !!rr.collapsed;
+  const openRight = { mode: 'open', w: rr.full ? vp : rr.w, push: rr.push, full: !!rr.full };
+  let right = { mode: 'off', w: 0, push: false, full: false };
+  if (s.right === 'open') right = openRight;
+  if (s.right === 'collapsed') right = rightCollapsible ? { mode: 'collapsed', w: rr.collapsed, push: true, full: false } : openRight;
+
+  const push = left.push ? left.w : 0;
+  const rpush = right.push ? right.w : 0;
+  const cw = vp - push - rpush;            // content area: screen minus pushing panels
+  const gw = Math.min(cw, GRID_CAP);       // the grid never grows past 1920
+  const capGap = (cw - gw) / 2;            // empty margin each side when capped
+  const gx = push + capGap;                // grid origin
+  const abp = gridBp(gw);                  // grid responds to the effective width
+  const innerW = gw - 2 * abp.margin;
+  const colW = (innerW - (abp.columns - 1) * abp.gutter) / abp.columns;
+  return { vp, vbp, view, cmAllowed, rule, shareW, treeW, resizable, maxPanels, listN,
+           left, push, right, rpush, rightCollapsible, cw, gw, capGap, gx, abp, innerW, colW };
+}
+
+/* A few sentences naming the rules currently in effect. */
+function gridReadout(L) {
+  const out = [];
+  const { vp, vbp, abp, left, right } = L;
+  const r = Math.round;
+  if (L.gw < L.cw) {
+    out.push(`The grid never grows past ${GRID_CAP}: it stays ${r(L.gw)} wide and centres in the ${r(L.cw)} px content area, leaving ${r(L.capGap)} px of empty margin each side. Only the header keeps stretching.`);
+  }
+  if (left.mode === 'tree' || left.mode === 'list') {
+    const panelW = left.panels[0];
+    if (L.rule.full) out.push('On XS the left panel is the screen: no share and no resizing.');
+    else if (left.mode === 'tree') out.push(`Agent view: the tree panel is absolute and sits over the page, so the grid does not move. ${L.resizable ? `It opens at ${r(L.rule.share * 100)}% (${panelW}) and drags between ${L.rule.min} and ${L.rule.max}.` : `At SM it is a fixed ${panelW}.`}`);
+    else out.push(`Agent view: regular-list panels are fixed at ${panelW} and stack from the left. ${L.listN === L.maxPanels ? `${L.listN} together fill the screen exactly` : `${L.listN} of ${L.maxPanels} open`}; the grid underneath is unchanged.`);
+  }
+  if (left.mode === 'cm-open') {
+    out.push(`CM view: the left panel takes its own space (${left.w}) and the content area is what is left.`);
+    if (abp.name === vbp.name && vp - left.w - L.rpush >= GRID_CAP) out.push('Content is already at the 1920 cap, so collapsing would only re-centre the grid.');
+  }
+  if (left.mode === 'cm-collapsed') {
+    if (vp - L.treeW - L.rpush >= GRID_CAP) out.push(`Left panel collapsed to ${GRID_COLLAPSED}: the grid was already at ${GRID_CAP}, so it only re-centres. The freed space becomes equal margin on both sides and the page shifts, animated.`);
+    else out.push(`Left panel collapsed to ${GRID_COLLAPSED}: the grid widens to ${r(L.gw)}. The 48 is not side spacing; the grid centres inside the content area.`);
+  }
+  if (right.mode === 'open' && right.push) {
+    out.push(`The right panel is not part of the grid: it takes a fixed ${right.w} and reduces the container to ${r(L.cw)} px.`);
+  }
+  if (right.mode === 'collapsed') out.push(`Right panel collapsed to ${right.w}: it keeps its rail and hands ${GRID_RIGHT[vbp.name].w - right.w} px back to the content area.`);
+  if (right.mode === 'open' && !right.push && !right.full) out.push(`At SM the right panel is ${right.w} and sits over the grid; the columns underneath are unchanged.`);
+  if (right.full) out.push('On XS the right panel takes the whole screen.');
+  if ((L.push || L.rpush) && abp.name !== vbp.name) {
+    out.push(`That puts the content area under the ${vbp.name} range, so the grid switches to ${abp.name}: ${abp.columns} columns, ${abp.gutter} gutter, ${abp.margin} margins.`);
+  }
+  if (!left.push && left.mode !== 'off' && L.rpush) out.push('Dual panel: the left panel continues to overlay while the right one reduces the grid, and nothing scrolls horizontally.');
+  if (!out.length) {
+    if (vp === GRID_CAP) out.push('At 1920 the grid fills the screen: header and content share the same width, with 64 margins on both.');
+    else out.push(`${vbp.name}: ${abp.columns} columns, ${abp.gutter} gutter, ${abp.margin} margins. The grid fills the screen and the header spans it.`);
+  }
+  return out.slice(0, 4).join(' ');
+}
+
+const GRID_JUMPS = [
+  { label: 'XS', vp: 480 }, { label: 'SM', vp: 768 }, { label: 'MD', vp: 1280 },
+  { label: 'LG', vp: 1536 }, { label: 'XL', vp: 1920 }, { label: '2560', vp: 2560 }, { label: '3840', vp: 3840 },
+];
+
+function GridToggle({ value, options, onPick }) {
+  return (
+    <div className="pill-toggle">
+      {options.map(o => (
+        <button key={o.v} type="button" className={value === o.v ? 'active' : ''}
+                disabled={!!o.disabled} onClick={() => onPick(o.v)}>{o.label}</button>
+      ))}
+    </div>
+  );
+}
+
 function GridDemo({ caption }) {
-  const rootRef = useRef(null);
-  useEffect(() => {
-    const root = rootRef.current;
-    if (!root) return;
-    const $ = (id) => root.querySelector('#' + id);
-    const VW = 800;
-    const BPS = [
-      { name: 'XS', min: 0,    max: 599,      columns: 4,  gx: 16, gy: 16, margin: 16 },
-      { name: 'SM', min: 600,  max: 1023,     columns: 8,  gx: 16, gy: 24, margin: 24 },
-      { name: 'MD', min: 1024, max: 1439,     columns: 12, gx: 24, gy: 24, margin: 32 },
-      { name: 'LG', min: 1440, max: 1919,     columns: 12, gx: 24, gy: 24, margin: 48 },
-      { name: 'XL', min: 1920, max: Infinity, columns: 12, gx: 32, gy: 32, margin: 64 },
-    ];
-    const state = { vp: 1280, left: 'off', right: 'off' };
-    const bpFor = (w) => { for (const b of BPS) if (w >= b.min && w <= b.max) return b; return BPS[0]; };
-    const rwReal = (vbp, st) => {
-      if (st === 'off') return 0;
-      if (vbp.name === 'XS' || vbp.name === 'SM') return -1;
-      if (vbp.name === 'MD') return 360;
-      return st === 'collapsed' ? 56 : 460;
-    };
-    const lwReal = (vbp, st) => {
-      if (st === 'off') return 0;
-      if (vbp.name === 'XS') return -1;
-      return 320;
-    };
-    function paint() {
-      const vbp = bpFor(state.vp);
-      const rw = rwReal(vbp, state.right);
-      const lw = lwReal(vbp, state.left);
-      const reduces = rw > 0;
-      const available = state.vp - (reduces ? rw : 0);
-      const gridReal = Math.min(available, 1920);
-      const extraEach = (available - gridReal) / 2;
-      const abp = bpFor(gridReal);
-      $('g-vp').textContent = state.vp + ' px';
-      $('g-eff').textContent = Math.round(gridReal) + ' px';
-      const sb = $('g-bp'); sb.textContent = abp.name; sb.className = 'bp-pill bp-' + abp.name;
-      $('g-cols').textContent = abp.columns;
-      $('g-gut').textContent = abp.gx + ' / ' + abp.gy;
-      $('g-mar').textContent = abp.margin;
-      const scale = VW / state.vp;
-      const gridVisual = gridReal * scale;
-      const padVisual = extraEach * scale;
-      const grid = $('g-container');
-      grid.style.left = padVisual + 'px';
-      grid.style.width = gridVisual + 'px';
-      const mPx = abp.margin * scale;
-      $('g-mleft').style.left = '0';
-      $('g-mleft').style.width = mPx + 'px';
-      $('g-mright').style.left = (gridVisual - mPx) + 'px';
-      $('g-mright').style.width = mPx + 'px';
-      const cols = $('g-colslot');
-      cols.innerHTML = '';
-      cols.style.left = mPx + 'px';
-      const innerW = Math.max(0, gridVisual - 2 * mPx);
-      cols.style.width = innerW + 'px';
-      const totalGut = (abp.columns - 1) * abp.gx * scale;
-      const colW = Math.max(0, (innerW - totalGut) / abp.columns);
-      for (let i = 0; i < abp.columns; i++) {
-        const c = document.createElement('div'); c.className = 'grid-col'; c.style.width = colW + 'px';
-        cols.appendChild(c);
-        if (i < abp.columns - 1) {
-          const g = document.createElement('div'); g.className = 'grid-gutter'; g.style.width = (abp.gx * scale) + 'px';
-          cols.appendChild(g);
-        }
-      }
-      const rp = $('g-right');
-      if (state.right !== 'off') { rp.style.display = 'block'; rp.style.width = (rw === -1 ? VW : rw * scale) + 'px'; }
-      else rp.style.display = 'none';
-      const lp = $('g-left');
-      if (state.left === 'on') {
-        lp.style.display = 'block';
-        lp.style.left = padVisual + 'px';
-        lp.style.width = (lw === -1 ? VW : lw * scale) + 'px';
-      } else lp.style.display = 'none';
-      const jump = $('g-bp-jump');
-      if (jump) jump.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.bp === vbp.name));
-    }
-    const slider = $('g-vp-slider');
-    const out = $('g-vp-out');
-    const onSlide = () => { state.vp = parseInt(slider.value, 10); out.textContent = state.vp; paint(); };
-    slider.addEventListener('input', onSlide);
-    const cleanups = [() => slider.removeEventListener('input', onSlide)];
-    const bind = (id, key) => {
-      const wrap = $(id);
-      wrap.querySelectorAll('button').forEach(b => {
-        const h = () => {
-          wrap.querySelectorAll('button').forEach(x => x.classList.remove('active'));
-          b.classList.add('active');
-          state[key] = b.dataset.v;
-          paint();
-        };
-        b.addEventListener('click', h);
-        cleanups.push(() => b.removeEventListener('click', h));
-      });
-    };
-    bind('g-left-toggle', 'left');
-    bind('g-right-toggle', 'right');
-    $('g-bp-jump').querySelectorAll('button').forEach(b => {
-      const h = () => {
-        const v = parseInt(b.dataset.vp, 10);
-        state.vp = v;
-        slider.value = v;
-        out.textContent = v;
-        paint();
-      };
-      b.addEventListener('click', h);
-      cleanups.push(() => b.removeEventListener('click', h));
-    });
-    paint();
-    return () => cleanups.forEach(fn => fn());
-  }, []);
+  const [s, setS] = useState({ vp: 1920, view: 'agent', leftAgent: 'off', leftCM: 'open', listN: 1, treeW: null, right: 'off' });
+  const set = (patch) => setS(prev => ({ ...prev, ...patch }));
+  const setVp = (vp) => setS(prev => ({ ...prev, vp, treeW: gridBp(vp).name === gridBp(prev.vp).name ? prev.treeW : null }));
+  const L = computeGridLayout(s);
+  const m = L.abp.margin;
+  const pct = (px) => (px / L.vp * 100) + '%';           // of the stage (viewport)
+  const gp  = (px) => (px / L.gw * 100) + '%';           // of the grid container
+  const ip  = (px) => (px / L.innerW * 100) + '%';       // of the column slot
+  const r = Math.round;
+
+  const cols = [];
+  for (let i = 0; i < L.abp.columns; i++) {
+    cols.push(<div key={'c' + i} className="grid-col" style={{ width: ip(L.colW) }} />);
+    if (i < L.abp.columns - 1) cols.push(<div key={'g' + i} className="grid-gutter" style={{ width: ip(L.abp.gutter) }} />);
+  }
+  const leftLabel = (i, w) => {
+    if (L.left.mode === 'cm-collapsed') return '48';
+    if (L.left.mode === 'list') return i === 0 ? `List · ${w}` : '';
+    return `Tree · ${w}`;
+  };
+  const rightStat = L.right.mode === 'off' ? '—'
+    : L.right.full ? 'full' : `${L.right.w} · ${L.right.push ? 'pushes' : 'overlays'}`;
+  const rightLabel = L.right.mode === 'collapsed' ? String(L.right.w) : L.right.full ? 'Right panel · full width' : `Right · ${L.right.w}`;
+
   return (
     <figure className="proj-media-item k-wide grid-demo-figure">
-      <div id="proj-grid-demo" ref={rootRef}>
-        <div className="card">
-          <div className="grid-stats">
-            <div className="grid-stat"><p className="grid-stat-label">Viewport</p><p className="grid-stat-val" id="g-vp">1280 px</p></div>
-            <div className="grid-stat"><p className="grid-stat-label">Effective</p><p className="grid-stat-val" id="g-eff">1280 px</p></div>
-            <div className="grid-stat"><p className="grid-stat-label">Breakpoint</p><p className="grid-stat-val"><span className="bp-pill bp-MD" id="g-bp">MD</span></p></div>
-            <div className="grid-stat"><p className="grid-stat-label">Columns</p><p className="grid-stat-val" id="g-cols">12</p></div>
-            <div className="grid-stat"><p className="grid-stat-label">Gutter</p><p className="grid-stat-val" id="g-gut">24 / 24</p></div>
-            <div className="grid-stat"><p className="grid-stat-label">Margin</p><p className="grid-stat-val" id="g-mar">32</p></div>
-          </div>
-          <div className="grid-stage">
-            <div className="grid-header"></div>
-            <div className="grid-body" id="g-body">
-              <div className="grid-container" id="g-container">
-                <div className="grid-margin" id="g-mleft"></div>
-                <div className="grid-cols" id="g-colslot"></div>
-                <div className="grid-margin" id="g-mright"></div>
+      <div id="proj-grid-demo">
+        <div className="grid-stats">
+          <div className="grid-stat"><p className="grid-stat-label">Viewport</p><p className="grid-stat-val">{L.vp} px</p></div>
+          <div className="grid-stat"><p className="grid-stat-label">Content area</p><p className="grid-stat-val">{r(L.cw)} px</p></div>
+          <div className="grid-stat"><p className="grid-stat-label">Grid</p><p className="grid-stat-val">{r(L.gw)} px{L.gw < L.cw && <small> · cap</small>}</p></div>
+          <div className="grid-stat"><p className="grid-stat-label">Breakpoint</p><p className="grid-stat-val"><span className={'bp-pill bp-' + L.abp.name}>{L.abp.name}</span></p></div>
+          <div className="grid-stat"><p className="grid-stat-label">Columns</p><p className="grid-stat-val">{L.abp.columns}</p></div>
+          <div className="grid-stat"><p className="grid-stat-label">Gutter</p><p className="grid-stat-val">{L.abp.gutter}</p></div>
+          <div className="grid-stat"><p className="grid-stat-label">Margin</p><p className="grid-stat-val">{L.abp.margin}</p></div>
+          <div className="grid-stat"><p className="grid-stat-label">Right panel</p><p className="grid-stat-val">{rightStat}</p></div>
+        </div>
+
+        <div className="grid-stage" aria-hidden="true">
+          <div className="grid-header"></div>
+          <div className="grid-body">
+            {L.left.push && (
+              <div className={'gd-panel gd-left gd-push ' + L.left.mode} style={{ left: 0, width: pct(L.left.w) }}>
+                <span>{leftLabel(0, L.left.w)}</span>
               </div>
-              <div className="grid-right-panel" id="g-right" style={{display:'none'}}></div>
-              <div className="grid-left-panel" id="g-left" style={{display:'none'}}></div>
+            )}
+            {L.right.push && (
+              <div className={'gd-panel gd-right gd-push ' + L.right.mode} style={{ left: pct(L.vp - L.right.w), width: pct(L.right.w) }}>
+                <span>{rightLabel}</span>
+              </div>
+            )}
+            {L.capGap > 0 && <div className="gd-cap" style={{ left: pct(L.push), width: pct(L.capGap) }} />}
+            {L.capGap > 0 && <div className="gd-cap" style={{ left: pct(L.gx + L.gw), width: pct(L.capGap) }} />}
+
+            <div className="grid-container" style={{ left: pct(L.gx), width: pct(L.gw) }}>
+              <div className="grid-margin" style={{ left: 0, width: gp(m) }} />
+              <div className="grid-margin" style={{ left: gp(L.gw - m), width: gp(m) }} />
+              <div className="grid-cols" style={{ left: gp(m), width: gp(L.innerW) }}>{cols}</div>
+              <div className="gd-content" style={{ left: gp(m), width: gp(L.innerW) }}>
+                <i className="gd-title" /><i className="gd-line" /><i className="gd-block" />
+              </div>
             </div>
-          </div>
-          <div className="controls-row">
-            <label htmlFor="g-vp-slider">Viewport</label>
-            <input type="range" id="g-vp-slider" min="360" max="2400" step="1" defaultValue="1280" />
-            <span style={{fontFamily:'var(--ff-mono)', fontVariantNumeric:'tabular-nums', minWidth:'56px', textAlign:'right'}} id="g-vp-out">1280</span>
-          </div>
-          <div className="controls-row">
-            <label>Left panel</label>
-            <div className="pill-toggle" id="g-left-toggle">
-              <button data-v="off" className="active">Hidden</button>
-              <button data-v="on">Open (overlay)</button>
-            </div>
-          </div>
-          <div className="controls-row">
-            <label>Right panel</label>
-            <div className="pill-toggle" id="g-right-toggle">
-              <button data-v="off" className="active">Hidden</button>
-              <button data-v="on">Open</button>
-              <button data-v="collapsed">Collapsed (LG/XL)</button>
-            </div>
-          </div>
-          <div className="controls-row">
-            <label>Jump to</label>
-            <div className="bp-jump" id="g-bp-jump">
-              <button data-bp="XS" data-vp="360"  className="bp-pill bp-XS">XS</button>
-              <button data-bp="SM" data-vp="800"  className="bp-pill bp-SM">SM</button>
-              <button data-bp="MD" data-vp="1280" className="bp-pill bp-MD">MD</button>
-              <button data-bp="LG" data-vp="1600" className="bp-pill bp-LG">LG</button>
-              <button data-bp="XL" data-vp="2000" className="bp-pill bp-XL">XL</button>
-            </div>
+
+            {L.right.mode !== 'off' && !L.right.push && (
+              <div className={'gd-panel gd-right ' + (L.right.full ? 'gd-full' : 'gd-overlay')} style={{ left: pct(L.vp - L.right.w), width: pct(L.right.w) }}>
+                <span>{rightLabel}</span>
+              </div>
+            )}
+            {!L.left.push && L.left.panels.map((w, i) => (
+              <div key={i} className="gd-panel gd-left gd-overlay" style={{ left: pct(i * w), width: pct(w) }}>
+                <span>{leftLabel(i, w)}</span>
+              </div>
+            ))}
           </div>
         </div>
+
+        <div className="controls-row">
+          <label htmlFor="g-vp-slider">Viewport</label>
+          <input type="range" id="g-vp-slider" min="360" max="3840" step="1" value={s.vp}
+                 onChange={e => setVp(parseInt(e.target.value, 10))} />
+          <span className="gd-out">{s.vp}</span>
+        </div>
+        <div className="controls-row sub">
+          <label>Jump to</label>
+          <div className="bp-jump">
+            {GRID_JUMPS.map(j => {
+              const isBp = GRID_BPS.some(b => b.name === j.label);
+              const active = isBp ? L.vbp.name === j.label : s.vp === j.vp;
+              return (
+                <button key={j.label} type="button" className={'bp-pill bp-' + j.label + (active ? ' active' : '')}
+                        onClick={() => setVp(j.vp)}>{j.label}</button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="controls-row">
+          <label>View</label>
+          <GridToggle value={L.view} onPick={v => set({ view: v })}
+                  options={[{ v: 'agent', label: 'Agent' }, { v: 'cm', label: 'CM', disabled: !L.cmAllowed }]} />
+          {!L.cmAllowed && <span className="gd-hint">CM view is not built for tablet or mobile</span>}
+        </div>
+
+        <div className="controls-row">
+          <label>Left panel</label>
+          {L.view === 'cm' ? (
+            <GridToggle value={s.leftCM} onPick={v => set({ leftCM: v })}
+                    options={[{ v: 'off', label: 'Hidden' }, { v: 'open', label: 'Open (pushes)' }, { v: 'collapsed', label: 'Collapsed · 48' }]} />
+          ) : (
+            <GridToggle value={s.leftAgent} onPick={v => set({ leftAgent: v })}
+                    options={[{ v: 'off', label: 'Hidden' }, { v: 'tree', label: 'Tree list' }, { v: 'list', label: 'Regular list' }]} />
+          )}
+        </div>
+        {(L.left.mode === 'tree' || L.left.mode === 'cm-open') && L.resizable && (
+          <div className="controls-row sub">
+            <label htmlFor="g-tree-slider">Panel width</label>
+            <input type="range" id="g-tree-slider" min={L.rule.min} max={L.rule.max} step="1" value={L.treeW}
+                   onChange={e => set({ treeW: parseInt(e.target.value, 10) })} />
+            <span className="gd-out">{L.treeW}</span>
+            <span className="gd-hint">opens at {r(L.rule.share * 100)}% · {L.rule.min}–{L.rule.max}</span>
+          </div>
+        )}
+        {L.left.mode === 'list' && L.maxPanels > 1 && (
+          <div className="controls-row sub">
+            <label>Panels open</label>
+            <GridToggle value={L.listN} onPick={v => set({ listN: v })}
+                    options={Array.from({ length: L.maxPanels }, (_, i) => ({ v: i + 1, label: String(i + 1) }))} />
+            <span className="gd-hint">{L.shareW} each · {L.maxPanels} fill the screen</span>
+          </div>
+        )}
+
+        <div className="controls-row">
+          <label>Right panel</label>
+          <GridToggle value={L.right.mode} onPick={v => set({ right: v })}
+                  options={[{ v: 'off', label: 'Hidden' }, { v: 'open', label: 'Open' }, { v: 'collapsed', label: 'Collapsed · 56', disabled: !L.rightCollapsible }]} />
+          {!L.rightCollapsible && <span className="gd-hint">collapsed exists on desktop (LG, XL) only</span>}
+        </div>
+
+        <p className="gd-readout">{gridReadout(L)}</p>
       </div>
       {caption && <figcaption className="proj-caption">{caption}</figcaption>}
     </figure>
@@ -7467,7 +7663,12 @@ function Project({ projectId, onBack, onOpen }) {
       }
       const g = GROUND[mode];
       const color = bestHue ? mix(g, bestHue, STRENGTH[mode] * bestW) : g;
-      el.style.backgroundColor = `rgb(${color.join(',')})`;
+      const rgb = `rgb(${color.join(',')})`;
+      el.style.backgroundColor = rgb;
+      // Publish the live wash colour so opaque sticky surfaces (parallax
+      // section headers) can match it instead of painting a flat --ground
+      // box on top of the tint.
+      if (el.parentElement) el.parentElement.style.setProperty('--atmos', rgb);
     };
     const schedule = () => { if (!raf) raf = requestAnimationFrame(compute); };
     compute();
