@@ -978,6 +978,21 @@ nav.top.hidden { transform: translateY(-110%); }
   object-fit: cover; object-position: center; display: block;
   transition: transform .8s var(--expo);
 }
+/* Tile artwork runs through the .signal-tv CRT effect (same as the About photo).
+   The frame fills the tile; the swatch gradient on .tile-img shows through. */
+.tile-img .signal-tv--tile {
+  --signal-tv-bg: transparent;
+  --signal-tv-border: none;
+  --signal-tv-aspect: auto;
+  --signal-tv-max-h: none;
+  position: absolute; inset: 0; display: block;
+}
+.tile-img .signal-tv--tile .signal-tv__img.tile-photo {
+  position: absolute; inset: 0; width: 100%; height: 100%; max-height: none; object-fit: cover;
+}
+.tile-img .signal-tv--tile .signal-tv__ghost {
+  width: 100%; height: 100%; max-height: none; object-fit: cover; object-position: center;
+}
 
 .tile-overlay {
   position: absolute; inset: 0;
@@ -5952,14 +5967,22 @@ function Tile({ p, idx, onOpen, style }) {
          onClick={() => onOpen(p.id)} data-hover>
       <div className="tile-img"
            style={{ background: `linear-gradient(135deg, ${p.swatch.from} 0%, ${p.swatch.to} 100%)` }}>
-        {p.tileImage ? (
-          <img className="tile-photo" src={p.tileImage} alt={`${p.title} - preview`} loading="lazy" />
-        ) : (
-          <>
-            <div className="tile-img-mark">{p.n}</div>
-            <div className="tile-img-bg" style={{ color: p.swatch.mark }}>{p.n}</div>
-          </>
-        )}
+        <div className="signal-tv signal-tv--tile">
+          {p.tileImage ? (
+            <>
+              <img className="signal-tv__img tile-photo" src={p.tileImage} alt={`${p.title} - preview`} loading="lazy" />
+              <img className="signal-tv__ghost signal-tv__ghost--r" src={p.tileImage} aria-hidden="true" loading="lazy" />
+              <img className="signal-tv__ghost signal-tv__ghost--c" src={p.tileImage} aria-hidden="true" loading="lazy" />
+            </>
+          ) : (
+            <>
+              <div className="tile-img-mark">{p.n}</div>
+              <div className="tile-img-bg" style={{ color: p.swatch.mark }}>{p.n}</div>
+            </>
+          )}
+          <div className="signal-tv__grain" aria-hidden="true"></div>
+          <div className="signal-tv__slices" aria-hidden="true"></div>
+        </div>
         <div className="tile-overlay"></div>
         <div className="tile-label">View case study →</div>
         <div className="tile-arrow-corner">→</div>
