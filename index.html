@@ -1816,6 +1816,58 @@ footer a:hover { color: var(--accent); }
 }
 .lightbox-close:hover { background: var(--surface-2); transform: scale(1.08); }
 
+/* Gallery mode — items inside a [data-gallery] (e.g. the video marquee) page through
+   with the arrows, ←/→, trackpad scroll, swipe, or the filmstrip. */
+.lightbox.is-gallery { padding-bottom: calc(clamp(1rem, 4vw, 3.5rem) + 76px); }
+.lightbox.is-gallery img, .lightbox.is-gallery video { max-height: 72vh; }
+.lightbox-figure.swap-next { animation: lb-swap-next .42s var(--expo) both; }
+.lightbox-figure.swap-prev { animation: lb-swap-prev .42s var(--expo) both; }
+@keyframes lb-swap-next { from { opacity: 0; transform: translateX(36px) scale(.985); } to { opacity: 1; transform: none; } }
+@keyframes lb-swap-prev { from { opacity: 0; transform: translateX(-36px) scale(.985); } to { opacity: 1; transform: none; } }
+.lightbox-nav {
+  position: fixed; top: 50%; transform: translateY(-50%);
+  width: 48px; height: 48px; border-radius: 50%;
+  border: 1px solid var(--rim-soft); background: var(--surface);
+  color: var(--ink); font-size: 1.1rem; line-height: 1; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .2s, transform .2s;
+}
+.lightbox-nav.prev { left: 1.25rem; }
+.lightbox-nav.next { right: 1.25rem; }
+.lightbox-nav:hover { background: var(--surface-2); transform: translateY(-50%) scale(1.08); }
+.lightbox-count {
+  position: fixed; top: 1.25rem; left: 1.25rem; height: 40px;
+  display: flex; align-items: center;
+  font-family: var(--ff-mono); font-weight: var(--fw-mono); font-size: var(--fs-base); letter-spacing: var(--ls-base);
+  color: var(--muted);
+}
+.lightbox-strip {
+  position: fixed; left: 50%; bottom: 1.25rem; transform: translateX(-50%);
+  display: flex; gap: .5rem; max-width: calc(100vw - 2.5rem); overflow-x: auto;
+  padding: .35rem; scrollbar-width: none;
+}
+.lightbox-strip::-webkit-scrollbar { display: none; }
+.lightbox-thumb {
+  flex: 0 0 auto; width: 96px; aspect-ratio: 16 / 9; padding: 0; overflow: hidden;
+  border-radius: 4px; border: 1px solid var(--rim-soft); background: var(--surface);
+  opacity: .45; cursor: pointer; transition: opacity .2s, transform .2s, border-color .2s;
+}
+.lightbox-thumb img {
+  display: block; width: 100%; height: 100%; object-fit: cover;
+  border: 0; border-radius: 0; box-shadow: none; max-height: none; cursor: pointer;
+}
+.lightbox-thumb:hover { opacity: .8; }
+.lightbox-thumb.active { opacity: 1; border-color: var(--accent); transform: translateY(-2px); }
+@media (max-width: 639px) {
+  .lightbox-nav { width: 40px; height: 40px; top: auto; bottom: 5.75rem; transform: none; }
+  .lightbox-nav:hover { transform: scale(1.08); }
+  .lightbox-thumb { width: 64px; }
+  .lightbox.is-gallery { padding-bottom: calc(1rem + 120px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lightbox-figure.swap-next, .lightbox-figure.swap-prev { animation: none; }
+}
+
 /* zoom-in affordance on the images that open in the lightbox
    (only visible when the custom blob cursor is toggled off) */
 .proj-media-item img,
@@ -3112,7 +3164,11 @@ dialog.fv-dialog .fv { --fv-h: 100vh; border: none; border-radius: 0; margin: 0;
 
 /* ─── Marquee - endless slow strip of frames (see ProjectMarquee) ─── */
 .proj-marquee {
-  position: relative; overflow: hidden; margin: 2rem 0;
+  /* --mq-lift: headroom inside the clip so a hovered (scaled-up) frame isn't cut off;
+     the matching negative margin keeps the strip's footprint exactly as before. */
+  --mq-lift: 22px;
+  position: relative; overflow: hidden;
+  margin: calc(2rem - var(--mq-lift)) 0; padding: var(--mq-lift) 0;
   contain: inline-size; width: 100%; /* never let the long track widen the column */
   outline: none;
 }
@@ -3126,19 +3182,38 @@ dialog.fv-dialog .fv { --fv-h: 100vh; border: none; border-radius: 0; margin: 0;
   from { transform: translateX(0); }
   to   { transform: translateX(calc(-50% - .75rem)); }
 }
-.proj-marquee-item { flex: 0 0 auto; }
+.proj-marquee-item {
+  flex: 0 0 auto; position: relative;
+  transition: transform .5s var(--expo), opacity .35s ease, filter .35s ease;
+}
+/* Hover focus: the hovered frame grows a little (transform only - nothing reflows,
+   it may overlap its neighbours) and the rest of the strip dims back. */
+@media (hover: hover) {
+  .proj-marquee-item:hover { transform: scale(1.07); z-index: 2; }
+  .proj-marquee-track:has(.proj-marquee-item:hover) .proj-marquee-item:not(:hover) {
+    opacity: .35; filter: saturate(.6);
+  }
+}
 .proj-marquee-frame {
   height: 340px; border-radius: 4px; overflow: hidden;
   background: var(--surface); border: 1px solid var(--rim-soft);
 }
 /* fixed height, natural width - frames follow each image's proportions, never crop */
 .proj-marquee-frame img { display: block; height: 100%; width: auto; }
+/* video frames: 16:9 at the same height (videos load lazily, so they can't size the frame) */
+.proj-marquee-frame.is-video { aspect-ratio: 16 / 9; }
+.proj-marquee-frame.is-video video {
+  display: block; width: 100%; height: 100%; object-fit: cover; cursor: zoom-in;
+}
+/* in a parallax media column the strip is the column item itself */
+.proj-parallax-media > .proj-marquee { margin: calc(-1 * var(--mq-lift)) 0; }
 @media (max-width: 639px) {
   .proj-marquee-frame { height: 240px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .proj-marquee { overflow-x: auto; }
   .proj-marquee-track { animation: none; }
+  .proj-marquee-item, .proj-marquee-item:hover { transition: opacity .35s ease; transform: none; }
 }
 </style>
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
@@ -3565,7 +3640,17 @@ const PROJECTS = [
           'This also set the stage for the AI Assistant, which sits in the same sidebar real estate and lets users ask questions of the content directly inside the article they\'re working on.',
         ],
         parallax: true,
-        sideMedia: { placeholder: true, caption: 'Right sidebar - contextual panels' },
+        sideMarquee: [
+          { src: 'redesign/TOC prototypes/toc-01-states.mp4', poster: 'redesign/TOC prototypes/toc-01-states.png', caption: 'TOC states - pinned, collapsed, peek' },
+          { src: 'redesign/TOC prototypes/toc-02-navigation.mp4', poster: 'redesign/TOC prototypes/toc-02-navigation.png', caption: 'Navigating the article' },
+          { src: 'redesign/TOC prototypes/toc-03a-pin-unpin.mp4', poster: 'redesign/TOC prototypes/toc-03a-pin-unpin.png', caption: 'Pin & unpin motion' },
+          { src: 'redesign/TOC prototypes/toc-03b-active-item.mp4', poster: 'redesign/TOC prototypes/toc-03b-active-item.png', caption: 'Active item transition' },
+          { src: 'redesign/TOC prototypes/toc-03c-collapsed-scroll.mp4', poster: 'redesign/TOC prototypes/toc-03c-collapsed-scroll.png', caption: 'Collapsed rail as a scroll bar' },
+          { src: 'redesign/TOC prototypes/toc-03d-peek.mp4', poster: 'redesign/TOC prototypes/toc-03d-peek.png', caption: 'Hover to peek' },
+          { src: 'redesign/TOC prototypes/toc-04a-search.mp4', poster: 'redesign/TOC prototypes/toc-04a-search.png', caption: 'Search in article' },
+          { src: 'redesign/TOC prototypes/toc-04b-comments.mp4', poster: 'redesign/TOC prototypes/toc-04b-comments.png', caption: 'Comments' },
+          { src: 'redesign/TOC prototypes/toc-04c-article-info.mp4', poster: 'redesign/TOC prototypes/toc-04c-article-info.png', caption: 'Article info' },
+        ],
         media: [
           { placeholder: true, caption: 'AI Assistant - in-article Q&A' },
           { src: 'redesign/new-design-sidebar.mov', caption: 'Sidebar prototype' },
@@ -7374,8 +7459,11 @@ function ProjectMediaRows({ rows, idBase = 'mr' }) {
 /* ─── Project page - marquee: a slow, endless strip of frames (chyron-style).
    The list renders twice so the track can loop seamlessly at -50%; duration is
    derived from the measured width so speed stays constant in px/s. Hover or
-   keyboard focus pauses it; reduced-motion users get a plain scroll strip. */
-function ProjectMarquee({ items, speed = 28 }) {
+   keyboard focus pauses it; reduced-motion users get a plain scroll strip.
+   Video items ({src: '*.mp4', poster}) only play while on screen, and the strip
+   is marked data-gallery so the Lightbox opens it as a browsable gallery. */
+function ProjectMarquee({ items, speed = 28, label = 'Wireframes - slowly scrolling strip, hover to pause' }) {
+  const rootRef = useRef(null);
   const trackRef = useRef(null);
   const [dur, setDur] = useState(60);
   useEffect(() => {
@@ -7387,20 +7475,60 @@ function ProjectMarquee({ items, speed = 28 }) {
     ro.observe(el);
     return () => ro.disconnect();
   }, [speed]);
+  useEffect(() => {
+    const root = rootRef.current;
+    const vids = root ? [...root.querySelectorAll('video')] : [];
+    if (!vids.length) return;
+    // A video plays only while it's on screen - and, while a frame is hovered
+    // (the focus state), only if it's the hovered one.
+    const visible = new Set();
+    let hovered = null;
+    const sync = () => vids.forEach(v => {
+      const on = visible.has(v) && (!hovered || hovered.contains(v));
+      if (on && v.paused) { const p = v.play(); if (p && p.catch) p.catch(() => {}); }
+      else if (!on && !v.paused) v.pause();
+    });
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(en => en.isIntersecting ? visible.add(en.target) : visible.delete(en.target));
+      sync();
+    }, { threshold: 0.15 });
+    vids.forEach(v => io.observe(v));
+    const onOver = (e) => {
+      const fig = e.target.closest('.proj-marquee-item');
+      if (fig !== hovered) { hovered = fig; sync(); }
+    };
+    const onLeave = () => { hovered = null; sync(); };
+    root.addEventListener('pointerover', onOver);
+    root.addEventListener('pointerleave', onLeave);
+    return () => {
+      io.disconnect();
+      root.removeEventListener('pointerover', onOver);
+      root.removeEventListener('pointerleave', onLeave);
+    };
+  }, [items]);
   if (!items || !items.length) return null;
   const loop = [...items, ...items];
   return (
-    <div className="proj-marquee" tabIndex={0} aria-label="Wireframes - slowly scrolling strip, hover to pause">
+    <div className="proj-marquee" ref={rootRef} tabIndex={0} aria-label={label} data-gallery="">
       <div className="proj-marquee-track" ref={trackRef} style={{ animationDuration: `${dur}s` }}>
-        {loop.map((m, i) => (
-          <figure key={i} className={`proj-media-item proj-marquee-item k-${m.kind || 'desk'}`}
-                  aria-hidden={i >= items.length ? 'true' : undefined}>
-            <div className="proj-marquee-frame">
-              <img src={m.src} alt={i < items.length ? (m.caption || '') : ''} />
-            </div>
-            {m.caption && <figcaption className="proj-caption">{m.caption}</figcaption>}
-          </figure>
-        ))}
+        {loop.map((m, i) => {
+          const isVideo = /\.(mp4|mov|webm|ogg)$/i.test(m.src || '');
+          return (
+            <figure key={i} className={`proj-media-item proj-marquee-item k-${m.kind || 'desk'}`}
+                    data-gallery-index={i % items.length}
+                    aria-hidden={i >= items.length ? 'true' : undefined}>
+              <div className={`proj-marquee-frame ${isVideo ? 'is-video' : ''}`}>
+                {isVideo ? (
+                  <video src={m.src} poster={m.poster} muted loop playsInline preload="none"
+                         aria-label={i < items.length ? (m.caption || '') : undefined} />
+                ) : (
+                  <img src={m.src} alt={i < items.length ? (m.caption || '') : ''} />
+                )}
+              </div>
+              {m.caption && <figcaption className="proj-caption">{m.caption}</figcaption>}
+            </figure>
+          );
+        })}
       </div>
     </div>
   );
@@ -7455,8 +7583,13 @@ function ParallaxSection({ s, isSub }) {
     const mq = window.matchMedia('(min-width: 960px)');
 
     const update = () => {
-      if (!mq.matches) {
-        /* Mobile: single-column stacked layout, no sticky behavior - clear inline styles. */
+      /* Only pin the text when the row really is two columns side by side. The
+         width query alone isn't enough: the row can still render stacked (one grid
+         track), and then the computed left-column height is just an empty gap. */
+      const sideBySide = mq.matches &&
+        getComputedStyle(left.parentElement).gridTemplateColumns.trim().split(/\s+/).length > 1;
+      if (!sideBySide) {
+        /* Single-column stacked layout, no sticky behavior - clear inline styles. */
         text.style.top = '';
         left.style.height = '';
         return;
@@ -7506,6 +7639,7 @@ function ParallaxSection({ s, isSub }) {
           </div>
         </div>
         <div ref={mediaRef} className="proj-parallax-media">
+          {s.sideMarquee && <ProjectMarquee items={s.sideMarquee} label="Prototype recordings - slowly scrolling strip, hover to pause, click to open" />}
           {s.sideMedia && (
             <figure className="proj-parallax-item">
               {s.sideMedia.placeholder ? (
@@ -8065,46 +8199,128 @@ function PortfolioTweaks({ tweaks, setTweak }) {
 // icons, the .signal-tv effect, and anything inside a link are excluded so we
 // never hijack navigation.
 function Lightbox() {
-  const [item, setItem] = useState(null); // { src, cap } | null
+  // { list: [{ src | videoSrc, poster, cap }], index, dir } | null — a single image is a list of one.
+  const [item, setItem] = useState(null);
   const ZOOMABLE = '.proj-media-item, .proj-hero-image, .proj-side-gallery-frame, .problem-img';
+  const close = useCallback(() => setItem(null), []);
+  const go = useCallback((step) => setItem(it => {
+    if (!it || it.list.length < 2) return it;
+    const n = it.list.length;
+    return { ...it, index: (it.index + step + n) % n, dir: step > 0 ? 'next' : 'prev' };
+  }), []);
+  const goTo = useCallback((i) => setItem(it => it && i !== it.index
+    ? { ...it, index: i, dir: i > it.index ? 'next' : 'prev' } : it), []);
 
   useEffect(() => {
+    const entryOf = (media) => {
+      const fig = media.closest('figure');
+      const capEl = fig && fig.querySelector('.proj-caption');
+      const cap = capEl ? capEl.textContent.trim() : (media.getAttribute('alt') || media.getAttribute('aria-label') || '');
+      return media.tagName === 'VIDEO'
+        ? { videoSrc: media.currentSrc || media.getAttribute('src'), poster: media.getAttribute('poster') || '', cap }
+        : { src: media.currentSrc || media.src, cap };
+    };
     const onClick = (e) => {
       const media = e.target.closest && e.target.closest('img, video');
       if (!media) return;
       if (!media.closest(ZOOMABLE)) return;               // only content media
       if (media.closest('a, .tile, .signal-tv, .proj-beforeafter')) return; // skip links, tiles, TV, slider
       e.preventDefault();
-      const fig = media.closest('figure');
-      const capEl = fig && fig.querySelector('.proj-caption');
-      const cap = capEl ? capEl.textContent.trim() : (media.getAttribute('alt') || '');
-      if (media.tagName === 'VIDEO') setItem({ videoSrc: media.currentSrc || media.getAttribute('src'), cap });
-      else setItem({ src: media.currentSrc || media.src, cap });
+      const gallery = media.closest('[data-gallery]');
+      if (gallery) {
+        // Galleries (e.g. a looping marquee) may render items twice - keep the first copy of each index.
+        const seen = new Map();
+        gallery.querySelectorAll('[data-gallery-index]').forEach(fig => {
+          const i = +fig.dataset.galleryIndex, m = fig.querySelector('img, video');
+          if (m && !seen.has(i)) seen.set(i, entryOf(m));
+        });
+        const list = [...seen.keys()].sort((x, y) => x - y).map(k => seen.get(k));
+        const start = +(media.closest('[data-gallery-index]')?.dataset.galleryIndex || 0);
+        setItem({ list, index: start, dir: '' });
+      } else {
+        setItem({ list: [entryOf(media)], index: 0, dir: '' });
+      }
     };
     document.addEventListener('click', onClick);
     return () => document.removeEventListener('click', onClick);
   }, []);
 
+  const open = !!item;
+  const isGallery = open && item.list.length > 1;
   useEffect(() => {
-    if (!item) return;
-    const onKey = (e) => { if (e.key === 'Escape') setItem(null); };
+    if (!open) return;
+    const onKey = (e) => {
+      if (e.key === 'Escape') close();
+      else if (e.key === 'ArrowRight') go(1);
+      else if (e.key === 'ArrowLeft') go(-1);
+    };
+    // Trackpad / wheel scrolling pages through a gallery - one step per gesture.
+    let lock = 0, acc = 0;
+    const onWheel = (e) => {
+      e.preventDefault();
+      const d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+      const now = performance.now();
+      if (now < lock) return;
+      acc += d;
+      if (Math.abs(acc) > 40) { go(acc > 0 ? 1 : -1); acc = 0; lock = now + 550; }
+    };
+    let x0 = null;
+    const onTouchStart = (e) => { x0 = e.touches[0].clientX; };
+    const onTouchEnd = (e) => {
+      if (x0 == null) return;
+      const dx = e.changedTouches[0].clientX - x0; x0 = null;
+      if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1);
+    };
     document.body.style.overflow = 'hidden';
     window.addEventListener('keydown', onKey);
-    return () => { document.body.style.overflow = ''; window.removeEventListener('keydown', onKey); };
-  }, [item]);
+    window.addEventListener('wheel', onWheel, { passive: false });
+    window.addEventListener('touchstart', onTouchStart, { passive: true });
+    window.addEventListener('touchend', onTouchEnd);
+    return () => {
+      document.body.style.overflow = '';
+      window.removeEventListener('keydown', onKey);
+      window.removeEventListener('wheel', onWheel);
+      window.removeEventListener('touchstart', onTouchStart);
+      window.removeEventListener('touchend', onTouchEnd);
+    };
+  }, [open, close, go]);
 
+  const cur = open ? item.list[item.index] : null;
   return (
-    <div className={`lightbox ${item ? 'open' : ''}`} onClick={() => setItem(null)}>
-      {item && <button className="lightbox-close" aria-label="Close" onClick={() => setItem(null)}>✕</button>}
-      {item && (
-        <figure className="lightbox-figure" onClick={e => e.stopPropagation()}>
-          {item.videoSrc ? (
-            <video src={item.videoSrc} controls autoPlay loop playsInline />
+    <div className={`lightbox ${open ? 'open' : ''} ${isGallery ? 'is-gallery' : ''}`} onClick={close}>
+      {open && <button className="lightbox-close" aria-label="Close" onClick={close}>✕</button>}
+      {isGallery && (
+        <>
+          <div className="lightbox-count" aria-live="polite">
+            {String(item.index + 1).padStart(2, '0')} / {String(item.list.length).padStart(2, '0')}
+          </div>
+          <button className="lightbox-nav prev" aria-label="Previous"
+                  onClick={e => { e.stopPropagation(); go(-1); }}>←</button>
+          <button className="lightbox-nav next" aria-label="Next"
+                  onClick={e => { e.stopPropagation(); go(1); }}>→</button>
+        </>
+      )}
+      {cur && (
+        <figure key={item.index} className={`lightbox-figure ${item.dir ? 'swap-' + item.dir : ''}`}
+                onClick={e => e.stopPropagation()}>
+          {cur.videoSrc ? (
+            <video src={cur.videoSrc} poster={cur.poster || undefined} controls autoPlay loop muted playsInline />
           ) : (
-            <img src={item.src} alt={item.cap} onClick={() => setItem(null)} />
+            <img src={cur.src} alt={cur.cap} onClick={close} />
           )}
-          {item.cap && <figcaption className="lightbox-cap">{item.cap}</figcaption>}
+          {cur.cap && <figcaption className="lightbox-cap">{cur.cap}</figcaption>}
         </figure>
+      )}
+      {isGallery && (
+        <div className="lightbox-strip" onClick={e => e.stopPropagation()}>
+          {item.list.map((m, i) => (
+            <button key={i} className={`lightbox-thumb ${i === item.index ? 'active' : ''}`}
+                    aria-label={m.cap || `Item ${i + 1}`} aria-current={i === item.index ? 'true' : undefined}
+                    onClick={() => goTo(i)}>
+              <img src={m.poster || m.src} alt="" />
+            </button>
+          ))}
+        </div>
       )}
     </div>
   );
