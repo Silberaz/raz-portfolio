@@ -1954,6 +1954,15 @@ footer a:hover { color: var(--accent); }
 .proj-hero-image img {
   display: block; width: 100%; height: auto; max-height: 50vh; object-fit: cover;
 }
+/* Contained hero - image sits inside the page gutters, full width, natural height (never crops) */
+.proj-hero-image.is-contained {
+  border: none; background: transparent;
+  padding: 2.5rem var(--pad-x) 1rem;
+}
+.proj-hero-image.is-contained img {
+  width: 100%; height: auto; max-height: none;
+  border-radius: 4px;
+}
 /* Bare hero - device mockup floats on the page, no frame, no crop */
 .proj-hero-image.is-bare {
   border: none;
@@ -3026,6 +3035,37 @@ dialog.fv-dialog .fv { --fv-h: 100vh; border: none; border-radius: 0; margin: 0;
   .fv-card, .fv-card .fv-accent, .fv-thumb svg { transition: none; }
 }
 
+
+/* ─── Marquee - endless slow strip of frames (see ProjectMarquee) ─── */
+.proj-marquee {
+  position: relative; overflow: hidden; margin: 2rem 0;
+  contain: inline-size; width: 100%; /* never let the long track widen the column */
+  outline: none;
+}
+.proj-marquee-track {
+  display: flex; gap: 1.5rem; width: max-content;
+  animation: proj-marquee-slide 60s linear infinite;
+}
+.proj-marquee:hover .proj-marquee-track,
+.proj-marquee:focus-within .proj-marquee-track { animation-play-state: paused; }
+@keyframes proj-marquee-slide {
+  from { transform: translateX(0); }
+  to   { transform: translateX(calc(-50% - .75rem)); }
+}
+.proj-marquee-item { flex: 0 0 auto; }
+.proj-marquee-frame {
+  height: 340px; border-radius: 4px; overflow: hidden;
+  background: var(--surface); border: 1px solid var(--rim-soft);
+}
+/* fixed height, natural width - frames follow each image's proportions, never crop */
+.proj-marquee-frame img { display: block; height: 100%; width: auto; }
+@media (max-width: 639px) {
+  .proj-marquee-frame { height: 240px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .proj-marquee { overflow-x: auto; }
+  .proj-marquee-track { animation: none; }
+}
 </style>
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
@@ -3067,145 +3107,133 @@ const PROJECTS = [
     company: 'KMS Lighthouse',
     tile: 'wide',
     summary: 'A self-service Help Center that hands business admins full control of their branded support site - no developers required. Built to replace a legacy product that couldn\'t customize, couldn\'t scale, and wasn\'t winning customers.',
-    heroImage: 'help center/v2/homepage-devices.png',
-    heroBare: true,
+    heroImage: 'help center/Help Center — hero.png',
+    heroContained: true,
     tileImage: 'help center/Help Center — hero.png',
     swatch: { from: '#0F5A4A', to: '#082E25', mark: '#5BCAB8' },
     sections: [
-      { id: 'context', title: 'Context', body: [
-        'KMS Lighthouse is an enterprise knowledge platform behind the call centers and self-service portals of companies like DHL, GE Healthcare, and Allianz.',
-        'The Help Center is its customer-facing product - a fully branded self-service site that pulls content straight from the platform teams already use: no separate site, no migration, no parallel workflow.',
-      ]},
-      { id: 'role', title: 'Role & Approach', body: [
-        'Sole designer across research, IA, flows, UI, and design-system work, partnering with PMs and engineers over multiple phases. The core challenge: serve two audiences in one product - the admin configuring the site, and the end user trying to find an answer fast.',
-      ]},
-      { id: 'problem', title: 'The Problem', atmos: 'orchid',
+      /* ── Context ── */
+      { id: 'overview', title: 'Project overview',
+        group: 'context', groupLabel: 'Context',
+        body: [
+          'KMS Lighthouse is an enterprise knowledge platform behind the call centers and self-service portals of companies like DHL, GE Healthcare, and Allianz.',
+          'The Help Center is its customer-facing product - a fully branded self-service site that pulls content straight from the platform teams already use: no separate site, no migration, no parallel workflow. It ships as two connected surfaces: an admin panel where business owners configure and brand the site, and the end-user experience where readers find answers.',
+        ],
+        media: [
+          { placeholder: true, caption: 'Product overview - admin panel + end-user site', kind: 'wide' },
+        ],
+      },
+      { id: 'role', title: 'My role',
+        group: 'context',
+        body: [
+          'Sole designer across research, IA, flows, UI, and design-system work, partnering with PMs and engineers over multiple phases.',
+          'The core challenge: serve two audiences in one product - the admin configuring the site, and the end user trying to find an answer fast - without letting either one\'s complexity leak into the other.',
+        ],
+      },
+
+      /* ── Research ── */
+      { id: 'problems', title: 'Problems', atmos: 'orchid',
+        group: 'research', groupLabel: 'Research',
         list: [
           { label: 'No admin control.', text: 'Every change - copy, layout, branding - went through a specialized dev team. Admins couldn\'t touch their own site.' },
           { label: 'Not built for mobile.', text: 'Most users seek help on their phone; the legacy product wasn\'t responsive, answers were hard to find, and tickets went up.' },
           { label: 'Barely customizable.', text: 'Enterprises couldn\'t make it feel like their brand - a dealbreaker for a product sold as a differentiator.' },
         ],
         outro: ['A differentiator that didn\'t differentiate. Clients passed; prospects went elsewhere.'],
-        sideMedia: { src: 'help center/3.png', caption: 'Before - legacy product' },
+        sideMedia: { placeholder: true, caption: 'Before - legacy product' },
       },
       { id: 'goals', title: 'Goals',
+        group: 'research',
         list: [
           { label: 'Put admins in control -', text: 'own setup, content, and branding without dev or support.' },
           { label: 'Design mobile-first -', text: 'around one user, one answer, fast.' },
           { label: 'Make it brandable -', text: 'real control over look and layout, so it feels like the customer\'s own site.' },
         ],
       },
-      { id: 'research', title: 'Research',
-        body: ['Four parallel tracks grounded the redesign: stakeholder interviews, admin and end-user interviews, competitive analysis, and surveys to validate findings at scale.'],
-      },
-      { id: 'insights', title: 'Key Insights',
-        list: [
-          { label: 'Branding isn\'t a nice-to-have.', text: 'Enterprises won\'t ship a Help Center that doesn\'t feel like theirs - and they need that control without code.' },
-          { label: 'Navigation is the product.', text: 'For end users, the Help Center is its search and structure; findability was the biggest unlock.' },
-          { label: 'The UI had to earn its place.', text: 'It needed to look like something a brand would proudly link from its own site.' },
+      { id: 'user-flows', title: 'User flows',
+        group: 'research',
+        body: [
+          'I mapped admin and end-user paths in parallel - shaping an admin model that gives real power without exposing end users to its complexity.',
         ],
-      },
-      { id: 'flows', title: 'User Flows',
-        body: ['I mapped admin and end-user paths in parallel - shaping an admin model that gives real power without exposing end users to its complexity.'],
         flowViewer: { caption: 'Admin access & routing, and the homepage widget model behind the customization studio - the real flows, walkable' },
       },
-      { id: 'wireframing', title: 'Wireframing',
+      { id: 'wireframes', title: 'Wireframes',
+        group: 'research',
         body: ['Structure before style: density, navigation, and hierarchy resolved across both admin and end-user screens before any visual design entered.'],
-        sideMedia: { src: 'help center/9.png', caption: 'Wireframe grid' },
-      },
-      { id: 'admin', title: 'The Admin Experience', atmos: 'sky',
-        body: [
-          'Where the product earns its keep. If admins can\'t run the Help Center themselves, nothing else matters. I designed it as focused, self-serve settings - configuration, localization, content, and a dedicated customization studio.',
-        ],
-        subsections: [
-          {
-            id: 'admin-custom',
-            title: 'Customization studio',
-            body: ['Direct control over logo, favicon, header, footer, color system, card styles, and content layout - no code. Admins change how the site looks and behaves in real time.'],
-            media: [
-              { src: 'help center/v2/admin-panel-mosaic.png', caption: 'Customization panel breakdown', kind: 'wide', bare: true },
-            ],
-          },
-          {
-            id: 'admin-homepage',
-            title: 'Editing in place',
-            body: ['Admins compose the homepage widget by widget, editing cards against a live preview of the site itself.'],
-            media: [
-              { src: 'help center/v2/admin-cards-edit.mov', caption: 'Editing a card against live preview', kind: 'wide' },
-            ],
-          },
-          {
-            id: 'admin-styles',
-            title: 'One product, any brand',
-            body: ['The proof that the customization model works: the same Help Center, rendered in three entirely different brand systems - no code, no dev team.'],
-            media: [
-              { src: 'help center/v2/site-styles-compare.png', caption: 'One Help Center, three brand styles', kind: 'wide' },
-            ],
-          },
-          {
-            id: 'admin-settings',
-            title: 'Settings & sync',
-            body: ['Website settings, language support, and live content sync with the Lighthouse platform.'],
-            media: [
-              { src: 'help center/v2/settings-website.png',      caption: 'Website', kind: 'sq' },
-              { src: 'help center/v2/settings-content.png',      caption: 'Content', kind: 'sq' },
-              { src: 'help center/v2/settings-localization.png', caption: 'Localization', kind: 'sq' },
-              { src: 'help center/v2/settings-translations.png', caption: 'Translations', kind: 'sq' },
-            ],
-          },
-          {
-            id: 'admin-onboarding',
-            title: 'Guided onboarding',
-            body: ['Inline guides walk first-time admins through localization and translation - turning a former dev task into a self-serve flow.'],
-            media: [
-              { src: 'help center/17.png', kind: 'sq' },
-              { src: 'help center/18.png', kind: 'sq' },
-              { src: 'help center/19.png', kind: 'sq' },
-              { src: 'help center/20.png', kind: 'sq' },
-              { src: 'help center/21.png', kind: 'sq' },
-              { src: 'help center/22.png', kind: 'sq' },
-            ],
-          },
+        marquee: [
+          { src: 'help center/WireFrames/1.png', caption: 'Homepage editor' },
+          { src: 'help center/WireFrames/2.png', caption: 'Widget settings' },
+          { src: 'help center/WireFrames/3.png', caption: 'Search results & AI answer' },
+          { src: 'help center/WireFrames/4.png', caption: 'Article view' },
+          { src: 'help center/WireFrames/5.png', caption: 'End-user homepage' },
+          { src: 'help center/WireFrames/8.png', caption: 'Mobile' },
         ],
       },
-      { id: 'enduser', title: 'The End-User Experience', atmos: 'sage',
+
+      /* ── Admin panel ── */
+      { id: 'admin-panels', title: 'Admin panel panels', atmos: 'sky',
+        group: 'admin', groupLabel: 'Admin panel',
         body: [
-          'For end users, success is one thing: the right answer, fast. A hero search anchored in the brand\'s own identity, category cards mapped to the most common tasks, and clean article pages with related links, helpful/not-helpful feedback, and step-by-step guides. An AI Answer feature streams a direct response above the results, closing with the sources it drew on and a plain caveat that it isn\'t infallible.',
+          'Where the product earns its keep. If admins can\'t run the Help Center themselves, nothing else matters.',
+          'The panel is organized into focused areas - customization, content, localization, and settings - each a self-serve surface that replaces what used to be a dev ticket.',
         ],
         media: [
-          { src: 'help center/v2/homepage-style1.png',   caption: 'Final homepage', kind: 'wide' },
-          { src: 'help center/v2/search-results.png',    caption: 'Search results', kind: 'wide' },
-          { src: 'help center/v2/ai-answer-loading.png', caption: 'AI answer - resolving', kind: 'wide' },
-          { src: 'help center/v2/ai-answer-complete.png',caption: 'AI answer - with sources', kind: 'wide' },
-          { src: 'help center/v2/article-large.png',     caption: 'Article view', kind: 'wide' },
-          { src: 'help center/v2/guide-page.png',        caption: 'Step-by-step guide', kind: 'wide' },
-          { src: 'help center/34.png',                   caption: 'Multilingual and RTL support', kind: 'wide' },
+          { placeholder: true, caption: 'Admin panel - overview', kind: 'wide' },
         ],
-        beforeAfter: {
-          before: { src: 'help center/3.png',                   label: 'Before - legacy product' },
-          after:  { src: 'help center/v2/homepage-style1.png',  label: 'After - new Help Center' },
-        },
       },
-      { id: 'responsive', title: 'Responsive',
-        body: ['Mobile-first as a constraint, not a slogan - the same search-first hierarchy holds across desktop, tablet, and mobile.'],
+      { id: 'homepage-widgets', title: 'Homepage widgets',
+        group: 'admin',
+        body: ['Admins compose the homepage from modular widgets - hero search, category cards, featured content, news, and more - arranging and configuring each one to fit their audience.'],
         media: [
-          { src: 'help center/33.png', caption: 'Desktop · tablet · mobile', kind: 'wide' },
+          { placeholder: true, caption: 'Homepage widget library', kind: 'wide' },
+          { placeholder: true, caption: 'Configuring a widget', kind: 'sq' },
+          { placeholder: true, caption: 'Widget states & variants', kind: 'sq' },
         ],
       },
-      { id: 'outcome', title: 'Outcome', placeholder: true,
-        body: ['Candidates to draw from: first fully customizable Help Center in the Lighthouse line; former hold-outs now requesting the new version; new clients citing it in their decision; admins self-serving setup without dev or support; positive sales and CS feedback.'],
+      { id: 'editing', title: 'Editing the help center',
+        group: 'admin',
+        body: ['Admins edit the site widget by widget against a live preview of the real page - changing copy, layout, and branding and seeing the result immediately, no code and no publish-and-pray.'],
+        media: [
+          { placeholder: true, caption: 'Editing against a live preview', kind: 'wide' },
+        ],
       },
-      { id: 'reflection', title: 'Reflection', placeholder: true,
-        body: ['One honest sentence on what I learned or would do differently - to fill in.'],
+      { id: 'settings', title: 'Settings',
+        group: 'admin',
+        body: ['Website, content, localization, and translation settings - presented as a carousel of focused panels so admins move through configuration one clear step at a time.'],
+        media: [
+          { placeholder: true, caption: 'Settings - Website', kind: 'sq' },
+          { placeholder: true, caption: 'Settings - Content', kind: 'sq' },
+          { placeholder: true, caption: 'Settings - Localization', kind: 'sq' },
+          { placeholder: true, caption: 'Settings - Translations', kind: 'sq' },
+        ],
+      },
+
+      /* ── End user experience ── */
+      { id: 'enduser', title: 'End-user experience', atmos: 'sage',
+        group: 'enduser', groupLabel: 'End user experience',
+        body: [
+          'For end users, success is one thing: the right answer, fast. A hero search anchored in the brand\'s own identity, category cards mapped to the most common tasks, and clean article pages with related links and step-by-step guides.',
+          'An AI Answer feature streams a direct response above the results, closing with the sources it drew on and a plain caveat that it isn\'t infallible.',
+        ],
+        media: [
+          { placeholder: true, caption: 'Homepage - hero search', kind: 'wide' },
+          { placeholder: true, caption: 'Search results', kind: 'wide' },
+          { placeholder: true, caption: 'AI answer - with sources', kind: 'wide' },
+          { placeholder: true, caption: 'Article view', kind: 'wide' },
+        ],
+      },
+      { id: 'enduser-mobile', title: 'Mobile',
+        group: 'enduser',
+        body: ['Mobile-first as a constraint, not a slogan - the same search-first hierarchy holds on the smallest screen, where most users actually seek help.'],
+        media: [
+          { placeholder: true, caption: 'Mobile - homepage', kind: 'sq' },
+          { placeholder: true, caption: 'Mobile - search', kind: 'sq' },
+          { placeholder: true, caption: 'Mobile - article', kind: 'sq' },
+          { placeholder: true, caption: 'Mobile - AI answer', kind: 'sq' },
+        ],
       },
     ],
-    gallery: [
-      { src: 'help center/v2/homepage-style1.png',       label: 'Final homepage',      kind: 'wide' },
-      { src: 'help center/v2/admin-panel-breakdown.png', label: 'Customization panel', kind: 'sq'   },
-      { src: 'help center/v2/search-results.png',        label: 'Search results',      kind: 'sq'   },
-      { src: 'help center/33.png',                       label: 'Responsive',          kind: 'tall' },
-      { src: 'help center/8.png',                        label: 'User flows',          kind: 'tall' },
-    ],
+    gallery: [],
   },
   {
     id: 'design-system',
@@ -7269,6 +7297,41 @@ function ProjectMediaRows({ rows, idBase = 'mr' }) {
 }
 
 /* ─── Project page - A-vs-B comparison table (built from the same tokens as outcome-grid) ─── */
+/* ─── Project page - marquee: a slow, endless strip of frames (chyron-style).
+   The list renders twice so the track can loop seamlessly at -50%; duration is
+   derived from the measured width so speed stays constant in px/s. Hover or
+   keyboard focus pauses it; reduced-motion users get a plain scroll strip. */
+function ProjectMarquee({ items, speed = 28 }) {
+  const trackRef = useRef(null);
+  const [dur, setDur] = useState(60);
+  useEffect(() => {
+    const el = trackRef.current;
+    if (!el) return;
+    const measure = () => setDur(Math.max(20, (el.scrollWidth / 2) / speed));
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [speed]);
+  if (!items || !items.length) return null;
+  const loop = [...items, ...items];
+  return (
+    <div className="proj-marquee" tabIndex={0} aria-label="Wireframes - slowly scrolling strip, hover to pause">
+      <div className="proj-marquee-track" ref={trackRef} style={{ animationDuration: `${dur}s` }}>
+        {loop.map((m, i) => (
+          <figure key={i} className={`proj-media-item proj-marquee-item k-${m.kind || 'desk'}`}
+                  aria-hidden={i >= items.length ? 'true' : undefined}>
+            <div className="proj-marquee-frame">
+              <img src={m.src} alt={i < items.length ? (m.caption || '') : ''} />
+            </div>
+            {m.caption && <figcaption className="proj-caption">{m.caption}</figcaption>}
+          </figure>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function ProjectCompare({ data }) {
   if (!data || !data.columns || !data.rows) return null;
   const [a, b] = data.columns;
@@ -7531,6 +7594,7 @@ function ProjectSection({ s }) {
             </div>
           )}
           {s.media && <ProjectMedia items={s.media} />}
+          {s.marquee && <ProjectMarquee items={s.marquee} />}
           {s.mediaRows && <ProjectMediaRows rows={s.mediaRows} idBase={s.id} />}
           {s.compare && <ProjectCompare data={s.compare} />}
           {s.subsections?.map((sub, i) => (
@@ -7731,7 +7795,7 @@ function Project({ projectId, onBack, onOpen }) {
       </section>
 
       {p.heroImage ? (
-        <div className={`proj-hero-image ${p.heroBare ? 'is-bare' : ''}`}>
+        <div className={`proj-hero-image ${p.heroBare ? 'is-bare' : ''} ${p.heroContained ? 'is-contained' : ''}`}>
           <img src={p.heroImage} alt={`${p.title} - hero`} loading="eager" />
         </div>
       ) : p.heroPlaceholder ? (
@@ -7743,7 +7807,8 @@ function Project({ projectId, onBack, onOpen }) {
         </figure>
       ) : null}
 
-      <div className="proj-gallery">
+      {/* an explicitly empty gallery (gallery: []) renders nothing; other projects unchanged */}
+      {!(Array.isArray(p.gallery) && p.gallery.length === 0) && <div className="proj-gallery">
         {(p.gallery || []).map((g, i) => (
           <div key={i} className={`g-cell ${g.kind} ${g.src ? 'has-img' : ''}`}
                style={!g.src ? { background: g.tone } : undefined}>
@@ -7754,7 +7819,7 @@ function Project({ projectId, onBack, onOpen }) {
             )}
           </div>
         ))}
-      </div>
+      </div>}
 
       <div className="proj-content">
         <aside className="proj-sidebar">
