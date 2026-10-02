@@ -2592,6 +2592,15 @@ footer a:hover { color: var(--accent); }
   margin-bottom: 1.5rem;
 }
 .proj-split-text > p:first-child { margin-top: 0; }
+/* Opt-in two columns (sideBySide: true) - text beside the media from 960px up.
+   Declared after the base rule so the cascade can't fold it back to one column. */
+@media (min-width: 960px) {
+  .proj-split.is-cols {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+    gap: 2.5rem;
+  }
+  .proj-split.is-cols .proj-split-text { position: sticky; top: 6rem; }
+}
 .proj-split-media { margin: 0; }
 .proj-split-media img,
 .proj-split-media video {
@@ -3464,9 +3473,8 @@ const PROJECTS = [
           'Working closely with product, I mapped key task flows to make sure the new product simplified the most common journeys rather than just visually polishing them.',
           'A particular focus: the article versioning model (Draft → Active → Past versions), which was central to how content managers worked but had no clear conceptual model in the old product.',
         ],
-        media: [
-          { diagram: 'user-flow', caption: 'Article versioning flow - Draft → Active → Past', kind: 'wide' },
-        ],
+        sideBySide: true,
+        sideMedia: { diagram: 'user-flow', caption: 'Article versioning flow - Draft → Active → Past' },
       },
       { id: 'wireframing', title: 'Wireframing',
         body: [
@@ -7579,7 +7587,7 @@ function ProjectSection({ s }) {
       ) : (
         <>
           {s.sideMedia ? (
-            <div className="proj-split">
+            <div className={`proj-split ${s.sideBySide ? 'is-cols' : ''}`}>
               <div className="proj-split-text">
                 {s.body?.map((para, i) => <p key={`b${i}`}>{para}</p>)}
                 {s.list && (
