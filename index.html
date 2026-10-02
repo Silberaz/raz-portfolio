@@ -645,6 +645,71 @@ footer::before {
 @keyframes wipeIn  { to { clip-path: inset(0 0% 0 0); } }
 @keyframes wipeOut { from { clip-path: inset(0 0% 0 0); } to { clip-path: inset(0 0 0 100%); } }
 
+/* ─── Channel change (analog TV page transition) ───
+   Alternative to .wipe. Three beats driven by runChannelChange():
+   tv-out  → the picture loses hold, then collapses to a bright line,
+   tv-hold → a short burst of (dimmed) snow while the page swaps underneath,
+   tv-in   → the new picture opens out of the line with colour fringing. */
+.tvx { position: fixed; inset: 0; z-index: 8000; pointer-events: none; }
+.tvx-snow {
+  position: absolute; inset: 0; opacity: 0;
+  background: #0d0d0d;
+}
+.tvx-snow canvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .7; }
+.tvx-snow::before {      /* scanlines */
+  content: ''; position: absolute; inset: 0; z-index: 2;
+  background: repeating-linear-gradient(to bottom, rgba(0,0,0,.28) 0 1px, transparent 1px 3px);
+}
+.tvx-snow::after {       /* rolling sync bar */
+  content: ''; position: absolute; left: 0; right: 0; height: 22%; top: -25%; z-index: 3;
+  background: linear-gradient(to bottom, transparent, rgba(255,255,255,.08) 50%, transparent);
+}
+.tvx-line {              /* the CRT "collapsed picture" line */
+  position: absolute; left: 0; right: 0; top: 50%; height: 2px; margin-top: -1px;
+  background: #fff; opacity: 0; z-index: 4;
+  box-shadow: 0 0 6px 1px rgba(255,255,255,.8), 0 0 24px 4px rgba(191,217,255,.5); /* cool phosphor glow */
+}
+html.tv-out  .tvx-line { animation: tvxLineOut .24s linear forwards; }
+html.tv-hold .tvx-snow { opacity: 1; }
+html.tv-hold .tvx-snow::after { animation: tvxRoll .2s linear infinite; }
+html.tv-in   .tvx-snow { animation: tvxSnowOut .16s steps(3) forwards; }
+html.tv-in   .tvx-line { animation: tvxLineIn .2s linear forwards; }
+@keyframes tvxLineOut { 0%, 65% { opacity: 0; transform: scaleX(1); } 80% { opacity: 1; } 100% { opacity: 1; transform: scaleX(.85); } }
+@keyframes tvxLineIn  { 0% { opacity: 1; transform: scaleX(.85); } 40% { opacity: .9; transform: scaleX(1); } 100% { opacity: 0; } }
+@keyframes tvxSnowOut { 0% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes tvxRoll { to { top: 105%; } }
+
+/* Collapse toward the middle of the viewport, not the middle of the page.
+   --tv-oy is set by runChannelChange to scrollY + half the viewport. */
+html.tv-out .page.active, html.tv-in .page.active { transform-origin: 50% var(--tv-oy, 50vh); }
+html.tv-out nav.top,      html.tv-in nav.top      { transform-origin: 50% 50vh; }
+html.tv-out nav.top,
+html.tv-out .page.active { animation: tvLoseHold .24s linear forwards; }
+html.tv-hold nav.top,
+html.tv-hold .page.active { opacity: 0; }
+html.tv-in  nav.top,
+html.tv-in  .page.active { animation: tvLockIn .46s var(--expo) both; }
+@keyframes tvLoseHold {
+  0%   { transform: none; filter: none; }
+  15%  { transform: translateY(-1.5%) skewX(-1.5deg); filter: brightness(1.1) contrast(1.15); }
+  32%  { transform: translateY(2%) skewX(1.5deg);     filter: brightness(1.2) contrast(1.2); }
+  45%  { transform: scaleY(1);    filter: brightness(1.25) contrast(1.2); }
+  80%  { transform: scaleY(.015); filter: brightness(1.8) contrast(1.3); opacity: 1; }
+  100% { transform: scaleY(.004); filter: brightness(2.2); opacity: 0; }
+}
+@keyframes tvLockIn {
+  0%   { transform: scaleY(.004); opacity: 0;
+         filter: brightness(1.8) drop-shadow(6px 0 0 rgba(255,40,60,.55)) drop-shadow(-6px 0 0 rgba(0,220,255,.55)); }
+  12%  { opacity: 1; }
+  30%  { transform: scaleY(1.03);
+         filter: brightness(1.3) drop-shadow(4px 0 0 rgba(255,40,60,.45)) drop-shadow(-4px 0 0 rgba(0,220,255,.45)); }
+  48%  { transform: scaleY(.99) translateY(-.6%);
+         filter: brightness(1.1) drop-shadow(2px 0 0 rgba(255,40,60,.3)) drop-shadow(-2px 0 0 rgba(0,220,255,.3)); }
+  70%  { transform: translateY(.3%);
+         filter: brightness(1.04) drop-shadow(1px 0 0 rgba(255,40,60,.15)) drop-shadow(-1px 0 0 rgba(0,220,255,.15)); }
+  100% { transform: none; filter: none; }
+}
+
 /* ─── Nav ─── */
 nav.top {
   position: fixed; top: 0; left: 0; right: 0; z-index: 400;
@@ -5503,7 +5568,8 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "density": "dense",
   "cursorOn": true,
   "cursorStyle": "puddle",
-  "grain": true
+  "grain": true,
+  "pageTransition": "channel"
 }/*EDITMODE-END*/;
 
 const ACCENTS = {
@@ -7976,6 +8042,9 @@ function PortfolioTweaks({ tweaks, setTweak }) {
                    onChange={v => setTweak('cursorStyle', v)} />
       <TweakToggle label="Film grain" value={tweaks.grain}
                    onChange={v => setTweak('grain', v)} />
+      <TweakRadio  label="Page transition" value={tweaks.pageTransition}
+                   options={['slide', 'channel']}
+                   onChange={v => setTweak('pageTransition', v)} />
     </TweaksPanel>
   );
 }
@@ -8033,6 +8102,54 @@ function Lightbox() {
   );
 }
 
+// ─── Channel change ─────────────────────────────────────────────────────
+// Analog-TV page transition. Paints snow into the .tvx canvas and steps the
+// <html> class through tv-out → tv-hold → tv-in; `swap` runs under the snow.
+const CHANNEL_TIMING = { out: 240, hold: 110, in: 460 };
+function runChannelChange(swap) {
+  const root = document.documentElement;
+  const host = document.querySelector('.tvx');
+  const canvas = host && host.querySelector('canvas');
+  if (!canvas) { swap(); return; }
+  root.style.setProperty('--tv-oy', (window.scrollY + window.innerHeight / 2) + 'px');
+
+  // Low-res buffer, scaled up by CSS - softens the grain like a real tube.
+  const w = canvas.width  = Math.ceil(window.innerWidth / 3);
+  const h = canvas.height = Math.ceil(window.innerHeight / 3);
+  const ctx = canvas.getContext('2d');
+  const img = ctx.createImageData(w, h);
+  const px = new Uint32Array(img.data.buffer);
+  let raf = 0;
+  const paint = () => {
+    let band = 0, gain = 1;
+    for (let y = 0; y < h; y++) {
+      // Occasional bright/dark horizontal bands - lost sync.
+      if (band-- <= 0) { band = (Math.random() * 6) | 0; gain = Math.random() < .12 ? 1.6 : Math.random() < .1 ? .45 : 1; }
+      const row = y * w;
+      for (let x = 0; x < w; x++) {
+        const v = Math.min(170, (20 + Math.random() * 130 * gain) | 0);
+        px[row + x] = 0xff000000 | (v << 16) | (v << 8) | v;
+      }
+    }
+    ctx.putImageData(img, 0, 0);
+    raf = requestAnimationFrame(paint);
+  };
+  paint();
+
+  const T = CHANNEL_TIMING;
+  root.classList.add('tv-out');
+  setTimeout(() => {
+    root.classList.replace('tv-out', 'tv-hold');
+    swap();
+    root.style.setProperty('--tv-oy', (window.innerHeight / 2) + 'px'); // swap scrolls to top
+  }, T.out);
+  setTimeout(() => root.classList.replace('tv-hold', 'tv-in'), T.out + T.hold);
+  setTimeout(() => {
+    root.classList.remove('tv-in');
+    cancelAnimationFrame(raf);
+  }, T.out + T.hold + T.in);
+}
+
 function App() {
   const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
   const [loading, setLoading] = useState(true);
@@ -8052,7 +8169,21 @@ function App() {
     root.style.setProperty('--accent', acc);
   }, [tweaks]);
 
+  // ?tx=slide / ?tx=channel overrides the tweak - handy for A/B-ing.
+  const transition = new URLSearchParams(location.search).get('tx') || tweaks.pageTransition;
+  const transitionRef = useRef(transition);
+  transitionRef.current = transition;
+
   const setPage = useCallback((id, opts = {}) => {
+    if (transitionRef.current === 'channel'
+        && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      runChannelChange(() => {
+        if (id === 'project') setProjectId(opts.id);
+        setPageRaw(id);
+        window.scrollTo(0, 0);
+      });
+      return;
+    }
     setWipe('in');
     setTimeout(() => {
       if (id === 'project') setProjectId(opts.id);
@@ -8139,6 +8270,10 @@ function App() {
       <BlobCursor enabled={tweaks.cursorOn} style={tweaks.cursorStyle} />
       {loading && <Loader onDone={() => setLoading(false)} />}
       <div className={`wipe ${wipe}`}></div>
+      <div className="tvx" aria-hidden="true">
+        <div className="tvx-snow"><canvas></canvas></div>
+        <div className="tvx-line"></div>
+      </div>
 
       <Nav page={page} setPage={(id) => setPage(id)} onCmdK={() => setCmdkOpen(true)}
            theme={tweaks.theme} toggleTheme={toggleTheme} />
