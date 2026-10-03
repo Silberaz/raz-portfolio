@@ -3399,11 +3399,14 @@ const PROJECTS = [
     tile: 'tall',
     summary: 'The design system behind KMS Lighthouse - tokens, components, and documentation serving two very different surfaces: a dense authoring environment for knowledge managers, and a fast lookup experience for agents.',
     swatch: { from: '#553A0E', to: '#2B1D05', mark: '#F4D06F' },
-    heroPlaceholder: { label: 'IMG-1', caption: 'Spark - the component library at a glance' },
+    heroImage: 'spark/spark images/project-cover-2800.webp',
+    heroContained: true,
     sections: [
       { id: 'context', title: 'Context', body: [
         'KMS Lighthouse builds enterprise knowledge management software - the tool support agents, banks, and telcos use to find a verified answer in seconds. That means two very different surfaces in one product: a dense authoring and admin environment for knowledge managers, and a fast, low-friction lookup experience for agents under time pressure.',
         'Spark is the design system that holds both together.',
+    tileImage: 'spark/spark images/homepage-thumbnail-1400.webp',
+    tileAspect: '1399 / 2074', /* tile takes the thumbnail's own shape, so nothing is cropped */
       ]},
       { id: 'problem', title: 'The problem',
         list: [
@@ -3432,7 +3435,7 @@ const PROJECTS = [
           'Tokens first: color, type, spacing, radius, elevation - defined once, named semantically, and mirrored 1:1 between Figma variables and code.',
         ],
         media: [
-          { placeholder: true, label: 'IMG-3', kind: 'wide',
+          { src: 'spark/spark images/tokens-2400.jpg?v=2', kind: 'wide',
             caption: 'Semantic color and type tokens, mirrored between Figma and code' },
         ],
       },
@@ -3441,9 +3444,9 @@ const PROJECTS = [
           '{{ N }} components covering the {{ authoring console and agent workspace }}, each with defined variants, states, and responsive behavior.',
         ],
         media: [
-          { placeholder: true, label: 'IMG-4', kind: 'sq',
+          { src: 'spark/spark images/component-2400.webp', kind: 'wide', bare: true,
             caption: 'One component, fully specified - variants, states, and usage rules' },
-          { placeholder: true, label: 'IMG-5', kind: 'wide',
+          { src: 'spark/spark images/before-and-after-2400.webp', kind: 'wide', bare: true,
             caption: 'The same screen, before and after Spark' },
         ],
       },
@@ -6153,7 +6156,8 @@ function Tile({ p, idx, onOpen, style }) {
          style={{transitionDelay: `${idx * 80}ms`}}
          onClick={() => onOpen(p.id)} data-hover>
       <div className="tile-img"
-           style={{ background: `linear-gradient(135deg, ${p.swatch.from} 0%, ${p.swatch.to} 100%)` }}>
+           style={{ background: `linear-gradient(135deg, ${p.swatch.from} 0%, ${p.swatch.to} 100%)`,
+                    ...(p.tileAspect ? { aspectRatio: p.tileAspect } : {}) }}>
         <div className="signal-tv signal-tv--tile">
           {p.tileImage ? (
             <>
