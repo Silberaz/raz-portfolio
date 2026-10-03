@@ -1953,21 +1953,8 @@ footer a:hover { color: var(--accent); }
   .proj-sidebar { position: sticky; top: 5rem; }
   .proj-hero-image img { max-height: 78vh; }
 
-  /* Project split / parallax / problem rows */
-  .proj-split {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 2.5rem;
-  }
-  .proj-parallax-header { position: sticky; top: 5rem; }
-  .proj-parallax-row {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 2.5rem;
-  }
-  .proj-parallax-text { position: sticky; }
-  .problem-row { grid-template-columns: 180px 1fr; gap: 2rem; }
-  .problem-row-imgs { grid-template-columns: 1fr 1fr; }
-  .problem-row-imgs[data-count="1"] .problem-placeholder,
-  .problem-row-imgs[data-count="1"] .problem-img { grid-column: 2; }
+  /* Project split / parallax / problem rows: their desktop rules sit after
+     each base rule further down, so the cascade doesn't fold them back. */
 
   /* Resume */
   .resume { padding: 8rem var(--pad-x) 4rem; }
@@ -2287,6 +2274,17 @@ footer a:hover { color: var(--accent); }
 .proj-parallax-text {
   position: static;
   /* position becomes sticky and top set inline by JS at ≥960. JS clears top on mobile. */
+}
+/* Desktop: sticky header, text beside the media. Declared after the base
+   rules so the cascade can't fold it back to one column. A marquee needs the
+   full width, so sections with one stay stacked (the JS then skips pinning). */
+@media (min-width: 960px) {
+  .proj-section.is-parallax:not(:has(.proj-marquee)) .proj-parallax-header { position: sticky; top: 5rem; }
+  .proj-section.is-parallax:not(:has(.proj-marquee)) .proj-parallax-row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 2.5rem;
+  }
+  .proj-section.is-parallax:not(:has(.proj-marquee)) .proj-parallax-text { position: sticky; }
 }
 .proj-parallax-text > p:first-of-type { margin-top: 0; }
 .proj-parallax-media {
@@ -2721,6 +2719,14 @@ footer a:hover { color: var(--accent); }
 .problem-row-imgs { display: grid; gap: 1rem; grid-template-columns: 1fr; }
 .problem-row-imgs[data-count="1"] .problem-placeholder,
 .problem-row-imgs[data-count="1"] .problem-img { grid-column: 1; }
+/* Desktop: label column + 2-up images. Declared after the base rules so the
+   cascade can't fold it back to one column. */
+@media (min-width: 960px) {
+  .problem-row { grid-template-columns: 180px 1fr; gap: 2rem; }
+  .problem-row-imgs { grid-template-columns: 1fr 1fr; }
+  .problem-row-imgs[data-count="1"] .problem-placeholder,
+  .problem-row-imgs[data-count="1"] .problem-img { grid-column: 2; }
+}
 .problem-img { margin: 0; }
 .problem-img img {
   display: block; width: 100%; height: auto;
@@ -3398,6 +3404,8 @@ const PROJECTS = [
     statusNote: 'In active internal rollout - not yet shipped to customers.',
     tile: 'tall',
     summary: 'The design system behind KMS Lighthouse - tokens, components, and documentation serving two very different surfaces: a dense authoring environment for knowledge managers, and a fast lookup experience for agents.',
+    tileImage: 'spark/spark images/homepage-thumbnail-1400.webp',
+    tileAspect: '1399 / 2074', /* tile takes the thumbnail's own shape, so nothing is cropped */
     swatch: { from: '#553A0E', to: '#2B1D05', mark: '#F4D06F' },
     heroImage: 'spark/spark images/project-cover-2800.webp',
     heroContained: true,
@@ -3405,8 +3413,6 @@ const PROJECTS = [
       { id: 'context', title: 'Context', body: [
         'KMS Lighthouse builds enterprise knowledge management software - the tool support agents, banks, and telcos use to find a verified answer in seconds. That means two very different surfaces in one product: a dense authoring and admin environment for knowledge managers, and a fast, low-friction lookup experience for agents under time pressure.',
         'Spark is the design system that holds both together.',
-    tileImage: 'spark/spark images/homepage-thumbnail-1400.webp',
-    tileAspect: '1399 / 2074', /* tile takes the thumbnail's own shape, so nothing is cropped */
       ]},
       { id: 'problem', title: 'The problem',
         list: [
@@ -3587,6 +3593,7 @@ const PROJECTS = [
         outro: ['We had a choice: push through and hope, or pivot.'],
       },
       { id: 'scrapped', title: 'The Scrapped Design',
+        sideBySide: true,
         body: [
           'The original ambitious redesign isn\'t lost - it\'s documented and preserved as future direction for the platform. Not shipped, but informing future work.',
         ],
@@ -7756,7 +7763,7 @@ function ProjectSection({ s }) {
               </figure>
             </div>
           ) : s.sideGallery ? (
-            <div className="proj-split">
+            <div className={`proj-split ${s.sideBySide ? 'is-cols' : ''}`}>
               <div className="proj-split-text">
                 {s.body?.map((para, i) => <p key={`b${i}`}>{para}</p>)}
                 {s.list && (
