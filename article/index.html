@@ -1,0 +1,627 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Knowledge Article</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F5F6F8; --surface:#FFFFFF; --surface-2:#F9FAFB; --sunken:#EEF0F4;
+  --line:#E3E6EC; --line-strong:#CDD2DB;
+  --ink:#171A21; --ink-2:#424856; --muted:#6B7280;
+  --accent:#3B5BDB; --accent-hover:#2F4BC0; --accent-soft:#EDF1FF; --accent-ink:#2742B8;
+  --ok:#1F8A4C; --ok-soft:#E5F5EC; --warn:#E8A317;
+  --shadow:0 1px 2px rgba(16,24,40,.05),0 1px 3px rgba(16,24,40,.06);
+  --shadow-lg:0 12px 32px rgba(16,24,40,.14);
+  --r:10px; --r-sm:6px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0F1115; --surface:#171A21; --surface-2:#1C2029; --sunken:#222733;
+  --line:#2A2F3B; --line-strong:#3A4150;
+  --ink:#ECEEF2; --ink-2:#C2C7D1; --muted:#8C93A1;
+  --accent:#7C93F5; --accent-hover:#9AACF8; --accent-soft:#1E2747; --accent-ink:#A9B8FA;
+  --ok:#4CC27E; --ok-soft:#12291D;
+  --shadow:0 1px 2px rgba(0,0,0,.4); --shadow-lg:0 12px 32px rgba(0,0,0,.5);
+}}
+:root[data-theme="dark"]{
+  --bg:#0F1115; --surface:#171A21; --surface-2:#1C2029; --sunken:#222733;
+  --line:#2A2F3B; --line-strong:#3A4150;
+  --ink:#ECEEF2; --ink-2:#C2C7D1; --muted:#8C93A1;
+  --accent:#7C93F5; --accent-hover:#9AACF8; --accent-soft:#1E2747; --accent-ink:#A9B8FA;
+  --ok:#4CC27E; --ok-soft:#12291D;
+  --shadow:0 1px 2px rgba(0,0,0,.4); --shadow-lg:0 12px 32px rgba(0,0,0,.5);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:128px}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.55 Inter,system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+a{color:var(--accent-ink);text-decoration:none}
+a:hover{text-decoration:underline}
+svg.i{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* ---------- top bar ---------- */
+.top{position:sticky;top:0;z-index:30;height:56px;background:var(--surface);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:24px;padding:0 20px}
+.logo{font-weight:700;letter-spacing:.14em;font-size:15px;display:flex;align-items:center;gap:8px}
+.logo b{width:26px;height:26px;border-radius:7px;background:var(--accent);display:grid;place-items:center;color:#fff;font-size:13px;letter-spacing:0}
+.nav{display:flex;gap:4px}
+.nav a{color:var(--ink-2);padding:8px 12px;border-radius:var(--r-sm);font-weight:500}
+.nav a:hover{background:var(--sunken);text-decoration:none}
+.nav a[aria-current]{color:var(--ink);background:var(--sunken)}
+.top-r{margin-left:auto;display:flex;align-items:center;gap:2px}
+.icon-btn{width:36px;height:36px;border-radius:var(--r-sm);display:grid;place-items:center;color:var(--ink-2);position:relative}
+.icon-btn:hover{background:var(--sunken);color:var(--ink)}
+.icon-btn[aria-pressed="true"]{color:var(--accent-ink);background:var(--accent-soft)}
+.badge{position:absolute;top:4px;right:4px;min-width:16px;height:16px;border-radius:8px;background:#E5484D;color:#fff;font-size:10px;font-weight:600;display:grid;place-items:center;padding:0 4px;border:2px solid var(--surface)}
+.avatar{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:600;color:#fff;background:linear-gradient(135deg,#8B5CF6,#3B5BDB);margin-left:8px}
+.avatar.sm{width:24px;height:24px;font-size:10px;margin:0}
+
+/* ---------- sub bar ---------- */
+.sub{position:sticky;top:56px;z-index:25;background:var(--surface);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;padding:10px 20px}
+.btn{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px;border-radius:var(--r-sm);border:1px solid var(--line);background:var(--surface);font-weight:500;color:var(--ink-2);white-space:nowrap}
+.btn:hover{background:var(--surface-2);border-color:var(--line-strong);color:var(--ink)}
+.btn.ghost{border-color:transparent;background:none}
+.btn.ghost:hover{background:var(--sunken)}
+.btn[aria-pressed="true"]{color:var(--accent-ink);background:var(--accent-soft);border-color:transparent}
+.btn svg.i{width:16px;height:16px}
+.search{flex:0 1 380px;position:relative}
+.search input{width:100%;height:34px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--surface-2);padding:0 12px 0 34px;font:inherit;color:var(--ink)}
+.search input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);background:var(--surface)}
+.search svg{position:absolute;left:10px;top:9px;width:16px;height:16px;color:var(--muted)}
+.crumbs{display:flex;align-items:center;gap:4px;min-width:0;color:var(--muted);font-size:13px;overflow:hidden}
+.crumbs a{color:var(--muted);white-space:nowrap}
+.crumbs a:hover{color:var(--ink)}
+.crumbs span[aria-current]{color:var(--ink);font-weight:500;white-space:nowrap}
+.crumbs svg{width:14px;height:14px;color:var(--line-strong)}
+
+/* ---------- layout ---------- */
+.layout{display:grid;grid-template-columns:240px minmax(0,1fr) 320px;gap:24px;max-width:1520px;margin:0 auto;padding:24px 20px 96px}
+.rail{position:sticky;top:136px;align-self:start;max-height:calc(100vh - 152px);overflow:auto}
+.rail-h{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 10px 10px}
+.toc{list-style:none;margin:0 0 28px;padding:0}
+.toc a{display:block;padding:6px 10px;border-radius:var(--r-sm);color:var(--ink-2);border-left:2px solid transparent;font-size:13px}
+.toc a:hover{background:var(--sunken);text-decoration:none}
+.toc a.on{color:var(--accent-ink);background:var(--accent-soft);font-weight:500}
+.toc .l2 a{padding-left:24px}
+.toc .l3 a{padding-left:38px}
+.related{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.related a{display:flex;gap:10px;padding:10px;border-radius:var(--r-sm);background:var(--surface);border:1px solid var(--line);color:var(--ink-2);font-size:13px;line-height:1.4}
+.related a:hover{border-color:var(--line-strong);color:var(--ink);text-decoration:none}
+.related svg{color:var(--muted);width:16px;height:16px;margin-top:1px}
+
+/* ---------- article header ---------- */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+.head{padding:24px 28px}
+.actions{display:flex;flex-wrap:wrap;gap:6px;margin:-4px -6px 16px;align-items:center}
+.actions .sp{flex:1}
+.select{position:relative}
+.select select{appearance:none;height:34px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--surface);padding:0 30px 0 32px;font:inherit;font-weight:500;color:var(--ink-2);cursor:pointer}
+.select .g{position:absolute;left:10px;top:9px;width:16px;height:16px;color:var(--muted);pointer-events:none}
+.select .c{position:absolute;right:9px;top:10px;width:14px;height:14px;color:var(--muted);pointer-events:none}
+h1{font-size:26px;line-height:1.25;letter-spacing:-.015em;margin:0 0 12px;font-weight:700}
+.meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
+.pill{display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 9px;border-radius:12px;font-size:12px;font-weight:500;background:var(--sunken);color:var(--ink-2)}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.ok::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.pill svg{width:14px;height:14px}
+.desc{color:var(--ink-2);margin:0 0 18px;max-width:78ch}
+.engage{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding-top:16px;border-top:1px solid var(--line)}
+.stars{display:flex;align-items:center;gap:2px;margin-left:6px}
+.stars button{color:var(--line-strong);padding:2px}
+.stars button svg{width:20px;height:20px}
+.stars button.on{color:var(--warn)}
+.stars button.on svg{fill:currentColor}
+.stars .lbl{font-size:13px;color:var(--muted);margin-right:6px}
+.version{margin-left:auto;position:relative}
+.pop{position:absolute;right:0;top:calc(100% + 8px);width:300px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow-lg);padding:14px 16px;z-index:20;font-size:13px;color:var(--ink-2)}
+.pop[hidden]{display:none}
+.pop strong{display:block;color:var(--ink);margin-bottom:4px}
+
+/* ---------- sections & fields ---------- */
+.section{margin-top:20px;overflow:hidden}
+.sec-h{display:flex;align-items:center;gap:10px;padding:14px 20px 14px 14px;border-bottom:1px solid var(--line)}
+.sec-h h2{font-size:17px;margin:0;font-weight:600;flex:1}
+.chev{width:28px;height:28px;border-radius:var(--r-sm);display:grid;place-items:center;color:var(--muted);transition:transform .2s}
+.chev:hover{background:var(--sunken);color:var(--ink)}
+[aria-expanded="false"] > .chev, .chev[aria-expanded="false"]{transform:rotate(-90deg)}
+.link-btn{font-size:13px;font-weight:500;color:var(--accent-ink);padding:4px 8px;border-radius:var(--r-sm)}
+.link-btn:hover{background:var(--accent-soft)}
+.sec-b[hidden], .fld-b[hidden]{display:none}
+.field{padding:16px 20px 18px 20px;border-bottom:1px solid var(--line)}
+.field:last-child{border-bottom:0}
+.fld-h{display:flex;align-items:center;gap:4px;margin:0 0 6px -6px}
+.fld-h h3{font-size:12px;font-weight:600;letter-spacing:.02em;color:var(--muted);margin:0;flex:1;text-transform:uppercase}
+.fld-h .chev{width:24px;height:24px}
+.fld-h .chev svg{width:16px;height:16px}
+.copy{opacity:0;width:28px;height:28px;border-radius:var(--r-sm);display:grid;place-items:center;color:var(--muted);transition:opacity .15s}
+.copy svg{width:16px;height:16px}
+.field:hover .copy,.copy:focus-visible,.sub-h:hover .copy{opacity:1}
+.copy:hover{background:var(--sunken);color:var(--ink)}
+.fld-b{padding-left:20px;color:var(--ink)}
+.fld-b p{margin:0 0 10px;max-width:80ch}
+.fld-b p:last-child{margin-bottom:0}
+.val-lg{font-size:20px;font-weight:600;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+.val-lg small{font-size:12px;font-weight:500;color:var(--muted);margin-left:8px;letter-spacing:0}
+.token{display:inline-flex;align-items:center;gap:4px;padding:1px 7px;border-radius:5px;background:var(--accent-soft);color:var(--accent-ink);font-size:13px;font-weight:500;font-variant-numeric:tabular-nums;white-space:nowrap}
+.token i{font-style:normal;opacity:.65;font-size:11px}
+.inline-ico{display:inline-flex;align-items:center;gap:8px}
+.inline-ico svg{color:var(--muted)}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r-sm);margin-top:12px}
+table{border-collapse:collapse;width:100%;font-size:13px;font-variant-numeric:tabular-nums}
+th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+th{background:var(--surface-2);font-weight:600;color:var(--ink-2);font-size:12px}
+tr:last-child td{border-bottom:0}
+td:first-child{font-weight:500}
+.lvl{display:inline-flex;align-items:center;gap:6px}
+.lvl::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.lvl.vh::before{background:var(--ok)} .lvl.h::before{background:#4C9AE8} .lvl.m::before{background:var(--warn)}
+.faq{border:1px solid var(--line);border-radius:var(--r-sm);overflow:hidden}
+.faq details{border-bottom:1px solid var(--line)}
+.faq details:last-child{border-bottom:0}
+.faq summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:12px 14px;font-weight:500}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary:hover{background:var(--surface-2)}
+.faq summary svg{color:var(--muted);width:16px;height:16px;transition:transform .2s;transform:rotate(-90deg)}
+.faq details[open] summary svg{transform:none}
+.faq .ans{padding:0 14px 14px 40px;color:var(--ink-2)}
+.faq .ans p{margin:0}
+.chip{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;border-radius:var(--r-sm);border:1px solid var(--line);background:var(--surface-2);font-weight:500}
+.chip svg{width:14px;height:14px;color:var(--muted)}
+.subfields{display:grid;gap:12px}
+.subfield{padding:12px 14px;border-radius:var(--r-sm);background:var(--surface-2);border:1px solid var(--line)}
+.subfield .t{font-size:12px;font-weight:600;color:var(--muted);margin-bottom:4px}
+.subfield .v{overflow-wrap:anywhere}
+.ilist{margin:0;padding:0;list-style:none;display:grid;gap:2px;counter-reset:n}
+.ilist li{display:flex;gap:10px;padding:8px 0;border-bottom:1px dashed var(--line);overflow-wrap:anywhere}
+.ilist li:last-child{border-bottom:0}
+.ilist li::before{counter-increment:n;content:counter(n);flex:none;width:22px;height:22px;border-radius:50%;background:var(--sunken);color:var(--ink-2);font-size:11px;font-weight:600;display:grid;place-items:center}
+.picker{display:flex;flex-wrap:wrap;gap:8px}
+.picker .chip svg{color:var(--accent)}
+.sub-h{display:flex;align-items:center;gap:4px;margin:14px 0 6px}
+.sub-h h4{font-size:15px;font-weight:600;margin:0}
+.ext{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border:1px solid var(--line);border-radius:var(--r-sm);color:var(--ink);max-width:640px}
+.ext:hover{border-color:var(--accent);text-decoration:none;background:var(--accent-soft)}
+.ext .ico{width:36px;height:36px;border-radius:8px;display:grid;place-items:center;flex:none;background:var(--accent-soft);color:var(--accent-ink)}
+.ext .ico.file{background:#FDECEC;color:#C93636}
+.ext .tx{flex:1;min-width:0}
+.ext .tx b{display:block;font-weight:500;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.ext .tx span{font-size:12px;color:var(--muted)}
+.ext > svg{color:var(--muted);margin-top:8px}
+.radio{display:inline-flex;align-items:center;gap:8px;font-weight:500}
+.radio::before{content:"";width:16px;height:16px;border-radius:50%;border:5px solid var(--accent);box-sizing:border-box}
+.computed{display:inline-flex;align-items:center;gap:8px;font-weight:500}
+.computed svg{color:var(--accent-ink);width:16px;height:16px}
+
+/* ---------- right panel ---------- */
+.panel{display:flex;flex-direction:column;overflow:hidden;padding:0;max-height:calc(100vh - 152px)}
+.tabs{display:flex;align-items:center;gap:2px;padding:6px;border-bottom:1px solid var(--line)}
+.tabs [role=tab]{white-space:nowrap;display:flex;align-items:center;gap:6px;height:32px;padding:0 10px;border-radius:var(--r-sm);font-weight:500;font-size:13px;color:var(--ink-2)}
+.tabs [role=tab]:hover{background:var(--sunken)}
+.tabs [role=tab][aria-selected="true"]{background:var(--accent-soft);color:var(--accent-ink)}
+.tabs [role=tab] svg{width:16px;height:16px}
+.tabs{overflow-x:auto}
+.tabs .icon-btn{margin-left:auto;width:32px;height:32px}
+.tabs .icon-btn svg{width:16px;height:16px}
+.tabp{padding:18px;overflow:auto}
+.tabp[hidden]{display:none}
+.info-t{font-size:15px;font-weight:600;margin:0 0 2px}
+.info-s{color:var(--muted);font-size:13px;margin:0 0 16px}
+.note{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-sm);padding:12px;font-size:13px;color:var(--ink-2);margin-bottom:16px}
+.note b{display:block;color:var(--ink);font-size:12px;margin-bottom:4px}
+dl.kv{margin:0;display:grid;grid-template-columns:auto 1fr;gap:12px 16px;font-size:13px}
+dl.kv dt{color:var(--muted);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding-top:3px}
+dl.kv dd{margin:0;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+dl.kv .when{width:100%;color:var(--muted);font-size:12px;margin-top:-4px;padding-left:32px}
+.av-ll{background:linear-gradient(135deg,#14B8A6,#0E7490)} .av-jd{background:linear-gradient(135deg,#F59E0B,#DC2626)}
+.empty{color:var(--muted);font-size:13px;text-align:center;padding:24px 8px}
+.panel .search{flex:none;margin-bottom:12px}
+.comment{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);font-size:13px}
+.comment:last-of-type{border-bottom:0}
+.comment p{margin:2px 0 0;color:var(--ink-2)}
+.comment small{color:var(--muted)}
+textarea{width:100%;min-height:72px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--surface-2);padding:10px;font:inherit;color:var(--ink);resize:vertical;margin-top:10px}
+textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+mark{background:#FFE58F;color:inherit;border-radius:2px}
+
+/* ---------- ask ai + toast ---------- */
+.ask{position:fixed;right:24px;bottom:24px;z-index:40;display:flex;align-items:center;gap:8px;height:44px;padding:0 18px 0 14px;border-radius:22px;background:var(--accent);color:#fff;font-weight:600;box-shadow:var(--shadow-lg)}
+.ask:hover{background:var(--accent-hover)}
+.ask svg{width:18px;height:18px}
+.toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);opacity:0;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:8px;font-size:13px;font-weight:500;z-index:50;transition:.2s;pointer-events:none}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.panel-toggle{display:none}
+
+/* ---------- responsive ---------- */
+@media (max-width:1280px){
+  .layout{grid-template-columns:220px minmax(0,1fr)}
+  .side-r{position:fixed;top:56px;right:0;bottom:0;width:340px;max-height:none;z-index:35;transform:translateX(100%);transition:transform .25s;padding:12px;background:var(--bg);border-left:1px solid var(--line)}
+  .side-r.open{transform:none;box-shadow:var(--shadow-lg)}
+  .side-r .panel{max-height:100%}
+  .panel-toggle{display:inline-flex}
+}
+@media (max-width:960px){
+  .layout{grid-template-columns:minmax(0,1fr)}
+  .side-l{display:none}
+  .nav{display:none}
+  .crumbs{display:none}
+  .search{flex:1}
+}
+@media (max-width:600px){
+  .top{padding:0 16px;gap:12px}
+  .top-r .hide-sm{display:none}
+  .sub{padding:10px 16px}
+  .sub .btn .t{display:none}
+  .layout{padding:16px 16px 96px}
+  .head{padding:18px 16px}
+  h1{font-size:21px}
+  .actions .btn .t{display:none}
+  .sec-h{padding:12px 12px 12px 8px}
+  .field{padding:14px 16px}
+  .fld-b{padding-left:0}
+  .version{margin-left:0}
+  .side-r{width:100%}
+  .ask .t{display:none}
+  .ask{padding:0 13px}
+}
+</style>
+</head>
+<body>
+
+<!-- icon sprite -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="i-right" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+    <symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 5h16M7 12h10M10 19h4"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-access" viewBox="0 0 24 24"><circle cx="12" cy="4.5" r="1.5"/><path d="M5 8.5 12 10l7-1.5M12 10v5m0 0-3 6m3-6 3 6"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></symbol>
+    <symbol id="i-bookmark" viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4-6 4z"/></symbol>
+    <symbol id="i-share" viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.6-4.5M8.2 13.2l7.6 4.5"/></symbol>
+    <symbol id="i-msg" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.8 7L3 21l2-6A8 8 0 1 1 21 12"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></symbol>
+    <symbol id="i-thumb" viewBox="0 0 24 24"><path d="M7 10v11H3V10zM7 10l4-7a2.5 2.5 0 0 1 3 3l-1 4h6a2 2 0 0 1 2 2.3l-1.4 7A2 2 0 0 1 17.6 21H7"/></symbol>
+    <symbol id="i-history" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M9 4h6l-1 6 4 4H6l4-4zM12 14v7"/></symbol>
+    <symbol id="i-doc" viewBox="0 0 24 24"><path d="M14 3H6v18h12V7z"/><path d="M14 3v4h4M9 13h6M9 17h4"/></symbol>
+    <symbol id="i-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v6H4V6h6"/></symbol>
+    <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 3c.6 4.5 2.5 6.4 7 7-4.5.6-6.4 2.5-7 7-.6-4.5-2.5-6.4-7-7 4.5-.6 6.4-2.5 7-7zM19 16c.3 1.8 1 2.6 3 3-2 .3-2.7 1.1-3 3-.3-1.9-1-2.7-3-3 2-.4 2.7-1.2 3-3z"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 6 6L16 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></symbol>
+    <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+    <symbol id="i-calc" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h.01M12 12h.01M16 12h.01M8 16h.01M12 16h.01M16 16h.01"/></symbol>
+    <symbol id="i-tag" viewBox="0 0 24 24"><path d="M3 12V3h9l9 9-9 9z"/><circle cx="7.5" cy="7.5" r="1.2"/></symbol>
+    <symbol id="i-feedback" viewBox="0 0 24 24"><path d="M4 4h16v12H8l-4 4z"/><path d="M8 9h8M8 12h5"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M15 3v18M3 5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+  </defs>
+</svg>
+
+<header class="top">
+  <div class="logo"><b>I</b>IPSUM</div>
+  <nav class="nav" aria-label="Primary">
+    <a href="#">Home</a>
+    <a href="#" aria-current="page">Browse articles</a>
+    <a href="#">Quick links</a>
+  </nav>
+  <div class="top-r">
+    <button class="icon-btn hide-sm" aria-label="Accessibility" title="Accessibility"><svg class="i"><use href="#i-access"/></svg></button>
+    <button class="icon-btn hide-sm" aria-label="Recent items" title="Recent items"><svg class="i"><use href="#i-clock"/></svg></button>
+    <button class="icon-btn hide-sm" aria-label="Favorites" title="Favorites"><svg class="i"><use href="#i-star"/></svg></button>
+    <button class="icon-btn" aria-label="2 notifications" title="Notifications"><svg class="i"><use href="#i-bell"/></svg><span class="badge">2</span></button>
+    <div class="avatar" title="Isabella Robinson" aria-label="Isabella Robinson">IR</div>
+  </div>
+</header>
+
+<div class="sub">
+  <button class="btn" id="filtersBtn" aria-pressed="false"><svg class="i"><use href="#i-filter"/></svg><span class="t">Filters</span></button>
+  <label class="search"><span class="sr">Search</span><svg class="i"><use href="#i-search"/></svg><input type="search" placeholder="Search by topic, title, or folder..."></label>
+  <nav class="crumbs" aria-label="Breadcrumb">
+    <a href="#">Banking industry</a><svg class="i"><use href="#i-right"/></svg>
+    <a href="#">Payment methods for UIS costumers</a><svg class="i"><use href="#i-right"/></svg>
+    <a href="#">AE Central America clients</a><svg class="i"><use href="#i-right"/></svg>
+    <a href="#">Credit cards</a><svg class="i"><use href="#i-right"/></svg>
+    <span aria-current="page">American express gold</span>
+  </nav>
+  <button class="btn ghost panel-toggle" id="panelToggle" style="margin-left:auto" aria-controls="sideR" aria-expanded="false"><svg class="i"><use href="#i-menu"/></svg><span class="t">Article info</span></button>
+</div>
+
+<div class="layout">
+  <!-- left rail -->
+  <aside class="rail side-l" aria-label="In this article">
+    <p class="rail-h">In this article</p>
+    <ul class="toc" id="toc"></ul>
+    <p class="rail-h">Related articles</p>
+    <ul class="related">
+      <li><a href="#"><svg class="i"><use href="#i-doc"/></svg>The Robotic Process of Machine Learning</a></li>
+      <li><a href="#"><svg class="i"><use href="#i-doc"/></svg>Integrating AI with Internet of Things for Smart City Grids</a></li>
+      <li><a href="#"><svg class="i"><use href="#i-doc"/></svg>The Future of Brain-Computer Interfaces in Assistive Technology</a></li>
+    </ul>
+  </aside>
+
+  <!-- article -->
+  <main id="article">
+    <section class="card head">
+      <div class="actions">
+        <button class="btn ghost" data-copy="article"><svg class="i"><use href="#i-link"/></svg><span class="t">Copy link</span></button>
+        <label class="select"><span class="sr">Language</span><svg class="i g"><use href="#i-globe"/></svg>
+          <select><option>English</option><option>Español</option><option>Français</option></select>
+          <svg class="i c"><use href="#i-chev"/></svg></label>
+        <button class="btn ghost" id="saveBtn" aria-pressed="false"><svg class="i"><use href="#i-bookmark"/></svg><span class="t">Save to</span></button>
+        <button class="btn ghost"><svg class="i"><use href="#i-share"/></svg><span class="t">Share</span></button>
+        <span class="sp"></span>
+        <button class="btn"><svg class="i"><use href="#i-feedback"/></svg><span class="t">Send feedback</span></button>
+      </div>
+      <h1>American express gold- an 2025-2026 update for families and singles</h1>
+      <div class="meta">
+        <span class="pill ok">Active</span>
+        <span class="pill" title="Views"><svg class="i"><use href="#i-eye"/></svg>45</span>
+        <span class="pill"><svg class="i"><use href="#i-tag"/></svg>Employee Card · #140</span>
+      </div>
+      <p class="desc">This is an item short description. Lorem ipsum Etiam vehicula ex dictum lacinia malesuada. Duis aliquam purus quis viverra luctus. Vestibulum rutrum eleifend enim, ut pretium ligula commodo at. This is an item short description. Lorem ipsum Etiam veh</p>
+      <div class="engage">
+        <button class="btn" id="followBtn" aria-pressed="false"><svg class="i"><use href="#i-plus"/></svg><span>Follow article</span></button>
+        <button class="btn" id="likeBtn" aria-pressed="false"><svg class="i"><use href="#i-thumb"/></svg><span>Like article</span></button>
+        <div class="stars" role="group" aria-label="Rate this article">
+          <span class="lbl">Rate this article</span>
+        </div>
+        <div class="version">
+          <button class="btn ghost" id="verBtn" aria-expanded="false" aria-controls="verPop"><svg class="i"><use href="#i-history"/></svg>Version 12<svg class="i"><use href="#i-chev"/></svg></button>
+          <div class="pop" id="verPop" hidden><strong>Version 12</strong>This is a version note description. Lorem ipsum Etiam vehicula ex dictum lacinia malesuada. Duis aliquam purus</div>
+        </div>
+      </div>
+    </section>
+    <div id="sections"></div>
+  </main>
+
+  <!-- right rail -->
+  <aside class="rail side-r" id="sideR" aria-label="Article details">
+    <div class="card panel">
+      <div class="tabs" role="tablist">
+        <button role="tab" aria-selected="true" aria-controls="tp-info" id="t-info"><svg class="i"><use href="#i-info"/></svg>Article info</button>
+        <button role="tab" aria-selected="false" aria-controls="tp-search" id="t-search"><svg class="i"><use href="#i-search"/></svg>Search</button>
+        <button role="tab" aria-selected="false" aria-controls="tp-comments" id="t-comments"><svg class="i"><use href="#i-msg"/></svg>Comments</button>
+        <button class="icon-btn" id="pinBtn" aria-pressed="true" aria-label="Unpin" title="Unpin"><svg class="i"><use href="#i-pin"/></svg></button>
+      </div>
+      <div class="tabp" role="tabpanel" id="tp-info" aria-labelledby="t-info">
+        <p class="info-t">Article info</p>
+        <p class="info-s">Employee Card · #140</p>
+        <div class="note"><b>Version notes</b>This is a version note description. Lorem ipsum Etiam vehicula ex dictum lacinia malesuada. Duis aliquam purus</div>
+        <dl class="kv">
+          <dt>ID</dt><dd>#140</dd>
+          <dt>Template</dt><dd>Migrated Article</dd>
+          <dt>Created</dt><dd><span class="avatar sm av-ll">LL</span>Leo Lee<span class="when">11 Feb 2024 · 15:44</span></dd>
+          <dt>Owner</dt><dd><span class="avatar sm av-jd">JD</span>John Doe</dd>
+        </dl>
+      </div>
+      <div class="tabp" role="tabpanel" id="tp-search" aria-labelledby="t-search" hidden>
+        <label class="search"><span class="sr">Search in article</span><svg class="i"><use href="#i-search"/></svg><input id="inSearch" type="search" placeholder="Search in this article"></label>
+        <div id="inResults" class="empty">Type to find text in this article.</div>
+      </div>
+      <div class="tabp" role="tabpanel" id="tp-comments" aria-labelledby="t-comments" hidden>
+        <div id="comments"><p class="empty">No comments yet. Start the conversation.</p></div>
+        <textarea id="cText" placeholder="Add a comment…" aria-label="Add a comment"></textarea>
+        <div style="display:flex;justify-content:flex-end;margin-top:8px"><button class="btn" id="cSend">Comment</button></div>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<button class="ask"><svg class="i"><use href="#i-sparkle"/></svg><span class="t">Ask AI</span></button>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const LONG = 'Item 1 has a really long name Item 1 has a really long name  Item 1 has a really long name  Item 1 has a really long name Item 1 has a really long nameItem 1 has a really long name  Item 1 has a really long nameItem 1 has a really long name';
+const LONGB = 'BB' + LONG + 'B';
+const DIGITAL = 'In the realm of digital innovation, the pursuit of excellence often leads to unexpected challenges. Companies strive to create solutions that not only meet user needs but also enhance their overall experience. This journey is marked by continuous learning and adaptation, as teams work tirelessly to refine their products and services. Understanding user feedback is crucial, as it provides insights into what truly matters to the audience.';
+const ico = n => `<svg class="i"><use href="#i-${n}"/></svg>`;
+const lvl = t => `<span class="lvl ${{'Very high':'vh','High':'h','Medium':'m'}[t]}">${t}</span>`;
+
+const SECTIONS = [
+  { title: 'General info', fields: [
+    { title: 'This is an input field - string', html: '<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis disyp</p>' },
+    { title: 'This is an input field - currency', html: '<div class="val-lg">150,000 USD</div>' },
+    { title: 'This is a included VAT field', html: '<div class="val-lg">150,000 USD<small>incl. VAT</small></div>' },
+    { title: 'This is a complex field', html: '<p>In digital innovation, pursuing excellence leads to challenges. Companies aim to create solutions that meet diverse user needs, while anticipating future trends and advancements to stay competitive in the evolving market landscape <span class="token"><i>XX</i>17/04/25</span> <span class="token"><i>YY</i>15.00 USD</span></p>' },
+  ]},
+  { title: 'Employees', fields: [
+    { title: 'This is an input field - email', html: `<span class="inline-ico">${ico('mail')}<a href="mailto:in@your.dreams">in@your.dreams</a></span>` },
+    { title: 'This is a date field', html: `<span class="inline-ico">${ico('cal')}20/04/2024</span>` },
+    { title: 'Employee benefits', toc: 2, html: `<p>${DIGITAL}</p><p>To illustrate the impact of user-centric design, consider the following table that outlines key metrics from a recent project:</p>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Feature</th><th>User satisfaction</th><th>Implementation time</th><th>Cost efficiency</th><th>Overall impact</th></tr></thead>
+        <tbody>
+          <tr><td>Enhanced UI</td><td>85%</td><td>3 months</td><td>20%</td><td>${lvl('High')}</td></tr>
+          <tr><td>New features</td><td>90%</td><td>2 months</td><td>15%</td><td>${lvl('Very high')}</td></tr>
+          <tr><td>Performance</td><td>80%</td><td>4 months</td><td>10%</td><td>${lvl('Medium')}</td></tr>
+          <tr><td>Support system</td><td>95%</td><td>1 months</td><td>25%</td><td>${lvl('Very high')}</td></tr>
+          <tr><td>Accessibility</td><td>88%</td><td>5 months</td><td>30%</td><td>${lvl('High')}</td></tr>
+        </tbody></table></div>` },
+  ]},
+  { title: 'Facilities', fields: [
+    { title: 'FAQ', html: `<div class="faq">
+      <details open><summary>${ico('chev')}Have you ever seen the rain?</summary><div class="ans"><p>If i could, would you? In the realm of digital innovation, the pursuit of excellence often leads to unexpected challenges. Companies strive to create solutions that not only meet user needs but also enhance their overall experience.</p></div></details>
+      <details><summary>${ico('chev')}What'll you do when you get lonely and nobody's waiting by your side?</summary><div class="ans"><p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.</p></div></details>
+      <details><summary>${ico('chev')}What’s the Frequency, Kenneth?</summary><div class="ans"><p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean massa.</p></div></details>
+    </div>` },
+    { title: 'This is a dynamic dropdown field', html: `<div class="subfield" style="display:inline-block;min-width:260px"><div class="t">This is a dynamic dropdown field</div><span class="chip">${ico('check')}Value 1</span></div>` },
+    { title: 'This is a single dropdown field', html: `<span class="chip">${ico('check')}Lorem ipsum</span>` },
+    { title: 'This is a topic field', html: `<div class="subfields">
+      <div class="subfield"><div class="t">This is a field title</div><div class="v">${LONG}</div></div>
+      <div class="subfield"><div class="t">This is a field title</div><div class="v">${LONGB}</div></div>
+      <div class="subfield"><div class="t">This is a field title</div><div class="v">${LONGB}</div></div>
+    </div>` },
+  ]},
+  { title: 'List of rooms', fields: [
+    { title: 'This is an item list field', html: `<ol class="ilist">${[LONG,'Item 2 has a name but not too long','Item 3 has a long name','Item 4 but not too long','Item 5 has a long name but not too long'].map(t=>`<li>${t}</li>`).join('')}</ol>` },
+    { title: 'This is an item picker field', html: `<div class="picker">${['Item 1 has a long name but not too long','Item 2 has a name but not too long','Item 3 has a long name','Item 4 but not too long','Item 5 has a long name but not too long'].map(t=>`<span class="chip">${ico('check')}${t}</span>`).join('')}</div>` },
+  ]},
+  { title: 'Hotel areas', fields: [
+    { title: 'Conference rooms', toc: 2, html: '<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Etiam vehicula ex dictum lacinia malesuada.</p>' },
+    { title: 'Wellness center', toc: 2, sub: 'Pool and Spa access', html: `
+      <div class="sub-h" id="pool-and-spa-access"><h4>Pool and Spa access</h4><button class="copy" data-copy="pool-and-spa-access" aria-label="Copy link" title="Copy link">${ico('link')}</button></div>
+      <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem.</p>
+      <p>Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium.</p>` },
+    { title: 'This is a text area field', html: `<p>${DIGITAL}</p>` },
+  ]},
+  { title: 'Support', fields: [
+    { title: 'This is a phone number field', html: `<span class="inline-ico">${ico('phone')}<a href="tel:009723334444">00 972 333 4444</a></span>` },
+    { title: 'This is an external link field', html: `<a class="ext" href="#"><span class="ico">${ico('link')}</span><span class="tx"><b>This is an external link with caption, it looks to the end user with a vary vary long name, that could be and should be much smaller</b><span>External link</span></span>${ico('ext')}</a>` },
+    { title: 'This is an external file field', html: `<a class="ext" href="#"><span class="ico file">${ico('doc')}</span><span class="tx"><b>This is an external file and how it looks to the end user with a vary vary long name, that could be and should be much smaller</b><span>PDF · External file</span></span>${ico('ext')}</a>` },
+    { title: 'This is an external element field', html: '<div class="val-lg">50 USD</div>' },
+    { title: 'This is a radio field', html: '<span class="radio">Yes</span>' },
+    { title: 'This is a compute field', html: `<span class="computed">${ico('calc')}Computed value</span>` },
+  ]},
+];
+
+const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => [...r.querySelectorAll(s)];
+
+// ---- render sections + TOC
+const used = {};
+const uid = s => { let id = slug(s); used[id] = (used[id]||0)+1; return used[id] > 1 ? `${id}-${used[id]}` : id; };
+let toc = '';
+$('#sections').innerHTML = SECTIONS.map(sec => {
+  const sid = uid(sec.title);
+  toc += `<li><a href="#${sid}">${sec.title}</a></li>`;
+  const fields = sec.fields.map(f => {
+    const fid = uid(f.title);
+    if (f.toc) toc += `<li class="l2"><a href="#${fid}">${f.title}</a></li>`;
+    if (f.sub) toc += `<li class="l3"><a href="#${slug(f.sub)}">${f.sub}</a></li>`;
+    return `<div class="field" id="${fid}">
+      <div class="fld-h">
+        <button class="chev" aria-expanded="true" aria-controls="${fid}-b" aria-label="Collapse field" title="Collapse field">${ico('chev')}</button>
+        <h3>${f.title}</h3>
+        <button class="copy" data-copy="${fid}" aria-label="Copy link to field" title="Copy link to field">${ico('link')}</button>
+      </div>
+      <div class="fld-b" id="${fid}-b">${f.html}</div>
+    </div>`;
+  }).join('');
+  return `<section class="card section" id="${sid}" aria-labelledby="${sid}-h">
+    <div class="sec-h">
+      <button class="chev" aria-expanded="true" aria-controls="${sid}-b" aria-label="Collapse section">${ico('chev')}</button>
+      <h2 id="${sid}-h">${sec.title}</h2>
+      <button class="link-btn" data-all="${sid}">Collapse all</button>
+    </div>
+    <div class="sec-b" id="${sid}-b">${fields}</div>
+  </section>`;
+}).join('');
+$('#toc').innerHTML = toc;
+
+// ---- collapse
+function setOpen(btn, open) {
+  btn.setAttribute('aria-expanded', open);
+  document.getElementById(btn.getAttribute('aria-controls')).hidden = !open;
+  if (btn.getAttribute('aria-label')?.startsWith('Collapse') || btn.getAttribute('aria-label')?.startsWith('Expand')) {
+    const what = btn.closest('.sec-h') ? 'section' : 'field';
+    btn.setAttribute('aria-label', (open ? 'Collapse ' : 'Expand ') + what);
+    btn.title = btn.getAttribute('aria-label');
+  }
+}
+document.addEventListener('click', e => {
+  const chev = e.target.closest('.chev');
+  if (chev) { setOpen(chev, chev.getAttribute('aria-expanded') !== 'true'); return; }
+  const all = e.target.closest('[data-all]');
+  if (all) {
+    const sec = document.getElementById(all.dataset.all);
+    const collapse = all.textContent === 'Collapse all';
+    $$('.fld-h .chev', sec).forEach(b => setOpen(b, !collapse));
+    setOpen($('.sec-h .chev', sec), true);
+    all.textContent = collapse ? 'Expand all' : 'Collapse all';
+    return;
+  }
+  const cp = e.target.closest('[data-copy]');
+  if (cp) {
+    const url = location.href.split('#')[0] + (cp.dataset.copy === 'article' ? '' : '#' + cp.dataset.copy);
+    navigator.clipboard?.writeText(url).catch(()=>{});
+    toast(cp.dataset.copy === 'article' ? 'Article link copied' : 'Link to field copied');
+  }
+});
+
+// ---- toast
+let tt;
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove('show'),1800); }
+
+// ---- toggles
+const toggle = (id, on, off) => $(id).addEventListener('click', e => {
+  const b = e.currentTarget, p = b.getAttribute('aria-pressed') !== 'true';
+  b.setAttribute('aria-pressed', p);
+  if (on) b.querySelector('span').textContent = p ? on : off;
+});
+toggle('#followBtn', 'Following', 'Follow article');
+toggle('#likeBtn', 'Liked', 'Like article');
+toggle('#saveBtn'); toggle('#filtersBtn');
+$('#saveBtn').addEventListener('click', e => { if (e.currentTarget.getAttribute('aria-pressed')==='true') toast('Saved to Favorites'); });
+
+// ---- rating
+const stars = $('.stars'); let rating = 0;
+for (let i=1;i<=5;i++){
+  const b=document.createElement('button'); b.innerHTML=ico('star'); b.setAttribute('aria-label',`Rate ${i} out of 5 stars`); b.dataset.v=i;
+  b.addEventListener('mouseenter',()=>paint(i)); b.addEventListener('click',()=>{rating=i;paint(i);toast(`Thanks — you rated ${i}/5`);});
+  stars.appendChild(b);
+}
+stars.addEventListener('mouseleave',()=>paint(rating));
+function paint(n){ $$('button',stars).forEach(b=>{ b.classList.toggle('on', +b.dataset.v<=n); b.setAttribute('aria-pressed', +b.dataset.v===rating); }); }
+
+// ---- version popover
+const vb=$('#verBtn'), vp=$('#verPop');
+vb.addEventListener('click',e=>{e.stopPropagation();vp.hidden=!vp.hidden;vb.setAttribute('aria-expanded',!vp.hidden);});
+document.addEventListener('click',e=>{ if(!vp.contains(e.target)&&!vb.contains(e.target)){vp.hidden=true;vb.setAttribute('aria-expanded',false);} });
+
+// ---- tabs
+$$('[role=tab]').forEach(t=>t.addEventListener('click',()=>{
+  $$('[role=tab]').forEach(o=>{o.setAttribute('aria-selected',o===t); document.getElementById(o.getAttribute('aria-controls')).hidden = o!==t;});
+  if(t.id==='t-search') $('#inSearch').focus();
+}));
+$('#pinBtn').addEventListener('click',e=>{
+  const b=e.currentTarget, p=b.getAttribute('aria-pressed')!=='true';
+  b.setAttribute('aria-pressed',p); b.setAttribute('aria-label',p?'Unpin':'Pin'); b.title=b.getAttribute('aria-label');
+  $('#sideR').style.position = p ? '' : 'static';
+});
+
+// ---- in-article search
+$('#inSearch').addEventListener('input',e=>{
+  const q=e.target.value.trim().toLowerCase(), out=$('#inResults');
+  if(q.length<2){out.className='empty';out.textContent='Type to find text in this article.';return;}
+  const hits=$$('.field').filter(f=>f.textContent.toLowerCase().includes(q));
+  if(!hits.length){out.className='empty';out.textContent='No matches.';return;}
+  out.className='';
+  out.innerHTML=`<p class="info-s">${hits.length} field${hits.length>1?'s':''} match</p><ul class="related">`+hits.map(f=>{
+    const tx=$('.fld-b',f).textContent.replace(/\s+/g,' '), i=tx.toLowerCase().indexOf(q);
+    const snip = i<0 ? '' : '…'+tx.slice(Math.max(0,i-30),i)+'<mark>'+tx.slice(i,i+q.length)+'</mark>'+tx.slice(i+q.length,i+q.length+40)+'…';
+    return `<li><a href="#${f.id}" style="flex-direction:column;gap:4px"><b style="color:var(--ink);font-weight:600">${$('h3',f).textContent}</b><span>${snip}</span></a></li>`;
+  }).join('')+'</ul>';
+});
+
+// ---- comments
+$('#cSend').addEventListener('click',()=>{
+  const v=$('#cText').value.trim(); if(!v) return;
+  const box=$('#comments'); if($('.empty',box)) box.innerHTML='';
+  const d=document.createElement('div'); d.className='comment';
+  d.innerHTML=`<span class="avatar sm">IR</span><div><b>Isabella Robinson</b> <small>· just now</small><p></p></div>`;
+  $('p',d).textContent=v; box.appendChild(d); $('#cText').value='';
+});
+
+// ---- side panel toggle (narrow screens)
+$('#panelToggle').addEventListener('click',e=>{
+  const o=$('#sideR').classList.toggle('open'); e.currentTarget.setAttribute('aria-expanded',o);
+});
+
+// ---- scrollspy
+const links=$$('#toc a'), targets=links.map(a=>document.getElementById(a.hash.slice(1)));
+const spy=()=>{ let cur=0; targets.forEach((t,i)=>{ if(t.getBoundingClientRect().top<160) cur=i; }); links.forEach((a,i)=>a.classList.toggle('on',i===cur)); };
+addEventListener('scroll',spy,{passive:true}); spy();
+</script>
+</body>
+</html>

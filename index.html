@@ -3586,6 +3586,19 @@ const PROJECTS = [
         ],
         outro: ['We had a choice: push through and hope, or pivot.'],
       },
+      { id: 'scrapped', title: 'The Scrapped Design',
+        body: [
+          'The original ambitious redesign isn\'t lost - it\'s documented and preserved as future direction for the platform. Not shipped, but informing future work.',
+        ],
+        sideGallery: [
+          { src: 'redesign/scrapped-1-collapsed.png',  caption: 'Sidebar collapsed' },
+          { src: 'redesign/scrapped-2-sidebar.png',    caption: 'Field details sidebar' },
+          { src: 'redesign/scrapped-3-history.png',    caption: 'History panel' },
+          { src: 'redesign/scrapped-4-analytics.png',  caption: 'Analytics panel' },
+          { src: 'redesign/scrapped-5-properties.png', caption: 'Properties panel' },
+          { src: 'redesign/scrapped-6-hidden.png',     caption: 'End user view' },
+        ],
+      },
       { id: 'pivot', title: 'The Pivot',
         body: ['We pivoted. The full redesign was scaled back. Three goals stayed:'],
         list: [
@@ -3654,22 +3667,11 @@ const PROJECTS = [
           { src: 'redesign/TOC prototypes/toc-04b-comments.mp4', poster: 'redesign/TOC prototypes/toc-04b-comments.png', caption: 'Comments' },
           { src: 'redesign/TOC prototypes/toc-04c-article-info.mp4', poster: 'redesign/TOC prototypes/toc-04c-article-info.png', caption: 'Article info' },
         ],
+        leadMedia: [
+          { src: 'redesign/article-view-prototype.mp4', caption: 'Article view prototype' },
+        ],
         media: [
           { placeholder: true, caption: 'AI Assistant - in-article Q&A' },
-          { src: 'redesign/new-design-sidebar.mov', caption: 'Sidebar prototype' },
-        ],
-      },
-      { id: 'scrapped', title: 'The Scrapped Design',
-        body: [
-          'The original ambitious redesign isn\'t lost - it\'s documented and preserved as future direction for the platform. Not shipped, but informing future work.',
-        ],
-        sideGallery: [
-          { src: 'redesign/scrapped-1-collapsed.png',  caption: 'Sidebar collapsed' },
-          { src: 'redesign/scrapped-2-sidebar.png',    caption: 'Field details sidebar' },
-          { src: 'redesign/scrapped-3-history.png',    caption: 'History panel' },
-          { src: 'redesign/scrapped-4-analytics.png',  caption: 'Analytics panel' },
-          { src: 'redesign/scrapped-5-properties.png', caption: 'Properties panel' },
-          { src: 'redesign/scrapped-6-hidden.png',     caption: 'End user view' },
         ],
       },
       { id: 'outcome', title: 'Outcome & Key Takeaways',
@@ -7622,6 +7624,22 @@ function ParallaxSection({ s, isSub }) {
     return () => { ro.disconnect(); window.removeEventListener('resize', update); };
   }, []);
 
+  const renderMediaItem = (m, key) => {
+    const mIsVideo = /\.(mp4|mov|webm|ogg)$/i.test(m.src || '');
+    return (
+      <figure key={key} className="proj-parallax-item">
+        {m.placeholder ? (
+          <div className="proj-media-placeholder"><span>Image placeholder</span></div>
+        ) : mIsVideo ? (
+          <video src={m.src} autoPlay loop muted playsInline preload="metadata" />
+        ) : (
+          <img src={m.src} alt={m.caption || ''} loading="lazy" />
+        )}
+        {m.caption && <figcaption className="proj-caption">{m.caption}</figcaption>}
+      </figure>
+    );
+  };
+
   return (
     <div id={`s-${s.id}`} className="proj-section is-parallax">
       <header ref={headerRef} className="proj-parallax-header">
@@ -7643,6 +7661,7 @@ function ParallaxSection({ s, isSub }) {
           </div>
         </div>
         <div ref={mediaRef} className="proj-parallax-media">
+          {s.leadMedia?.map((m, i) => renderMediaItem(m, `l${i}`))}
           {s.sideMarquee && <ProjectMarquee items={s.sideMarquee} label="Prototype recordings - slowly scrolling strip, hover to pause, click to open" />}
           {s.sideMedia && (
             <figure className="proj-parallax-item">
@@ -7658,21 +7677,7 @@ function ParallaxSection({ s, isSub }) {
               {s.sideMedia.caption && <figcaption className="proj-caption">{s.sideMedia.caption}</figcaption>}
             </figure>
           )}
-          {s.media?.map((m, i) => {
-            const mIsVideo = /\.(mp4|mov|webm|ogg)$/i.test(m.src || '');
-            return (
-              <figure key={i} className="proj-parallax-item">
-                {m.placeholder ? (
-                  <div className="proj-media-placeholder"><span>Image placeholder</span></div>
-                ) : mIsVideo ? (
-                  <video src={m.src} autoPlay loop muted playsInline preload="metadata" />
-                ) : (
-                  <img src={m.src} alt={m.caption || ''} loading="lazy" />
-                )}
-                {m.caption && <figcaption className="proj-caption">{m.caption}</figcaption>}
-              </figure>
-            );
-          })}
+          {s.media?.map((m, i) => renderMediaItem(m, `m${i}`))}
         </div>
       </div>
     </div>
