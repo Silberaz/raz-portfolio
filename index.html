@@ -3253,6 +3253,9 @@ dialog.fv-dialog .fv { --fv-h: 100vh; border: none; border-radius: 0; margin: 0;
 }
 /* fixed height, natural width - frames follow each image's proportions, never crop */
 .proj-marquee-frame img { display: block; height: 100%; width: auto; }
+/* image frames carry no box of their own, so transparent areas show the page */
+.proj-marquee-frame:not(.is-video),
+.proj-marquee-frame:not(.is-video) img { background: none; border: 0; border-radius: 0; }
 /* video frames: 16:9 at the same height (videos load lazily, so they can't size the frame) */
 .proj-marquee-frame.is-video { aspect-ratio: 16 / 9; }
 .proj-marquee-frame.is-video video {
@@ -3366,7 +3369,7 @@ const PROJECTS = [
         body: ['Structure before style: density, navigation, and hierarchy resolved across both admin and end-user screens before any visual design entered.'],
         marquee: [
           { src: 'help center/WireFrames/1.png', caption: 'Homepage editor' },
-          { src: 'help center/WireFrames/2.png', caption: 'Widget settings' },
+          { src: 'help center/WireFrames/2-transparent.png', caption: 'Widget settings' },
           { src: 'help center/WireFrames/3.png', caption: 'Search results & AI answer' },
           { src: 'help center/WireFrames/4.png', caption: 'Article view' },
           { src: 'help center/WireFrames/5.png', caption: 'End-user homepage' },
