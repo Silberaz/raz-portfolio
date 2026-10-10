@@ -2189,6 +2189,35 @@ footer a:hover { color: var(--accent); }
   letter-spacing: var(--ls-base); text-transform: none;
 }
 .proj-media-item.k-sq   .proj-media-placeholder { aspect-ratio: 4 / 3; }
+
+/* Mosaic - tall item left, stacked items right; one column on phones */
+.proj-mosaic {
+  display: grid; grid-template-columns: 1fr; gap: 1.75rem;
+  margin: 2rem 0 1.75rem;
+}
+.proj-mosaic-side { display: flex; flex-direction: column; gap: 1.75rem; min-width: 0; }
+.proj-mosaic-item { min-width: 0; }
+/* images carry their own corners/shadows - no box behind them */
+.proj-mosaic-item img { background: none; border: 0; border-radius: 0; }
+.proj-mosaic-item.is-side .proj-media-placeholder { aspect-ratio: 16 / 10; }
+.proj-mosaic-item.is-main .proj-media-placeholder { aspect-ratio: 2 / 3; }
+@media (min-width: 640px) {
+  .proj-mosaic { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1.25rem; align-items: stretch; }
+  .proj-mosaic-side { gap: 1.25rem; }
+  /* the tall placeholder matches the right column's height */
+  .proj-mosaic-item.is-main { height: 100%; }
+  .proj-mosaic-item.is-main .proj-media-placeholder { aspect-ratio: auto; flex: 1 1 auto; min-height: 0; }
+  /* With a fill item, the left item alone sets the row height (the side column
+     contributes 0 and stretches to it); the fill item takes whatever height is
+     left, cropped from the bottom, so the last side item lines up with the left. */
+  .proj-mosaic:has(.is-fill) .proj-mosaic-side { height: 0; min-height: 100%; }
+  .proj-mosaic-item.is-fill { flex: 1 1 0; min-height: 0; }
+  .proj-mosaic-item.is-fill img {
+    flex: 1 1 0; min-height: 0; width: 100%;
+    object-fit: cover; object-position: top;
+    border-radius: 6px;
+  }
+}
 .proj-media-item.k-tall .proj-media-placeholder { aspect-ratio: 3 / 4; }
 .proj-media-item.k-half { width: calc(50% - 1.25rem); align-self: flex-end; }
 
@@ -2701,9 +2730,12 @@ footer a:hover { color: var(--accent); }
   .proj-split.is-cols .proj-split-text { position: sticky; top: 6rem; }
   /* title rides in the text column: pin at the top, drop the media by the title's height */
   .proj-split.is-cols.has-head .proj-split-text { top: 5rem; }
+  /* mediaSplit: 'right' keeps the base text-left layout; 'left' puts the wider media column first */
+  .proj-split.is-cols.is-media-left { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); }
   .proj-split.is-cols.has-head > :last-child { margin-top: var(--head-h, 0px); }
 }
 .proj-split-media { margin: 0; }
+.proj-split > .proj-media { margin: 0; }
 .proj-split-media img,
 .proj-split-media video {
   display: block; width: 100%; height: auto;
@@ -3396,14 +3428,14 @@ const PROJECTS = [
           'The panel is organized into focused areas - customization, content, localization, and settings - each a self-serve surface that replaces what used to be a dev ticket.',
         ],
         media: [
-          { placeholder: true, caption: 'Admin panel - overview', kind: 'wide' },
+          { src: 'help center/Help Center — Admin panel panels.png?v=2', caption: 'Admin panel - overview', kind: 'wide' },
         ],
       },
       { id: 'homepage-widgets', title: 'Homepage widgets',
         group: 'admin',
         body: ['Admins compose the homepage from modular widgets - hero search, category cards, featured content, news, and more - arranging and configuring each one to fit their audience.'],
         media: [
-          { src: 'help center/Help Center — Admin panel panels.png?v=2', caption: 'Homepage widget library', kind: 'wide' },
+          { placeholder: true, caption: 'Homepage widget library', kind: 'wide' },
           { placeholder: true, caption: 'Configuring a widget', kind: 'sq' },
           { src: 'help center/Widget states & variants.png', caption: 'Widget states & variants', kind: 'wide' },
         ],
@@ -3417,6 +3449,7 @@ const PROJECTS = [
       },
       { id: 'settings', title: 'Settings',
         group: 'admin',
+        mediaSplit: 'right',  /* text in the left column, image grid on the right */
         body: ['Website, content, localization, and feedback settings - presented as a carousel of focused panels so admins move through configuration one clear step at a time.'],
         media: [
           { placeholder: true, caption: 'Settings - Website', kind: 'sq' },
@@ -3433,11 +3466,14 @@ const PROJECTS = [
           'For end users, success is one thing: the right answer, fast. A hero search anchored in the brand\'s own identity, category cards mapped to the most common tasks, and clean article pages with related links and step-by-step guides.',
           'An AI Answer feature streams a direct response above the results, closing with the sources it drew on and a plain caveat that it isn\'t infallible.',
         ],
+        /* mosaic: first item tall on the left, the next two stacked on the right */
+        mosaic: [
+          { src: 'help center/end user experience/homepage-trimmed.png', caption: 'Homepage - hero search' },
+          { src: 'help center/end user experience/article 2.png', caption: 'Article view', fill: true },
+          { src: 'help center/end user experience/HC_Guide_Page2.png', caption: 'Guide' },
+        ],
         media: [
-          { placeholder: true, caption: 'Homepage - hero search', kind: 'wide' },
-          { placeholder: true, caption: 'Search results', kind: 'wide' },
           { placeholder: true, caption: 'AI answer - with sources', kind: 'wide' },
-          { placeholder: true, caption: 'Article view', kind: 'wide' },
         ],
       },
       { id: 'enduser-mobile', title: 'Mobile',
@@ -7447,6 +7483,31 @@ function HCFlowViewer({ caption }) {
 }
 
 /* ─── Project page - section media (image grid + captions) ─── */
+/* Mosaic - one tall item on the left, the rest stacked in the right column.
+   Images keep their natural shape; placeholders stretch to fill their slot. */
+function ProjectMosaic({ items }) {
+  if (!items || !items.length) return null;
+  const [main, ...side] = items;
+  const cell = (m, key, cls) => (
+    <figure key={key} className={`proj-media-item proj-mosaic-item ${cls} ${m.placeholder ? 'is-placeholder' : ''} ${m.fill ? 'is-fill' : ''}`}>
+      {m.placeholder ? (
+        <div className="proj-media-placeholder"><span>{m.label || 'Image placeholder'}</span></div>
+      ) : (
+        <img src={m.src} alt={m.caption || ''} loading="lazy" />
+      )}
+      {m.caption && <figcaption className="proj-caption">{m.caption}</figcaption>}
+    </figure>
+  );
+  return (
+    <div className="proj-mosaic">
+      {cell(main, 'main', 'is-main')}
+      <div className="proj-mosaic-side">
+        {side.map((m, i) => cell(m, i, 'is-side'))}
+      </div>
+    </div>
+  );
+}
+
 function ProjectMedia({ items }) {
   if (!items || !items.length) return null;
   const allThumb = items.length > 1 && items.every(m => m.kind === 'sq');
@@ -7876,8 +7937,9 @@ function ProjectSection({ s }) {
     </header>
   );
   /* sideBySide splits carry their title in the pinned text column */
-  const splitHead = s.sideBySide && !s.placeholder && !s.prototype && !!(s.sideMedia || s.sideGallery);
-  const splitMedia = !splitHead ? null : s.sideGallery ? <SideGallery items={s.sideGallery} /> : (
+  const splitHead = !s.placeholder && !s.prototype &&
+    ((s.sideBySide && !!(s.sideMedia || s.sideGallery)) || (s.mediaSplit === 'right' && !!s.media));
+  const splitMedia = !splitHead ? null : s.mediaSplit === 'right' ? <ProjectMedia items={s.media} /> : s.sideGallery ? <SideGallery items={s.sideGallery} /> : (
     <figure className="proj-split-media proj-media-item k-wide">
       {s.sideMedia.placeholder ? (
         <div className="proj-media-placeholder"><span>{s.sideMedia.label || 'Image placeholder'}</span></div>
@@ -7962,11 +8024,23 @@ function ProjectSection({ s }) {
               <SideGallery items={s.sideGallery} />
             </div>
           ) : (
+            s.mediaSplit ? (
+              <div className={`proj-split is-cols has-media ${s.mediaSplit === 'left' ? 'is-media-left' : ''}`}>
+                {s.mediaSplit === 'left' && <ProjectMedia items={s.media} />}
+                <div className="proj-split-text">
+                  {s.body?.map((para, i) => <p key={`b${i}`}>{para}</p>)}
+                  <SectionList s={s} />
+                  {s.outro?.map((para, i) => <p key={`o${i}`}>{para}</p>)}
+                </div>
+                {s.mediaSplit !== 'left' && <ProjectMedia items={s.media} />}
+              </div>
+            ) : (
             <>
               {s.body?.map((para, i) => <p key={`b${i}`}>{para}</p>)}
               <SectionList s={s} />
               {s.outro?.map((para, i) => <p key={`o${i}`}>{para}</p>)}
             </>
+            )
           )}
           {s.inlineDemo === 'grid' && <GridDemo caption={s.inlineDemoCaption} />}
           {s.flowViewer && <HCFlowViewer caption={s.flowViewer.caption} />}
@@ -7995,7 +8069,8 @@ function ProjectSection({ s }) {
               })}
             </div>
           )}
-          {s.media && <ProjectMedia items={s.media} />}
+          {s.mosaic && <ProjectMosaic items={s.mosaic} />}
+          {s.media && !s.mediaSplit && <ProjectMedia items={s.media} />}
           {s.marquee && <ProjectMarquee items={s.marquee} />}
           {s.mediaRows && <ProjectMediaRows rows={s.mediaRows} idBase={s.id} />}
           {s.compare && <ProjectCompare data={s.compare} />}
