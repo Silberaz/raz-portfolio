@@ -2124,6 +2124,35 @@ footer a:hover { color: var(--accent); }
   color: var(--ink); font-weight: var(--fw-regular); margin-right: .35rem;
 }
 
+/* Card list (listStyle: 'cards') - one card per item, three across on wide screens */
+.proj-cards {
+  list-style: none; padding: 0; margin: .25rem 0 1.5rem;
+  display: grid; grid-template-columns: 1fr; gap: 1rem;
+}
+@media (min-width: 960px) {
+  .proj-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+.proj-card {
+  display: flex; flex-direction: column; gap: .75rem;
+  padding: 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--rim);
+  border-radius: 6px;
+}
+.proj-card-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 2.5rem; height: 2.5rem; margin-bottom: .25rem;
+  border: 1px solid var(--rim); border-radius: 6px;
+  color: var(--accent);
+}
+.proj-card-title {
+  margin: 0; font-size: var(--fs-base); font-weight: var(--fw-regular);
+  color: var(--ink); line-height: var(--lh-text);
+}
+.proj-card-text {
+  margin: 0; font-size: var(--fs-base); color: var(--ink-dim); line-height: var(--lh-text);
+}
+
 /* Media - large stack OR small-thumb grid */
 .proj-media {
   margin: 2rem 0 2.5rem;
@@ -2240,7 +2269,20 @@ footer a:hover { color: var(--accent); }
   border-radius: 0;
 }
 
-/* Parallax section - sticky full-width header + sticky left text, naturally scrolling right column */
+/* Divider under a title that rides in a pinned column: drawn as a line whose
+   width (--rule-w, set by useStickyHeadRule) runs from full row width down to
+   the column as the section reaches the top. Full width when stacked. */
+.proj-head-rule { position: relative; border-bottom: 0 !important; }
+.proj-head-rule::after {
+  content: ''; position: absolute; left: 0; bottom: 0;
+  width: var(--rule-w, 100%); height: 1px;
+  background: var(--rim-soft);
+  pointer-events: none;
+}
+.proj-parallax-header.proj-head-rule { background: none; }
+.proj-parallax-header.proj-head-rule::before { content: none; }
+
+/* Parallax section - title + text pinned in the left column, naturally scrolling right column */
 .proj-section.is-parallax { position: relative; }
 .proj-parallax-header {
   position: static;
@@ -2279,7 +2321,7 @@ footer a:hover { color: var(--accent); }
    rules so the cascade can't fold it back to one column. A marquee needs the
    full width, so sections with one stay stacked (the JS then skips pinning). */
 @media (min-width: 960px) {
-  .proj-section.is-parallax:not(:has(.proj-marquee)) .proj-parallax-header { position: sticky; top: 5rem; }
+  .proj-section.is-parallax:not(:has(.proj-marquee)) .proj-parallax-media { margin-top: var(--head-h, 0px); }
   .proj-section.is-parallax:not(:has(.proj-marquee)) .proj-parallax-row {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 2.5rem;
@@ -2652,6 +2694,9 @@ footer a:hover { color: var(--accent); }
     gap: 2.5rem;
   }
   .proj-split.is-cols .proj-split-text { position: sticky; top: 6rem; }
+  /* title rides in the text column: pin at the top, drop the media by the title's height */
+  .proj-split.is-cols.has-head .proj-split-text { top: 5rem; }
+  .proj-split.is-cols.has-head > :last-child { margin-top: var(--head-h, 0px); }
 }
 .proj-split-media { margin: 0; }
 .proj-split-media img,
@@ -3397,7 +3442,7 @@ const PROJECTS = [
     n: '02',
     title: 'Spark design system',
     subtitle: 'A design system for, well, designing a system, an enterprise knowledge management system',
-    role: '{{ Product Designer - sole designer on the system / lead }}',
+    role: 'Designer · Senior contributor',
     year: '2025 - present',
     timeline: '2025 - present',
     kind: 'Design system',
@@ -3405,7 +3450,7 @@ const PROJECTS = [
     tags: ['Design System', 'Component Library', 'Design Tokens', 'Figma'],
     statusNote: 'In active internal rollout - not yet shipped to customers.',
     tile: 'tall',
-    summary: 'The design system behind KMS Lighthouse - tokens, components, and documentation serving two very different surfaces: a dense authoring environment for knowledge managers, and a fast lookup experience for agents.',
+    summary: 'The design system behind KMS Lighthouse - tokens, components, and documentation for a white-label product used by three very different groups: knowledge managers authoring content, agents looking up answers under pressure, and admins running the system. Every surface carries the customer\'s brand, not ours.',
     tileImage: 'spark/spark images/homepage-thumbnail-1400.webp',
     tileAspect: '1399 / 2074', /* tile takes the thumbnail's own shape, so nothing is cropped */
     swatch: { from: '#553A0E', to: '#2B1D05', mark: '#F4D06F' },
@@ -3413,14 +3458,16 @@ const PROJECTS = [
     heroContained: true,
     sections: [
       { id: 'context', title: 'Context', body: [
-        'KMS Lighthouse builds enterprise knowledge management software - the tool support agents, banks, and telcos use to find a verified answer in seconds. That means two very different surfaces in one product: a dense authoring and admin environment for knowledge managers, and a fast, low-friction lookup experience for agents under time pressure.',
-        'Spark is the design system that holds both together.',
+        'KMS Lighthouse builds enterprise knowledge management software - the tool support agents, banks, and telcos use to find a verified answer in seconds. It\'s sold white-label, so every customer sees it under their own brand.',
+        'Inside it are three user groups with three separate interfaces: a dense authoring environment for knowledge managers, a fast, low-friction lookup experience for agents under time pressure, and an admin interface for the smallest group, the people who run the system. Spark currently covers authoring and agent lookup; the admin interface joins later in the redesign roadmap.',
+        'Spark is the design system that holds them together.',
       ]},
       { id: 'problem', title: 'The problem',
         list: [
           { label: 'Drift.', text: 'Years of features shipped by different hands meant {{ N }} button styles, inconsistent spacing, and no shared source of truth.' },
           { label: 'Slow handoff.', text: 'Every screen was rebuilt from scratch; specs were re-litigated in every dev ticket.' },
           { label: 'No accessibility floor.', text: 'Contrast and target sizes were decided per-screen, which is a liability for enterprise and public-sector buyers.' },
+          { label: 'Branding by hand.', text: 'Every customer\'s theme was designed manually by someone on the team - one to three weeks depending on the client - then spent another two weeks to a month in development and shipping.' },
         ],
         media: [
           { placeholder: true, label: 'IMG-2', kind: 'wide',
@@ -3432,24 +3479,25 @@ const PROJECTS = [
          "Answer-first" (the content is the interface) ·
          "Accessible by construction, not by review." */
       { id: 'principles', title: 'Principles',
+        listStyle: 'cards',
         list: [
-          { label: '{{ Principle 1 }} -', text: '{{ one line }}' },
-          { label: '{{ Principle 2 }} -', text: '{{ one line }}' },
-          { label: '{{ Principle 3 }} -', text: '{{ one line }}' },
+          { icon: 'simple', label: 'Simple by default', text: 'The product is complex enough on its own. Components stay plain, clear, and predictable, so the interface never adds to the load the content already carries.' },
+          { icon: 'brand', label: 'Brand-neutral, brand-ready', text: 'Spark powers a white-label product. Components carry no identity of their own, so every customer can apply their brand and make the interface theirs.' },
+          { icon: 'layers', label: 'One system, every surface', text: 'Three user groups, three distinct interfaces, and many designers working across many projects. Strict guidelines are what keep it all feeling like one product.' },
         ],
       },
       { id: 'foundations', title: 'Foundations',
         body: [
           'Tokens first: color, type, spacing, radius, elevation - defined once, named semantically, and mirrored 1:1 between Figma variables and code.',
+          'A brand layer sits on top. Through a customization panel, customer admins now apply their own branding themselves. What used to take three to seven weeks of design and development now takes as long as picking a few colors and uploading a few images - no design pass, no implementation, no delivery cycle.',
         ],
-        media: [
-          { src: 'spark/spark images/tokens-2400.jpg?v=2', kind: 'wide',
-            caption: 'Semantic color and type tokens, mirrored between Figma and code' },
-        ],
+        sideBySide: true,
+        sideMedia: { src: 'spark/spark images/tokens-2400.jpg?v=2',
+          caption: 'Semantic color and type tokens, mirrored between Figma and code' },
       },
       { id: 'components', title: 'Components',
         body: [
-          '{{ N }} components covering the {{ authoring console and agent workspace }}, each with defined variants, states, and responsive behavior.',
+          '{{ N }} components covering the authoring environment and agent workspace, each with defined variants, states, and responsive behavior - and each deliberately plain, so it stays legible under any customer\'s brand.',
         ],
         media: [
           { src: 'spark/spark images/component-2400.webp', kind: 'wide', bare: true,
@@ -3460,7 +3508,7 @@ const PROJECTS = [
       },
       { id: 'documentation', title: 'Documentation & governance',
         body: [
-          'Spark ships with usage documentation, contribution guidelines, and a review path - so the system stays alive after I stop maintaining it personally.',
+          'Spark ships with usage documentation, contribution guidelines, and a review path. With multiple designers working across multiple projects, that\'s what keeps everyone building from the same rules - and keeps the system alive long after any one of us stops maintaining it.',
         ],
         media: [
           { placeholder: true, label: 'IMG-6', kind: 'wide',
@@ -3470,7 +3518,7 @@ const PROJECTS = [
       { id: 'status', title: 'Where it stands',
         body: [
           'Spark is in internal rollout across {{ N }} product teams. {{ First surface adopted / what\'s live in Figma vs. code }}. Customer-facing release is planned for {{ timeline }}, and I\'ll update this page with adoption and velocity numbers once we have them.',
-          'What I\'d measure at launch: time from design to shipped screen, share of UI built from Spark components, and accessibility defects caught before QA.',
+          'What I\'d measure at launch: time from design to shipped screen, share of UI built from Spark components, accessibility defects caught before QA, and how many customers brand the product themselves instead of asking us.',
         ],
       },
       /* What I'd do differently - Raz edits by hand. Example of the register to aim for:
@@ -7577,11 +7625,74 @@ function ProjectCompare({ data }) {
 }
 
 /* ─── Parallax section - sticky full-width header + sticky text that releases when last item reaches top ─── */
+/* Sticky title for two-column sections (≥960px, really side by side).
+   The title sits in the pinned left column; its divider starts full width and
+   shrinks to the column as the section reaches the top, then the title rides
+   along with the text until the section is scrolled through. Sets:
+     --rule-w on the head  (divider width)
+     --head-h on the row   (right column drops by the title's height, so the
+                            starting layout matches a full-width title)        */
+const STICKY_TOP = 5 * 16;   /* matches the pinned block's top: 5rem */
+const RULE_RANGE = 160;      /* px of scroll over which the divider shrinks */
+function useStickyHeadRule(headRef, rowRef) {
+  useEffect(() => {
+    const head = headRef.current, row = rowRef.current;
+    if (!head || !row) return;
+    const mq = window.matchMedia('(min-width: 960px)');
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const cols = mq.matches &&
+        getComputedStyle(row).gridTemplateColumns.trim().split(/\s+/).length > 1;
+      if (!cols) {
+        head.style.removeProperty('--rule-w');
+        row.style.removeProperty('--head-h');
+        return;
+      }
+      const mb = parseFloat(getComputedStyle(head).marginBottom) || 0;
+      row.style.setProperty('--head-h', `${head.offsetHeight + mb}px`);
+      const full = row.clientWidth, col = head.offsetWidth;
+      const top = row.getBoundingClientRect().top;
+      const p = Math.min(1, Math.max(0, (STICKY_TOP + RULE_RANGE - top) / RULE_RANGE));
+      head.style.setProperty('--rule-w', `${full + (col - full) * p}px`);
+    };
+    const schedule = () => { if (!raf) raf = requestAnimationFrame(update); };
+    update();
+    const ro = new ResizeObserver(schedule);
+    ro.observe(row); ro.observe(head);
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule);
+    return () => {
+      cancelAnimationFrame(raf); ro.disconnect();
+      window.removeEventListener('scroll', schedule);
+      window.removeEventListener('resize', schedule);
+    };
+  }, []);
+}
+
+/* Two-column split (sideBySide) with the title riding in the text column */
+function StickyHeadSplit({ title, children, media }) {
+  const headRef = useRef(null);
+  const rowRef = useRef(null);
+  useStickyHeadRule(headRef, rowRef);
+  return (
+    <div ref={rowRef} className="proj-split is-cols has-head">
+      <div className="proj-split-text">
+        {React.cloneElement(title, { ref: headRef, className: `${title.props.className} proj-head-rule` })}
+        {children}
+      </div>
+      {media}
+    </div>
+  );
+}
+
 function ParallaxSection({ s, isSub }) {
   const headerRef = useRef(null);
   const textRef = useRef(null);
   const mediaRef = useRef(null);
   const leftRef = useRef(null);
+  const rowRef = useRef(null);
+  useStickyHeadRule(headerRef, rowRef);
 
   useEffect(() => {
     const header = headerRef.current;
@@ -7604,17 +7715,18 @@ function ParallaxSection({ s, isSub }) {
         left.style.height = '';
         return;
       }
-      const headerMB = parseFloat(getComputedStyle(header).marginBottom) || 0;
-      text.style.top = `${STICKY_OFFSET + header.offsetHeight + headerMB}px`;
+      /* the title rides inside the pinned block, so the block pins at the top */
+      text.style.top = `${STICKY_OFFSET}px`;
       const items = media.children;
       if (!items.length) { left.style.height = ''; return; }
       const lastItem = items[items.length - 1];
       const rightColH = media.offsetHeight;
       const lastItemH = lastItem.offsetHeight;
       const textH = text.offsetHeight;
-      /* Left col height = textH + (rightColH - lastItemH)
-         Sticky text releases when left col's bottom reaches T + textH
-         → at that moment, last item top is exactly at T (first item's slot).
+      /* Left col height = blockH + (rightColH - lastItemH), where the block is
+         title + text and the right column sits --head-h lower than the left.
+         The block releases when the left col's bottom reaches T + blockH
+         → at that moment, last item top is exactly at T + --head-h (the text's slot).
          After release, text and items scroll up together as the section exits. */
       left.style.height = `${textH + Math.max(0, rightColH - lastItemH)}px`;
     };
@@ -7646,13 +7758,13 @@ function ParallaxSection({ s, isSub }) {
 
   return (
     <div id={`s-${s.id}`} className="proj-section is-parallax">
-      <header ref={headerRef} className="proj-parallax-header">
-        {isSub && <div className="proj-section-eyebrow">{s.groupLabel || s.group}</div>}
-        <h2 className={`proj-section-title ${isSub ? 'is-sub' : ''}`}>{s.title}</h2>
-      </header>
-      <div className="proj-parallax-row">
+      <div ref={rowRef} className="proj-parallax-row">
         <div ref={leftRef} className="proj-parallax-left">
           <div ref={textRef} className="proj-parallax-text">
+            <header ref={headerRef} className="proj-parallax-header proj-head-rule">
+              {isSub && <div className="proj-section-eyebrow">{s.groupLabel || s.group}</div>}
+              <h2 className={`proj-section-title ${isSub ? 'is-sub' : ''}`}>{s.title}</h2>
+            </header>
             {s.body?.map((para, i) => <p key={`b${i}`}>{para}</p>)}
             {s.list && (
               <ul className="proj-list">
@@ -7689,6 +7801,24 @@ function ParallaxSection({ s, isSub }) {
 }
 
 /* ─── Project page - one section (handles every section variant) ─── */
+/* Line icons for card lists (listStyle: 'cards') - stroke follows currentColor */
+const CARD_ICONS = {
+  /* plain panel - simple by default */
+  simple: <><rect x="4" y="4" width="16" height="16" rx="3" /><path d="M8 10h8M8 14h5" /></>,
+  /* drop of colour - a brand applied on top */
+  brand: <><path d="M12 3.5c3.2 3.9 5.5 7 5.5 9.8a5.5 5.5 0 0 1-11 0c0-2.8 2.3-5.9 5.5-9.8z" /><path d="M9.5 14a2.5 2.5 0 0 0 2.5 2.5" /></>,
+  /* stacked layers - one system, every surface */
+  layers: <><path d="M12 4 3.5 8.5 12 13l8.5-4.5L12 4z" /><path d="m3.5 12.5 8.5 4.5 8.5-4.5" /><path d="m3.5 16.5 8.5 4.5 8.5-4.5" /></>,
+};
+function CardIcon({ name }) {
+  return (
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor"
+         strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      {CARD_ICONS[name]}
+    </svg>
+  );
+}
+
 function ProjectSection({ s }) {
   const isSub = !!s.group;
   if (s.parallax && !s.placeholder) return <ParallaxSection s={s} isSub={isSub} />;
@@ -7697,6 +7827,22 @@ function ProjectSection({ s }) {
       {isSub && <div className="proj-section-eyebrow">{s.groupLabel || s.group}</div>}
       <h2 className={`proj-section-title ${isSub ? 'is-sub' : ''}`}>{s.title}</h2>
     </header>
+  );
+  /* sideBySide splits carry their title in the pinned text column */
+  const splitHead = s.sideBySide && !s.placeholder && !s.prototype && !!(s.sideMedia || s.sideGallery);
+  const splitMedia = !splitHead ? null : s.sideGallery ? <SideGallery items={s.sideGallery} /> : (
+    <figure className="proj-split-media proj-media-item k-wide">
+      {s.sideMedia.placeholder ? (
+        <div className="proj-media-placeholder"><span>{s.sideMedia.label || 'Image placeholder'}</span></div>
+      ) : s.sideMedia.diagram === 'user-flow' ? (
+        <UserFlowDiagram />
+      ) : /\.(mp4|mov|webm|ogg)$/i.test(s.sideMedia.src || '') ? (
+        <video src={s.sideMedia.src} autoPlay loop muted playsInline preload="metadata" />
+      ) : (
+        <img src={s.sideMedia.src} alt={s.sideMedia.caption || ''} loading="lazy" />
+      )}
+      {s.sideMedia.caption && <figcaption className="proj-caption">{s.sideMedia.caption}</figcaption>}
+    </figure>
   );
   if (s.kind === 'outcomes') {
     return (
@@ -7715,7 +7861,7 @@ function ProjectSection({ s }) {
   }
   return (
     <div id={`s-${s.id}`} className={`proj-section ${s.placeholder ? 'is-placeholder' : ''} ${isSub ? 'is-sub' : ''}`}>
-      {titleBlock}
+      {!splitHead && titleBlock}
       {s.prototype && (
         <figure className="proj-media-item k-wide proj-proto-slot">
           {typeof s.prototype === 'string' ? (
@@ -7733,7 +7879,19 @@ function ProjectSection({ s }) {
         </div>
       ) : (
         <>
-          {s.sideMedia ? (
+          {splitHead ? (
+            <StickyHeadSplit title={titleBlock} media={splitMedia}>
+                {s.body?.map((para, i) => <p key={`b${i}`}>{para}</p>)}
+                {s.list && (
+                  <ul className="proj-list">
+                    {s.list.map((it, i) => (
+                      <li key={i}><strong>{it.label}</strong> {it.text}</li>
+                    ))}
+                  </ul>
+                )}
+                {s.outro?.map((para, i) => <p key={`o${i}`}>{para}</p>)}
+            </StickyHeadSplit>
+          ) : s.sideMedia ? (
             <div className={`proj-split ${s.sideBySide ? 'is-cols' : ''}`}>
               <div className="proj-split-text">
                 {s.body?.map((para, i) => <p key={`b${i}`}>{para}</p>)}
@@ -7777,7 +7935,17 @@ function ProjectSection({ s }) {
           ) : (
             <>
               {s.body?.map((para, i) => <p key={`b${i}`}>{para}</p>)}
-              {s.list && (
+              {s.list && s.listStyle === 'cards' ? (
+                <ul className="proj-cards">
+                  {s.list.map((it, i) => (
+                    <li key={i} className="proj-card">
+                      {it.icon && <span className="proj-card-icon"><CardIcon name={it.icon} /></span>}
+                      <h3 className="proj-card-title">{it.label}</h3>
+                      <p className="proj-card-text">{it.text}</p>
+                    </li>
+                  ))}
+                </ul>
+              ) : s.list && (
                 <ul className="proj-list">
                   {s.list.map((it, i) => (
                     <li key={i}><strong>{it.label}</strong> {it.text}</li>
