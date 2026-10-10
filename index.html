@@ -2302,6 +2302,8 @@ footer a:hover { color: var(--accent); }
   border: 1px solid var(--rim-soft);
   border-radius: 4px;
 }
+/* images keep their natural height - never cropped */
+.proj-parallax-item img { aspect-ratio: auto; height: auto; object-fit: contain; background: none; border: 0; }
 .proj-parallax-item .proj-media-placeholder { aspect-ratio: 16 / 9; }
 .proj-caption {
   font-family: var(--ff-mono); font-weight: var(--fw-mono); font-size: var(--fs-base); letter-spacing: var(--ls-base);
@@ -3664,17 +3666,18 @@ const PROJECTS = [
         ],
         parallax: true,
         sideMarquee: [
-          { src: 'redesign/TOC prototypes/toc-01-states.mp4', poster: 'redesign/TOC prototypes/toc-01-states.png', caption: 'TOC states - pinned, collapsed, peek' },
-          { src: 'redesign/TOC prototypes/toc-02-navigation.mp4', poster: 'redesign/TOC prototypes/toc-02-navigation.png', caption: 'Navigating the article' },
-          { src: 'redesign/TOC prototypes/toc-03a-pin-unpin.mp4', poster: 'redesign/TOC prototypes/toc-03a-pin-unpin.png', caption: 'Pin & unpin motion' },
-          { src: 'redesign/TOC prototypes/toc-03b-active-item.mp4', poster: 'redesign/TOC prototypes/toc-03b-active-item.png', caption: 'Active item transition' },
-          { src: 'redesign/TOC prototypes/toc-03c-collapsed-scroll.mp4', poster: 'redesign/TOC prototypes/toc-03c-collapsed-scroll.png', caption: 'Collapsed rail as a scroll bar' },
-          { src: 'redesign/TOC prototypes/toc-03d-peek.mp4', poster: 'redesign/TOC prototypes/toc-03d-peek.png', caption: 'Hover to peek' },
-          { src: 'redesign/TOC prototypes/toc-04a-search.mp4', poster: 'redesign/TOC prototypes/toc-04a-search.png', caption: 'Search in article' },
-          { src: 'redesign/TOC prototypes/toc-04b-comments.mp4', poster: 'redesign/TOC prototypes/toc-04b-comments.png', caption: 'Comments' },
-          { src: 'redesign/TOC prototypes/toc-04c-article-info.mp4', poster: 'redesign/TOC prototypes/toc-04c-article-info.png', caption: 'Article info' },
+          { src: 'redesign/TOC/TOC prototypes/toc-01-states.mp4', poster: 'redesign/TOC/TOC prototypes/toc-01-states.png', caption: 'TOC states - pinned, collapsed, peek' },
+          { src: 'redesign/TOC/TOC prototypes/toc-02-navigation.mp4', poster: 'redesign/TOC/TOC prototypes/toc-02-navigation.png', caption: 'Navigating the article' },
+          { src: 'redesign/TOC/TOC prototypes/toc-03a-pin-unpin.mp4', poster: 'redesign/TOC/TOC prototypes/toc-03a-pin-unpin.png', caption: 'Pin & unpin motion' },
+          { src: 'redesign/TOC/TOC prototypes/toc-03b-active-item.mp4', poster: 'redesign/TOC/TOC prototypes/toc-03b-active-item.png', caption: 'Active item transition' },
+          { src: 'redesign/TOC/TOC prototypes/toc-03c-collapsed-scroll.mp4', poster: 'redesign/TOC/TOC prototypes/toc-03c-collapsed-scroll.png', caption: 'Collapsed rail as a scroll bar' },
+          { src: 'redesign/TOC/TOC prototypes/toc-03d-peek.mp4', poster: 'redesign/TOC/TOC prototypes/toc-03d-peek.png', caption: 'Hover to peek' },
+          { src: 'redesign/TOC/TOC prototypes/toc-04a-search.mp4', poster: 'redesign/TOC/TOC prototypes/toc-04a-search.png', caption: 'Search in article' },
+          { src: 'redesign/TOC/TOC prototypes/toc-04b-comments.mp4', poster: 'redesign/TOC/TOC prototypes/toc-04b-comments.png', caption: 'Comments' },
+          { src: 'redesign/TOC/TOC prototypes/toc-04c-article-info.mp4', poster: 'redesign/TOC/TOC prototypes/toc-04c-article-info.png', caption: 'Article info' },
         ],
         leadMedia: [
+          { src: 'redesign/TOC/toc-sidebar.png', caption: 'TOC sidebar' },
           { src: 'redesign/article-view-prototype.mp4', caption: 'Article view prototype' },
         ],
         media: [
