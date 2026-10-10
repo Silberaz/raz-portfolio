@@ -239,7 +239,12 @@
 /* ─── Reset ─── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
-html.cursor-on, html.cursor-on * { cursor: none !important; }
+html.cursor-on:not(:has(dialog[open])),
+html.cursor-on:not(:has(dialog[open])) * { cursor: none !important; }
+/* A modal dialog sits in the top layer, above the custom cursor - so while
+   one is open the system cursor comes back and the custom one steps aside. */
+html:has(dialog[open]) :is(.blob-cursor, .puddle-cursor, .ripple-cursor,
+  .cur-trail-layer, .water-veil, .water-ring-layer) { visibility: hidden; }
 /* Safety net: never hide the native cursor on touch-only devices,
    even if `cursor-on` gets applied somehow. The custom cursor doesn't
    mount on touch (see BlobCursor isTouch check) but this guarantees
@@ -3175,12 +3180,18 @@ footer a:hover { color: var(--accent); }
 }
 
 /* ─── full-viewport dialog ─── */
+/* inset from the viewport edges so it reads as a panel, not a cut-off page */
 dialog.fv-dialog {
-  width: 100vw; max-width: 100vw; height: 100vh; max-height: 100vh;
-  padding: 0; border: none; background: var(--fv-bg); color: var(--ink);
+  --fv-inset: clamp(12px, 3vw, 40px);
+  position: fixed; inset: var(--fv-inset);
+  width: auto; height: auto; max-width: none; max-height: none;
+  margin: 0; padding: 0;
+  border: 1px solid var(--fv-line, var(--rim)); border-radius: 8px; overflow: hidden;
+  background: var(--fv-bg); color: var(--ink);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, .35);
 }
 dialog.fv-dialog::backdrop { background: color-mix(in oklab, var(--ground) 88%, transparent); }
-dialog.fv-dialog .fv { --fv-h: 100vh; border: none; border-radius: 0; margin: 0; }
+dialog.fv-dialog .fv { --fv-h: 100%; border: none; border-radius: 0; margin: 0; }
 
 .fv-caption {
   font-family: var(--ff-mono); font-weight: var(--fw-mono); font-size: .65rem; letter-spacing: .06em;
@@ -3392,9 +3403,9 @@ const PROJECTS = [
         group: 'admin',
         body: ['Admins compose the homepage from modular widgets - hero search, category cards, featured content, news, and more - arranging and configuring each one to fit their audience.'],
         media: [
-          { placeholder: true, caption: 'Homepage widget library', kind: 'wide' },
+          { src: 'help center/Help Center — Admin panel panels.png?v=2', caption: 'Homepage widget library', kind: 'wide' },
           { placeholder: true, caption: 'Configuring a widget', kind: 'sq' },
-          { placeholder: true, caption: 'Widget states & variants', kind: 'sq' },
+          { src: 'help center/Widget states & variants.png', caption: 'Widget states & variants', kind: 'wide' },
         ],
       },
       { id: 'editing', title: 'Editing the help center',
