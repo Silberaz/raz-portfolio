@@ -2136,6 +2136,8 @@ footer a:hover { color: var(--accent); }
 }
 @media (min-width: 960px) {
   .proj-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  /* four cards read as a 2x2 block instead of three plus an orphan */
+  .proj-cards.is-2x2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 .proj-card {
   display: flex; flex-direction: column; gap: .75rem;
@@ -3515,11 +3517,12 @@ const PROJECTS = [
         'Spark is the design system that holds them together.',
       ]},
       { id: 'problem', title: 'The problem',
+        listStyle: 'cards',
         list: [
-          { label: 'Drift.', text: 'Years of features shipped by different hands meant {{ N }} button styles, inconsistent spacing, and no shared source of truth.' },
-          { label: 'Slow handoff.', text: 'Every screen was rebuilt from scratch; specs were re-litigated in every dev ticket.' },
-          { label: 'No accessibility floor.', text: 'Contrast and target sizes were decided per-screen, which is a liability for enterprise and public-sector buyers.' },
-          { label: 'Branding by hand.', text: 'Every customer\'s theme was designed manually by someone on the team - one to three weeks depending on the client - then spent another two weeks to a month in development and shipping.' },
+          { icon: 'drift', label: 'Drift', text: 'Years of features shipped by different hands meant {{ N }} button styles, inconsistent spacing, and no shared source of truth.' },
+          { icon: 'cycle', label: 'Slow handoff', text: 'Every screen was rebuilt from scratch; specs were re-litigated in every dev ticket.' },
+          { icon: 'contrast', label: 'No accessibility floor', text: 'Contrast and target sizes were decided per-screen, which is a liability for enterprise and public-sector buyers.' },
+          { icon: 'brush', label: 'Branding by hand', text: 'Every customer\'s theme was designed manually by someone on the team - one to three weeks depending on the client - then spent another two weeks to a month in development and shipping.' },
         ],
         media: [
           { placeholder: true, label: 'IMG-2', kind: 'wide',
@@ -3647,11 +3650,12 @@ const PROJECTS = [
       },
       { id: 'insights', title: 'Key Insights',
         body: ['Four insights emerged from the research, and each one shaped a decision later in the project:'],
+        listStyle: 'cards',
         list: [
-          { label: 'Editing felt disconnected from reading.', text: 'Lighthouse has three distinct user types - admins, content managers, and end users (typically call center reps) - and each one was looking at a completely different interface. The content managers had it worst: every time they updated a piece of content, they had to jump to a separate tab or window to see what the end user would actually see. That gap created constant low-grade anxiety - did I just break something? - and slowed work down because every edit required a context switch to verify it. Notion became our reference point here: editing and reading should feel nearly identical, so you trust what you\'re writing.' },
-          { label: 'Navigation was disorienting.', text: 'Users frequently lost track of where they were in the product. The information architecture had grown organically, not deliberately.' },
-          { label: 'Collaboration was a real gap.', text: 'There was strong demand for the ability to share notes, comment on documents, and work alongside teammates - features competitors offered and Lighthouse didn\'t.' },
-          { label: 'Mobile didn\'t really work.', text: 'The platform wasn\'t optimized for smaller screens, which had become a daily friction for users in the field.' },
+          { icon: 'eyeEdit', label: 'Editing felt disconnected from reading', text: 'Content managers couldn’t see what end users saw without switching tabs, so every edit came with a context switch and a flicker of doubt.' },
+          { icon: 'compass', label: 'Navigation was disorienting', text: 'Users frequently lost track of where they were in the product. The information architecture had grown organically, not deliberately.' },
+          { icon: 'chat', label: 'Collaboration was a real gap', text: 'There was strong demand for the ability to share notes, comment on documents, and work alongside teammates - features competitors offered and Lighthouse didn\'t.' },
+          { icon: 'mobile', label: 'Mobile didn\'t really work', text: 'The platform wasn\'t optimized for smaller screens, which had become a daily friction for users in the field.' },
         ],
       },
       { id: 'flows', title: 'User Flows',
@@ -3666,12 +3670,14 @@ const PROJECTS = [
         body: [
           'Wireframes explored layout structures, content hierarchy, and how responsiveness would work across devices - particularly for the densest screens like the article editor.',
         ],
+        sideBySide: true,
         sideMedia: { src: 'redesign/wireframing.png', caption: 'Wireframes' },
       },
       { id: 'prototyping', title: 'Prototyping',
         body: [
           'I built interactive prototypes to validate flows, test interactions, and gather early feedback from product and engineering before committing to high-fidelity design.',
         ],
+        sideBySide: true,
         sideMedia: { src: 'redesign/scrapped_design_prototype.mov', caption: 'Prototype - early interactions' },
       },
       { id: 'testing', title: 'Usability Testing',
@@ -7888,6 +7894,18 @@ const CARD_ICONS = {
   mobileFast: <><rect x="7" y="3" width="10" height="18" rx="2" /><path d="m12.6 7.5-2.1 3.5h3l-2.1 3.5" /></>,
   /* brush - make it brandable */
   brush: <><path d="M19.5 4.5 11 13" /><path d="M9.5 13.5c-2 0-3.5 1.5-3.5 3.5 0 1.2-.7 2-1.5 2.5h4c2.2 0 3.8-1.6 3.8-3.6 0-1.3-1.2-2.4-2.8-2.4z" /><path d="m11 13 1.5 1.5" /></>,
+  /* eye with a pencil - editing disconnected from reading */
+  eyeEdit: <><path d="M2.5 12S6 5.5 12 5.5c2.2 0 4 .9 5.4 2" /><path d="M14.5 18.2c-.8.2-1.6.3-2.5.3-6 0-9.5-6.5-9.5-6.5" /><circle cx="12" cy="12" r="2.5" /><path d="m20.5 11.5-5 5-2 .5.5-2 5-5a1.06 1.06 0 0 1 1.5 1.5z" /></>,
+  /* compass - disorienting navigation */
+  compass: <><circle cx="12" cy="12" r="8.5" /><path d="m15.5 8.5-2 5-5 2 2-5 5-2z" /></>,
+  /* speech bubbles - collaboration gap */
+  chat: <><path d="M4 5.5h11a1.5 1.5 0 0 1 1.5 1.5v6a1.5 1.5 0 0 1-1.5 1.5H9l-3.5 3v-3H4A1.5 1.5 0 0 1 2.5 13V7A1.5 1.5 0 0 1 4 5.5z" /><path d="M16.5 9.5H20a1.5 1.5 0 0 1 1.5 1.5v5.5a1.5 1.5 0 0 1-1.5 1.5h-1v2.5L16 17.5h-3.5" /></>,
+  /* three mismatched buttons - drift */
+  drift: <><rect x="3.5" y="4" width="11" height="4.5" rx="2.25" /><rect x="7" y="10" width="13.5" height="4.5" rx="1" /><rect x="4.5" y="16" width="9" height="4.5" rx="0" /></>,
+  /* circular arrows - work redone every handoff */
+  cycle: <><path d="M19.5 12a7.5 7.5 0 0 1-13.1 5" /><path d="M4.5 12a7.5 7.5 0 0 1 13.1-5" /><path d="M17.8 3.5v3.7h-3.7" /><path d="M6.2 20.5v-3.7h3.7" /></>,
+  /* half-filled circle - contrast / accessibility */
+  contrast: <><circle cx="12" cy="12" r="8.5" /><path d="M12 3.5v17" /><path d="M12 7.5h3.5M12 12h4.5M12 16.5h3.5" /></>,
   /* phone - not built for mobile */
   mobile: <><rect x="7" y="3" width="10" height="18" rx="2" /><path d="M11 17.5h2" /></>,
   /* palette - barely customizable */
@@ -7907,7 +7925,7 @@ function SectionList({ s }) {
   if (!s.list) return null;
   if (s.listStyle === 'cards') {
     return (
-      <ul className="proj-cards">
+      <ul className={`proj-cards ${s.list.length === 4 ? 'is-2x2' : ''}`}>
         {s.list.map((it, i) => (
           <li key={i} className="proj-card">
             {it.icon && <span className="proj-card-icon"><CardIcon name={it.icon} /></span>}
