@@ -1561,7 +1561,7 @@ footer a:hover { color: var(--accent); }
 .sidebar-nav li.is-sub { padding-left: 1.1rem; }
 .sidebar-nav li.is-sub a { font-size: var(--fs-base); }
 
-.proj-section { margin-bottom: 4.5rem; scroll-margin-top: 6rem; }
+.proj-section { margin-bottom: 6.5rem; scroll-margin-top: 6rem; }
 .proj-section-head { margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--rim-soft); }
 .proj-section-eyebrow {
   font-family: var(--ff-mono); font-weight: var(--fw-mono); font-size: var(--fs-base); letter-spacing: var(--ls-base);
@@ -1575,7 +1575,7 @@ footer a:hover { color: var(--accent); }
 .proj-section-title.is-sub {
   font-weight: var(--fw-regular); font-size: var(--fs-base); letter-spacing: var(--ls-base);
 }
-.proj-section.is-sub { margin-bottom: 3.25rem; }
+.proj-section.is-sub { margin-bottom: 4.5rem; }
 .proj-section p {
   font-size: var(--fs-base); color: var(--ink-dim); line-height: var(--lh-text); margin-bottom: 1.1rem;
   max-width: 42rem;
@@ -2789,6 +2789,46 @@ footer a:hover { color: var(--accent); }
   background: var(--accent);
   border-color: var(--accent);
 }
+/* Tabbed media - segmented control switching image + side text (e.g. Spark Components).
+   The control sits at the top of the text column so text and image share one top edge. */
+.proj-tabs { margin: 0 0 2.5rem; }
+.proj-tabs-stage {
+  display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: start;
+}
+/* title spans both columns; the grid gap stands in for its usual margin */
+.proj-tabs-stage > .proj-section-head { grid-column: 1 / -1; margin-bottom: 0; }
+.proj-tabs.is-pinned .proj-tabs-stage { position: sticky; top: 5rem; } /* = STICKY_TOP */
+.proj-tabs-seg {
+  display: flex; width: fit-content; gap: 2px; padding: 3px;
+  background: var(--surface);
+  border: 1px solid var(--rim-soft); border-radius: 6px;
+  margin-bottom: 1.5rem;
+  max-width: 100%;
+}
+.proj-tabs-seg button {
+  font-family: var(--ff-mono); font-weight: var(--fw-mono); font-size: var(--fs-base);
+  letter-spacing: var(--ls-base);
+  flex: 1 1 auto; min-width: 0;
+  padding: .45rem clamp(.5rem, 1.2vw, 1.1rem);
+  border: 0; border-radius: 4px;
+  white-space: nowrap;
+  background: transparent; color: var(--ink-dim);
+  cursor: pointer;
+  transition: color .2s, background .2s;
+}
+.proj-tabs-seg button:hover:not([aria-selected="true"]) { color: var(--ink); background: var(--surface-2); }
+/* Selected tab - sky signal, paired bg/text tokens keep AA contrast in both themes */
+.proj-tabs-seg button[aria-selected="true"] {
+  background: var(--accent-sky-bg); color: var(--accent-sky);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--accent-sky) 45%, transparent);
+}
+.proj-tabs-side > p:first-of-type, .proj-tabs-text > :first-child { margin-top: 0; }
+.proj-tabs-side > p:last-of-type { margin-bottom: 1.75rem; }
+.proj-tabs-text h3 { margin: 0 0 .75rem; }
+.proj-tabs-media { margin: 0; }
+@media (min-width: 960px) {
+  .proj-tabs-stage { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: 1.5rem 2.5rem; }
+}
 /* Problem rows - labeled rows + image placeholders (Problem section) */
 .problem-rows { margin: 2rem 0 2.5rem; border-top: 1px solid var(--rim-soft); }
 .problem-row {
@@ -3554,9 +3594,18 @@ const PROJECTS = [
         body: [
           '{{ N }} components covering the authoring environment and agent workspace, each with defined variants, states, and responsive behavior - and each deliberately plain, so it stays legible under any customer\'s brand.',
         ],
+        tabs: [
+          { label: 'Anatomy', title: 'Anatomy',
+            body: ['{{ Placeholder: how a component is broken into named parts - container, label, icon, slots - and which tokens each part uses. }}'],
+            media: { placeholder: true, label: 'Anatomy - image placeholder' } },
+          { label: 'Variants', title: 'Variants',
+            body: ['{{ Placeholder: the defined variants and states - sizes, emphasis levels, hover, focus, disabled, error. }}'],
+            media: { placeholder: true, label: 'Variants - image placeholder' } },
+          { label: 'Usage', title: 'Usage',
+            body: ['{{ Placeholder: usage rules - when to use it, when not to, and the do / don\'t examples that come with it. }}'],
+            media: { placeholder: true, label: 'Usage - image placeholder' } },
+        ],
         media: [
-          { src: 'spark/spark images/component-2400.webp', kind: 'wide', bare: true,
-            caption: 'One component, fully specified - variants, states, and usage rules' },
           { src: 'spark/spark images/before-and-after-2400.webp', kind: 'wide', bare: true,
             caption: 'The same screen, before and after Spark' },
         ],
@@ -7538,6 +7587,108 @@ function ProjectMedia({ items }) {
   );
 }
 
+/* Segmented control over a set of panels - each panel is text beside one image.
+   On desktop the section pins while it is in view and the page scroll drives the
+   tabs: each tab gets one stage-height of scroll, and the page releases after the
+   last one. Where the stage can't fit the viewport it falls back to plain tabs.
+   The section title spans both columns and pins with the stage, so its divider
+   stays full width. */
+function ProjectTabs({ tabs, idBase = 'tabs', title, intro }) {
+  const [active, setActive] = useState(0);
+  const [pinned, setPinned] = useState(false);
+  const trackRef = useRef(null);
+  const stageRef = useRef(null);
+  const geo = useRef({ step: 0, top: 0 });
+  const n = tabs?.length || 0;
+
+  useEffect(() => {
+    const track = trackRef.current, stage = stageRef.current;
+    if (!track || !stage || n < 2) return;
+    const mq = window.matchMedia('(min-width: 960px)');
+
+    const measure = () => {
+      const stageH = stage.offsetHeight;
+      const on = mq.matches && stageH + STICKY_TOP <= window.innerHeight;
+      setPinned(on);
+      geo.current = { step: on ? stageH : 0, top: STICKY_TOP };
+      track.style.height = on ? `${stageH * (n + 1)}px` : '';
+      onScroll();
+    };
+    const onScroll = () => {
+      const { step, top } = geo.current;
+      if (!step) return;
+      const p = top - track.getBoundingClientRect().top;
+      setActive(Math.max(0, Math.min(n - 1, Math.floor(p / step))));
+    };
+
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(stage);
+    window.addEventListener('resize', measure);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    mq.addEventListener('change', measure);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', measure);
+      window.removeEventListener('scroll', onScroll);
+      mq.removeEventListener('change', measure);
+      track.style.height = '';
+    };
+  }, [n]);
+
+  if (!n) return null;
+  const t = tabs[active];
+
+  /* While pinned, picking a tab scrolls to the middle of that tab's stretch,
+     so the scroll position and the selection never disagree. */
+  const go = (i) => {
+    const { step, top } = geo.current;
+    if (!pinned || !step) { setActive(i); return; }
+    const trackTop = trackRef.current.getBoundingClientRect().top + window.scrollY;
+    window.scrollTo({ top: trackTop - top + step * i + step / 2, behavior: 'smooth' });
+  };
+  const onKey = (e) => {
+    const dir = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+    if (!dir) return;
+    e.preventDefault();
+    const next = (active + dir + n) % n;
+    go(next);
+    document.getElementById(`${idBase}-tab-${next}`)?.focus();
+  };
+
+  return (
+    <div ref={trackRef} className={`proj-tabs ${pinned ? 'is-pinned' : ''}`}>
+      <div ref={stageRef} className="proj-tabs-stage">
+        {title}
+        <div className="proj-tabs-side">
+          {intro}
+          <div className="proj-tabs-seg" role="tablist" onKeyDown={onKey}>
+            {tabs.map((tab, i) => (
+              <button key={i} type="button" role="tab" id={`${idBase}-tab-${i}`}
+                      aria-selected={i === active} aria-controls={`${idBase}-panel`}
+                      tabIndex={i === active ? 0 : -1}
+                      onClick={() => go(i)}>{tab.label}</button>
+            ))}
+          </div>
+          <div className="proj-tabs-text" role="tabpanel" id={`${idBase}-panel`}
+               aria-labelledby={`${idBase}-tab-${active}`}>
+            {t.title && <h3 className="proj-sub-title">{t.title}</h3>}
+            {t.body?.map((para, i) => <p key={i}>{para}</p>)}
+          </div>
+        </div>
+        <figure className="proj-tabs-media proj-media-item k-wide">
+          {t.media?.placeholder || !t.media?.src ? (
+            <div className="proj-media-placeholder"><span>{t.media?.label || `${t.label} - image placeholder`}</span></div>
+          ) : (
+            <img src={t.media.src} alt={t.media.caption || ''} loading="lazy" />
+          )}
+          {t.media?.caption && <figcaption className="proj-caption">{t.media.caption}</figcaption>}
+        </figure>
+      </div>
+    </div>
+  );
+}
+
 /* One "+" pinned over a highlighted region of a screenshot. The note is tied
    to the button with aria-describedby so screen readers get the explanation,
    not just the title, and Escape dismisses it for pointer users. */
@@ -7955,7 +8106,8 @@ function ProjectSection({ s }) {
     </header>
   );
   /* sideBySide splits carry their title in the pinned text column */
-  const splitHead = !s.placeholder && !s.prototype &&
+  const tabsHead = !s.placeholder && !!s.tabs;
+  const splitHead = !tabsHead && !s.placeholder && !s.prototype &&
     ((s.sideBySide && !!(s.sideMedia || s.sideGallery)) || (s.mediaSplit === 'right' && !!s.media));
   const splitMedia = !splitHead ? null : s.mediaSplit === 'right' ? <ProjectMedia items={s.media} /> : s.sideGallery ? <SideGallery items={s.sideGallery} /> : (
     <figure className="proj-split-media proj-media-item k-wide">
@@ -7988,7 +8140,7 @@ function ProjectSection({ s }) {
   }
   return (
     <div id={`s-${s.id}`} className={`proj-section ${s.placeholder ? 'is-placeholder' : ''} ${isSub ? 'is-sub' : ''}`}>
-      {!splitHead && titleBlock}
+      {!splitHead && !tabsHead && titleBlock}
       {s.prototype && (
         <figure className="proj-media-item k-wide proj-proto-slot">
           {typeof s.prototype === 'string' ? (
@@ -8006,7 +8158,10 @@ function ProjectSection({ s }) {
         </div>
       ) : (
         <>
-          {splitHead ? (
+          {tabsHead ? (
+            <ProjectTabs tabs={s.tabs} idBase={`${s.id}-tabs`} title={titleBlock}
+                         intro={s.body?.map((para, i) => <p key={`b${i}`}>{para}</p>)} />
+          ) : splitHead ? (
             <StickyHeadSplit title={titleBlock} media={splitMedia}>
                 {s.body?.map((para, i) => <p key={`b${i}`}>{para}</p>)}
                 <SectionList s={s} />
