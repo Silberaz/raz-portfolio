@@ -3615,6 +3615,118 @@ html[data-layout="m3"] footer {                  /* Label Medium */
   html[data-layout="m3"] .next-title,
   html[data-layout="m3"] .next-arrow { font-size: 28px; line-height: 36px; }
 }
+
+/* ═══ Test-card palette (opt-in experiment) ══════════════════════════════
+   A project with `palette: 'testcard'` sets html[data-palette="testcard"].
+   Every Signal family is re-pointed at its bar on the "No signal / TV test
+   signal" card (sampled off the image):
+
+     tomato  #D14543   red bar          sky     #B0DBDE   pale aqua bar
+     sage    #73B874   green bar        orchid  #E09BBE   pink bar
+     indigo  #5867B4   blue bar         butter  #F5D73B   yellow
+     ground  #0D0D0D   the card's black - neutrals lose their purple/warm cast
+
+   Bright surface roles take the card colour as-is. Text roles keep the
+   lightness they were tuned to (OKLCH, new hue + chroma) and are nudged
+   until they clear 4.5:1 on both ground and surface - the one visible
+   shift is dark-mode tomato text, lifted to #E65955. Ramps are remapped
+   the same way: each stop keeps its L, takes the new hue. */
+html[data-palette="testcard"] {
+  --ground:    #0D0D0D;
+  --surface:   #212121;
+  --surface-2: #212121;
+  --rim:       #2E2E2E;
+  --rim-soft:  rgba(234,234,234,.06);
+  --ink:       #EAEAEA;
+  --ink-dim:   #B0B0B0;
+  --muted:     #8B8B8B;
+
+  /* !important: the tweaks panel writes --accent inline on <html> */
+  --accent:        #E65955 !important;
+  --accent-hover:  #F87A73;
+  --accent-active: #FAA8A1;
+  --accent-bg:     #450508;
+  --accent-bg-strong: #7D1016;
+  --accent-text-on: #0D0D0D;
+
+  --accent-sky:         #B0DBDE;
+  --accent-sky-hover:   #C3EFF2;
+  --accent-sky-surface: #B0DBDE;
+  --accent-sky-bg:      #112021;
+
+  --accent-moment:         #F5D73B;
+  --accent-moment-bg:      #221B00;
+  --accent-moment-text-on: #F5D73B;
+
+  --bar-sage:           #73B874;
+  --bar-sage-surface:   #73B874;
+  --bar-orchid:         #E09BBE;
+  --bar-orchid-surface: #E09BBE;
+  --bar-indigo:         #7384D3;
+  --bar-indigo-surface: #5867B4;
+
+  --focus-ring: #B0DBDE;
+
+  --tomato-50:  #FEEBE9; --tomato-100: #FCCDC9; --tomato-200: #FAA8A1;
+  --tomato-300: #F87A73; --tomato-400: #ED524F; --tomato-500: #CA2E32;
+  --tomato-600: #A61921; --tomato-700: #7D1016; --tomato-800: #450508;
+
+  --sky-50:  #EFF7F8; --sky-100: #D5E9EA; --sky-200: #B7D4D6;
+  --sky-300: #91B6B9; --sky-400: #6F989B; --sky-500: #547A7D;
+  --sky-600: #406063; --sky-700: #2C4547; --sky-800: #112021;
+
+  --butter-50:  #FBF6DD; --butter-100: #F2E6AD; --butter-200: #E2CF72;
+  --butter-300: #C8AE1D; --butter-400: #A68F0F; --butter-500: #85720B;
+  --butter-600: #685900; --butter-700: #483E03; --butter-800: #221B00;
+  --butter-base: #F5D73B;
+
+  --sage-50:  #ECFAEC; --sage-100: #D0EFCF; --sage-200: #ACDDAC;
+  --sage-300: #82C083; --sage-400: #5EA25F; --sage-500: #3F8342;
+  --sage-600: #27682B; --sage-700: #0F4A15; --sage-800: #002303;
+
+  --orchid-50:  #FEF0F6; --orchid-100: #FBDAE9; --orchid-200: #EFBDD5;
+  --orchid-300: #D799B8; --orchid-400: #B97799; --orchid-500: #995A7B;
+  --orchid-600: #7B4261; --orchid-700: #5A2A44; --orchid-800: #2E0D20;
+
+  --indigo-50:  #F1F4FE; --indigo-100: #DAE2FD; --indigo-200: #BDCAFC;
+  --indigo-300: #98A9F3; --indigo-400: #7889D9; --indigo-500: #5B6AB8;
+  --indigo-600: #445198; --indigo-700: #2D3672; --indigo-800: #10153F;
+}
+html[data-palette="testcard"][data-theme="light"] {
+  --ground:    #F2F2F2;
+  --surface:   #E5E5E5;
+  --surface-2: #FFFFFF;
+  --rim:       #CFCFCF;
+  --rim-soft:  rgba(20,20,20,.08);
+  --ink:       #141414;
+  --ink-dim:   #3D3D3D;
+  --muted:     #5A5A5A;
+
+  --accent:        #BD2E30 !important;
+  --accent-hover:  #9A2124;
+  --accent-active: #79171A;
+  --accent-bg:     #FEEBE9;
+  --accent-bg-strong: #FCCDC9;
+  --accent-text-on: #FFFFFF;
+
+  --accent-sky:         #476A6D;
+  --accent-sky-hover:   #2C4547;
+  --accent-sky-surface: #B0DBDE;
+  --accent-sky-bg:      #EFF7F8;
+
+  --accent-moment:         #F5D73B;
+  --accent-moment-bg:      #FBF6DD;
+  --accent-moment-text-on: #483E03;
+
+  --bar-sage:           #356E37;
+  --bar-sage-surface:   #73B874;
+  --bar-orchid:         #844868;
+  --bar-orchid-surface: #E09BBE;
+  --bar-indigo:         #333E81;
+  --bar-indigo-surface: #5867B4;
+
+  --focus-ring: #BD2E30;
+}
 </style>
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
@@ -3807,9 +3919,10 @@ const PROJECTS = [
     tileImage: 'spark/spark images/homepage-thumbnail-1400.webp',
     tileAspect: '1399 / 2074', /* tile takes the thumbnail's own shape, so nothing is cropped */
     swatch: { from: '#553A0E', to: '#2B1D05', mark: '#F4D06F' },
-    heroImage: 'spark/spark images/project-cover-2800.webp',
+    heroImage: 'spark/spark images/hero-2800.png',
     heroContained: true,
     layout: 'm3', /* opt-in Material 3 layout experiment - see "M3 layout" in the styles */
+    palette: 'testcard', /* opt-in colour experiment - see "Test-card palette" in the styles */
     sections: [
       { id: 'context', title: 'Context', body: [
         'KMS Lighthouse builds enterprise knowledge management software - the tool support agents, banks, and telcos use to find a verified answer in seconds. It\'s sold white-label, so every customer sees it under their own brand.',
@@ -3857,10 +3970,12 @@ const PROJECTS = [
         tabs: [
           { label: 'Anatomy', title: 'Anatomy',
             body: ['{{ Placeholder: how a component is broken into named parts - container, label, icon, slots - and which tokens each part uses. }}'],
-            media: { placeholder: true, label: 'Anatomy - image placeholder' } },
+            media: { src: 'spark/spark images/anatomy-2800.png',
+                     caption: 'Card anatomy - nine named parts, two layouts, and the assembled result' } },
           { label: 'Variants', title: 'Variants',
             body: ['{{ Placeholder: the defined variants and states - sizes, emphasis levels, hover, focus, disabled, error. }}'],
-            media: { placeholder: true, label: 'Variants - image placeholder' } },
+            media: { src: 'spark/spark images/variants-2800.jpg',
+                     caption: 'Card states - default, hover, pressed, focus, disabled, selected' } },
           { label: 'Usage', title: 'Usage',
             body: ['{{ Placeholder: usage rules - when to use it, when not to, and the do / don\'t examples that come with it. }}'],
             media: { placeholder: true, label: 'Usage - image placeholder' } },
@@ -8559,12 +8674,14 @@ function Project({ projectId, onBack, onOpen }) {
   const next = window.PROJECTS[(window.PROJECTS.indexOf(p) + 1) % window.PROJECTS.length];
   const [activeSection, setActiveSection] = useState(p.sections[0].id);
   const atmosRef = useRef(null);
-  /* Opt-in page layout (e.g. layout: 'm3'). Set on <html> so the shared nav
-     follows too; a layout effect, so it lands before the first paint. */
+  /* Opt-in page layout / palette (e.g. layout: 'm3', palette: 'testcard').
+     Set on <html> so the shared nav follows too; a layout effect, so it
+     lands before the first paint. */
   React.useLayoutEffect(() => {
-    if (!p.layout) return;
-    document.documentElement.dataset.layout = p.layout;
-    return () => { delete document.documentElement.dataset.layout; };
+    const root = document.documentElement.dataset;
+    if (p.layout) root.layout = p.layout;
+    if (p.palette) root.palette = p.palette;
+    return () => { delete root.layout; delete root.palette; };
   }, [p]);
   useEffect(() => {
     const onScroll = () => {
@@ -8600,12 +8717,25 @@ function Project({ projectId, onBack, onOpen }) {
     const el = atmosRef.current;
     if (!el) return;
     const GROUND = { dark: [20, 19, 26], light: [244, 242, 236] };
-    const HUE = {
+    const HUE = p.palette === 'testcard' ? {
+      /* the test card's bars (dark) and their AA text tones (light) */
+      tomato: { dark: [209, 69, 67],   light: [189, 46, 48] },
+      sky:    { dark: [176, 219, 222], light: [71, 106, 109] },
+      sage:   { dark: [115, 184, 116], light: [53, 110, 55] },
+      orchid: { dark: [224, 155, 190], light: [132, 72, 104] },
+      indigo: { dark: [88, 103, 180],  light: [51, 62, 129] },
+    } : {
       tomato: { dark: [242, 84, 80],  light: [196, 32, 24] },
       sky:    { dark: [91, 196, 232], light: [19, 107, 146] },
       sage:   { dark: [54, 150, 104],  light: [26, 96, 68] },
       orchid: { dark: [176, 91, 168], light: [96, 48, 150] },
       indigo: { dark: [122, 146, 224], light: [42, 63, 133] },
+    };
+    /* the live --ground, so a page palette's ground is what the wash returns to */
+    const groundNow = (mode) => {
+      const hex = getComputedStyle(document.documentElement).getPropertyValue('--ground').trim();
+      const m = /^#([0-9a-f]{6})$/i.exec(hex);
+      return m ? [0, 2, 4].map(i => parseInt(m[1].slice(i, i + 2), 16)) : GROUND[mode];
     };
     const STRENGTH = { dark: 0.22, light: 0.14 };
     const mix = (a, b, t) => a.map((v, i) => Math.round(v + (b[i] - v) * t));
@@ -8662,7 +8792,7 @@ function Project({ projectId, onBack, onOpen }) {
         const w = d <= HOLD ? 1 : d >= HOLD + RAMP ? 0 : 1 - smooth((d - HOLD) / RAMP);
         if (w > bestW) { bestW = w; bestHue = a.hue; }
       }
-      const g = GROUND[mode];
+      const g = groundNow(mode);
       const color = bestHue ? mix(g, bestHue, STRENGTH[mode] * bestW) : g;
       const rgb = `rgb(${color.join(',')})`;
       el.style.backgroundColor = rgb;
