@@ -2237,6 +2237,56 @@ footer a:hover { color: var(--accent); }
 @media (min-width: 720px) {
   .proj-media-row-grid { grid-template-columns: repeat(var(--mr-cols, 3), 1fr); }
 }
+/* Concept accordion - screens left, concepts right; stacked in a narrow pane */
+.proj-concepts { margin: 2rem 0 2.5rem; display: grid; gap: 1.5rem; grid-template-columns: minmax(0, 1fr); }
+.proj-concepts-list { border-bottom: 1px solid var(--rim); }
+.proj-concept { border-top: 1px solid var(--rim); }
+.proj-concept-head { margin: 0; }
+.proj-concept-head button {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  width: 100%; padding: 1rem 0; border: 0; background: none; cursor: pointer;
+  font: inherit; font-weight: var(--fw-medium, 500); text-align: left; color: var(--ink-dim);
+  transition: color .2s;
+}
+.proj-concept-head button:hover, .proj-concept.is-open .proj-concept-head button { color: var(--ink); }
+.proj-concept-icon { color: var(--ink-dim); transition: color .2s; }
+.proj-concept.is-open .proj-concept-icon { color: var(--accent); }
+/* Bodies slide between 0fr and 1fr rows, so the opening item pushes the
+   closing one shut over the same duration and the list height stays steady. */
+.proj-concept-body {
+  display: grid; grid-template-rows: 0fr; opacity: 0;
+  transition: grid-template-rows .45s cubic-bezier(.4, 0, .2, 1), opacity .3s ease;
+}
+.proj-concept.is-open .proj-concept-body { grid-template-rows: 1fr; opacity: 1; transition-delay: 0s, .1s; }
+.proj-concept-body-inner { min-height: 0; overflow: hidden; }
+.proj-concept-body-inner > :last-child { padding-bottom: 1rem; }
+/* a "+" whose vertical bar folds flat into a "−" when the item opens */
+.proj-concept-icon { position: relative; flex: none; width: 12px; height: 12px; }
+.proj-concept-icon::before, .proj-concept-icon::after {
+  content: ''; position: absolute; left: 0; top: 50%; width: 100%; height: 1.5px;
+  margin-top: -.75px; background: currentColor;
+  transition: transform .45s cubic-bezier(.4, 0, .2, 1);
+}
+.proj-concept-icon::after { transform: rotate(90deg); }
+.proj-concept.is-open .proj-concept-icon::after { transform: rotate(0deg); }
+/* all layers share one grid cell; the open one fades and settles in over the old */
+.proj-concepts-media { display: grid; }
+.proj-concepts-layer {
+  grid-area: 1 / 1; opacity: 0; visibility: hidden; transform: scale(.985);
+  transition: opacity .55s ease, transform .55s cubic-bezier(.2, 0, 0, 1), visibility 0s linear .55s;
+}
+.proj-concepts-layer.is-open {
+  opacity: 1; visibility: visible; transform: none; z-index: 1;
+  transition: opacity .55s ease, transform .55s cubic-bezier(.2, 0, 0, 1), visibility 0s;
+}
+@media (prefers-reduced-motion: reduce) {
+  .proj-concept-body, .proj-concept-icon::after, .proj-concepts-layer { transition: none; }
+}
+.proj-concept-body p { margin: 0 0 .75rem; color: var(--ink-dim); }
+.proj-concept-body p:last-child { margin-bottom: 0; }
+@container pane (min-width: 700px) {
+  .proj-concepts { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 2.5rem; align-items: start; }
+}
 
 /* Annotated screenshots - a "+" pinned over each highlighted region that
    opens a short note on hover or keyboard focus. The layer is click-through
@@ -3963,7 +4013,7 @@ html[data-layout="m3"] :is(.proj-section, .proj-split-text, .proj-parallax-text,
   margin: 0 0 16px;
 }
 html[data-layout="m3"] :is(.proj-section, .proj-split-text, .proj-parallax-text, .proj-subsection) > :is(
-  .proj-media, .proj-mosaic, .proj-media-rows, .proj-ba-pairs, .proj-beforeafter, .proj-compare,
+  .proj-media, .proj-mosaic, .proj-media-rows, .proj-concepts, .proj-ba-pairs, .proj-beforeafter, .proj-compare,
   .problem-rows, .fv-wrap, .proj-proto-slot, .proj-split, .proj-cards, .outcome-grid,
   .proj-placeholder, .grid-demo-figure) {
   margin: 24px 0;
@@ -4752,34 +4802,43 @@ const PROJECTS = [
         group: 'stage-2', groupLabel: 'Stage 2',
         body: [
           'Stage two opened with wide exploration. Filtering was wireframed as four competing concepts, each a different answer to two questions - where the filters live, and how multiple conditions combine - and each pressure-tested against the same result table.',
-          'Concept 1 put everything in a collapsible side panel; concept 2 lifted the highest-traffic filters into a horizontal filter bar with applied-filter chips; concept 3 split a two-pane panel with a category rail; concept 4 framed filtering as an explicit condition builder. Collapsed, empty, and expanded states were drawn alongside each to see how it held up in use.',
         ],
         outro: [
           'The wireframes didn\'t crown a layout. They surfaced two realizations that reframed the brief - search might no longer be the main event, and the screen\'s real job is bulk operating on groups, not single lookups.',
         ],
-        /* One row per concept, in screen order. Concept 2 is the longest at
-           three screens, so it sets the column width for all four rows. */
-        mediaRows: [
-          { label: 'Concept 1 - Side panel', items: [
-            { src: 'advanced-search/wireframes/wireframe-concept-A-drawer.png',            caption: 'Filter panel open, groups collapsed' },
-            { src: 'advanced-search/wireframes/wireframe-state-A-drawer-collapsed.png',    caption: 'Panel collapsed to a rail' },
-          ] },
-          { label: 'Concept 2 - Filter bar', items: [
-            { src: 'advanced-search/wireframes/wireframe-concept-B-filter-bar.png',         caption: 'Filter bar with applied chips' },
-            { src: 'advanced-search/wireframes/wireframe-state-B-filter-menu-open.png',     caption: 'Filter menu open' },
-            { src: 'advanced-search/wireframes/wireframe-state-B-more-filters-overlay.png', caption: 'More-filters drawer' },
-          ] },
-          { label: 'Concept 3 - Two-pane', items: [
-            { src: 'advanced-search/wireframes/wireframe-concept-C-two-pane.png',           caption: 'Category rail with a detail pane' },
-          ] },
-          { label: 'Concept 4 - Condition builder', items: [
-            { src: 'advanced-search/wireframes/wireframe-concept-D-conditions.png',         caption: 'Conditions built as explicit rows' },
-            { src: 'advanced-search/wireframes/wireframe-state-D-add-filter-menu.png',      caption: 'Add-filter menu' },
-          ] },
-          { label: 'Shared across concepts', items: [
-            { src: 'advanced-search/wireframes/wireframe-state-empty.png',                  caption: 'Empty state - suggested searches' },
-            { src: 'advanced-search/wireframes/wireframe-state-row-expanded.png',           caption: 'Row expanded - version matches' },
-          ] },
+        /* One accordion item per concept, in screen order; the open item's
+           screens show beside the list, as a gallery when there are several. */
+        concepts: [
+          { label: 'Concept 1 - Side panel',
+            body: ['Every filter lives in a collapsible side panel beside the results, grouped by type. Collapsed to a rail, it hands the table back its full width.'],
+            items: [
+              { src: 'advanced-search/wireframes/wireframe-concept-A-drawer.png',            caption: 'Filter panel open, groups collapsed' },
+              { src: 'advanced-search/wireframes/wireframe-state-A-drawer-collapsed.png',    caption: 'Panel collapsed to a rail' },
+            ] },
+          { label: 'Concept 2 - Filter bar',
+            body: ['The highest-traffic filters lift into a horizontal bar above the table, with applied filters shown as chips. Everything else waits in a more-filters drawer.'],
+            items: [
+              { src: 'advanced-search/wireframes/wireframe-concept-B-filter-bar.png',         caption: 'Filter bar with applied chips' },
+              { src: 'advanced-search/wireframes/wireframe-state-B-filter-menu-open.png',     caption: 'Filter menu open' },
+              { src: 'advanced-search/wireframes/wireframe-state-B-more-filters-overlay.png', caption: 'More-filters drawer' },
+            ] },
+          { label: 'Concept 3 - Two-pane',
+            body: ['A two-pane panel splits filtering into a category rail and a detail pane, so one category is worked through at a time.'],
+            items: [
+              { src: 'advanced-search/wireframes/wireframe-concept-C-two-pane.png',           caption: 'Category rail with a detail pane' },
+            ] },
+          { label: 'Concept 4 - Condition builder',
+            body: ['Filtering is framed as an explicit condition builder - each condition is its own row, so how multiple conditions combine is spelled out.'],
+            items: [
+              { src: 'advanced-search/wireframes/wireframe-concept-D-conditions.png',         caption: 'Conditions built as explicit rows' },
+              { src: 'advanced-search/wireframes/wireframe-state-D-add-filter-menu.png',      caption: 'Add-filter menu' },
+            ] },
+          { label: 'Shared across concepts',
+            body: ['Empty and expanded states were drawn once and tested against every concept, to see how each held up in use.'],
+            items: [
+              { src: 'advanced-search/wireframes/wireframe-state-empty.png',                  caption: 'Empty state - suggested searches' },
+              { src: 'advanced-search/wireframes/wireframe-state-row-expanded.png',           caption: 'Row expanded - version matches' },
+            ] },
         ],
       },
       { id: 'stage-2-decision', title: 'The decision point',
@@ -8538,6 +8597,62 @@ function ProjectMediaRows({ rows, idBase = 'mr' }) {
   );
 }
 
+/* Concept accordion - the open concept's screens on one side, the list of
+   concepts on the other. Exactly one concept is open at a time; one with
+   several screens gets a gallery, one with a single screen a plain figure. */
+function ProjectConcepts({ concepts, idBase = 'concepts' }) {
+  const [open, setOpen] = useState(0);
+  if (!concepts || !concepts.length) return null;
+  /* Every concept's screens stay mounted in one stacked cell and crossfade,
+     so a switch never flashes an empty frame while the next image loads. */
+  return (
+    <div className="proj-concepts">
+      <div className="proj-concepts-media">
+        {concepts.map((c, i) => {
+          const items = c.items || [];
+          const isOpen = i === open;
+          return (
+            <div key={i} className={`proj-concepts-layer ${isOpen ? 'is-open' : ''}`}
+                 aria-hidden={!isOpen} inert={isOpen ? undefined : ''}>
+              {items.length > 1 ? (
+                <SideGallery items={items} />
+              ) : items[0] ? (
+                <figure className="proj-side-gallery-frame">
+                  <img src={items[0].src} alt={items[0].caption || c.label} />
+                  {items[0].caption && <figcaption className="proj-caption">{items[0].caption}</figcaption>}
+                </figure>
+              ) : null}
+            </div>
+          );
+        })}
+      </div>
+      <div className="proj-concepts-list">
+        {concepts.map((k, i) => {
+          const isOpen = i === open;
+          return (
+            <div key={i} className={`proj-concept ${isOpen ? 'is-open' : ''}`}>
+              <h3 className="proj-concept-head">
+                <button type="button" id={`${idBase}-c-${i}`}
+                        aria-expanded={isOpen} aria-controls={`${idBase}-p-${i}`}
+                        onClick={() => setOpen(i)}>
+                  <span>{k.label}</span>
+                  <span className="proj-concept-icon" aria-hidden="true" />
+                </button>
+              </h3>
+              <div className="proj-concept-body" id={`${idBase}-p-${i}`} role="region"
+                   aria-labelledby={`${idBase}-c-${i}`} aria-hidden={!isOpen} inert={isOpen ? undefined : ''}>
+                <div className="proj-concept-body-inner">
+                  {k.body?.map((para, j) => <p key={j}>{para}</p>)}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 /* ─── Project page - A-vs-B comparison table (built from the same tokens as outcome-grid) ─── */
 /* ─── Project page - marquee: a slow, endless strip of frames (chyron-style).
    The list renders twice so the track can loop seamlessly at -50%; duration is
@@ -9041,6 +9156,7 @@ function ProjectSection({ s }) {
           {s.media && !s.mediaSplit && <ProjectMedia items={s.media} />}
           {s.marquee && <ProjectMarquee items={s.marquee} />}
           {s.mediaRows && <ProjectMediaRows rows={s.mediaRows} idBase={s.id} />}
+          {s.concepts && <ProjectConcepts concepts={s.concepts} idBase={s.id} />}
           {s.compare && <ProjectCompare data={s.compare} />}
           {s.subsections?.map((sub, i) => (
             <div key={sub.id || i}
