@@ -3573,15 +3573,16 @@ html[data-layout="m3"] .proj-caption {           /* Body Small */
   font-size: 12px; line-height: 16px; letter-spacing: .4px;
 }
 
-/* Two-column sections (split + tabs): stacked until the pane reaches
-   expanded width, then two equal columns with a 24 spacer */
+/* Two-column splits: stacked until the pane reaches expanded width, then
+   two equal columns with a 24 spacer. Tabs always stack - their media is
+   detailed and needs the full pane width, so it sits under the text. */
 html[data-layout="m3"] .proj-split,
 html[data-layout="m3"] .proj-split.is-cols,
 html[data-layout="m3"] .proj-tabs-stage { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+html[data-layout="m3"] .proj-tabs-side { max-width: var(--m3-measure); }
 html[data-layout="m3"] .proj-split.is-cols .proj-split-text { position: static; }
 @container pane (min-width: 840px) {
-  html[data-layout="m3"] .proj-split.is-cols,
-  html[data-layout="m3"] .proj-tabs-stage { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+  html[data-layout="m3"] .proj-split.is-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
   html[data-layout="m3"] .proj-split.is-cols .proj-split-text { position: sticky; top: calc(var(--m3-bar-h) + 24px); }
 }
 html[data-layout="m3"] .proj-tabs { margin: 0 0 24px; }
@@ -7983,10 +7984,7 @@ function ProjectTabs({ tabs, idBase = 'tabs', title, intro }) {
 
     const measure = () => {
       const stageH = stage.offsetHeight;
-      /* pin only when the stage really is two columns - a layout can keep it
-         stacked past the width query (e.g. the M3 pane's container query) */
-      const cols = getComputedStyle(stage).gridTemplateColumns.trim().split(/\s+/).length > 1;
-      const on = mq.matches && cols && stageH + STICKY_TOP <= window.innerHeight;
+      const on = mq.matches && stageH + STICKY_TOP <= window.innerHeight;
       setPinned(on);
       geo.current = { step: on ? stageH : 0, top: STICKY_TOP };
       track.style.height = on ? `${stageH * (n + 1)}px` : '';
