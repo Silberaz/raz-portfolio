@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jira ticket wireframe</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { background: #F1F2F4; padding: 40px 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #172B4D; }
+  .ticket { width: 720px; margin: 0 auto; background: #FFFFFF; border: 1px solid #DFE1E6; border-radius: 8px; overflow: hidden; }
+  .topbar { background: #0C66E4; height: 6px; }
+  .inner { padding: 16px 20px; }
+  .crumbs { display: flex; gap: 6px; align-items: center; margin-bottom: 14px; font-size: 13px; color: #44546F; }
+  .crumbs .ti { font-size: 18px; }
+  .type-icon { width: 16px; height: 16px; border-radius: 3px; display: inline-flex; align-items: center; justify-content: center; color: #FFFFFF; }
+  .type-icon .ti { font-size: 11px; }
+  .key { color: #0C66E4; }
+  .spacer { flex: 1; }
+  .cols { display: grid; grid-template-columns: minmax(0, 1fr) 210px; gap: 24px; }
+  .title { font-size: 22px; font-weight: 500; margin-bottom: 12px; }
+  .actions { display: flex; gap: 6px; margin-bottom: 20px; }
+  .btn { border: 1px solid #DFE1E6; background: #F7F8F9; color: #44546F; border-radius: 3px; font-size: 13px; padding: 5px 10px; display: inline-flex; align-items: center; gap: 5px; }
+  .label { font-size: 12px; font-weight: 500; color: #44546F; margin-bottom: 8px; }
+  .line { height: 8px; background: #DCDFE4; border-radius: 4px; margin: 7px 0; }
+  .section { margin-bottom: 20px; }
+  .subtasks { border: 1px solid #DFE1E6; border-radius: 4px; margin-bottom: 20px; }
+  .subtask { display: flex; gap: 8px; align-items: center; padding: 8px 10px; }
+  .subtask + .subtask { border-top: 1px solid #DFE1E6; }
+  .subtask-icon { width: 14px; height: 14px; border-radius: 3px; background: #1D7AFC; flex-shrink: 0; }
+  .subtask .key { font-size: 12px; }
+  .subtask .line { flex: 1; margin: 0; }
+  .lozenge { font-size: 11px; font-weight: 500; padding: 2px 6px; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.02em; }
+  .lozenge.progress { background: #E9F2FF; color: #0055CC; }
+  .lozenge.done { background: #DCFFF1; color: #216E4E; }
+  .tabs { display: flex; gap: 4px; margin-bottom: 12px; font-size: 12px; }
+  .tab { padding: 3px 8px; color: #44546F; border-radius: 3px; }
+  .tab.active { background: #E9F2FF; color: #0C66E4; font-weight: 500; }
+  .comment { display: flex; gap: 10px; }
+  .comment + .comment { margin-top: 14px; }
+  .avatar { border-radius: 50%; color: #FFFFFF; font-size: 10px; font-weight: 500; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .avatar.lg { width: 30px; height: 30px; }
+  .avatar.sm { width: 20px; height: 20px; }
+  .avatar.purple { background: #6E5DC6; }
+  .avatar.yellow { background: #E2B203; color: #533F04; }
+  .comment-input { flex: 1; border: 1px solid #DFE1E6; border-radius: 3px; padding: 7px 10px; font-size: 13px; color: #626F86; }
+  .comment-body { flex: 1; }
+  .comment-meta { font-size: 13px; }
+  .comment-meta span { color: #626F86; font-size: 12px; }
+  .status-row { display: flex; gap: 6px; margin-bottom: 16px; }
+  .status { background: #0C66E4; color: #FFFFFF; border-radius: 3px; font-size: 13px; font-weight: 500; padding: 6px 10px; display: inline-flex; align-items: center; gap: 4px; }
+  .details { border: 1px solid #DFE1E6; border-radius: 4px; }
+  .details-head { padding: 10px 12px; border-bottom: 1px solid #DFE1E6; font-size: 13px; font-weight: 500; display: flex; justify-content: space-between; align-items: center; }
+  .fields { display: grid; grid-template-columns: 72px 1fr; gap: 12px 8px; align-items: center; font-size: 12px; color: #44546F; padding: 12px; }
+  .person { display: flex; gap: 6px; align-items: center; }
+  .person .line { flex: 1; margin: 0; }
+  .priority { color: #C9372C; display: flex; align-items: center; gap: 4px; }
+  .priority span { color: #172B4D; }
+  .chips { display: flex; gap: 4px; }
+  .chip { background: #F1F2F4; border-radius: 3px; padding: 1px 6px; color: #44546F; }
+  .sprint { color: #0C66E4; }
+  .points { background: #F1F2F4; border-radius: 10px; padding: 1px 8px; justify-self: start; color: #172B4D; }
+  .timestamps { font-size: 11px; color: #626F86; margin-top: 12px; line-height: 1.7; }
+</style>
+</head>
+<body>
+<div class="ticket">
+  <div class="topbar"></div>
+  <div class="inner">
+    <div class="crumbs">
+      <span class="type-icon" style="background:#6E5DC6"><i class="ti ti-bolt"></i></span>
+      <span>Project</span><span>/</span>
+      <span class="type-icon" style="background:#22A06B"><i class="ti ti-bookmark"></i></span>
+      <span class="key">PROJ-123</span>
+      <div class="spacer"></div>
+      <i class="ti ti-eye"></i>
+      <i class="ti ti-share" style="margin-left:8px"></i>
+      <i class="ti ti-dots" style="margin-left:8px"></i>
+      <i class="ti ti-x" style="margin-left:8px"></i>
+    </div>
+
+    <div class="cols">
+      <div>
+        <h1 class="title">New Spark component</h1>
+        <div class="actions">
+          <span class="btn"><i class="ti ti-paperclip"></i>Attach</span>
+          <span class="btn"><i class="ti ti-subtask"></i>Add subtask</span>
+          <span class="btn"><i class="ti ti-link"></i>Link issue</span>
+        </div>
+
+        <p class="label">Description</p>
+        <div class="section">
+          <div class="line" style="width:95%"></div>
+          <div class="line" style="width:88%"></div>
+          <div class="line" style="width:72%"></div>
+          <div class="line" style="width:40%"></div>
+        </div>
+
+        <p class="label">Subtasks</p>
+        <div class="subtasks">
+          <div class="subtask">
+            <span class="subtask-icon"></span>
+            <span class="key">PROJ-124</span>
+            <div class="line"></div>
+            <span class="lozenge progress">In progress</span>
+          </div>
+          <div class="subtask">
+            <span class="subtask-icon"></span>
+            <span class="key">PROJ-125</span>
+            <div class="line"></div>
+            <span class="lozenge done">Done</span>
+          </div>
+        </div>
+
+        <p class="label">Activity</p>
+        <div class="tabs">
+          <span class="tab active">Comments</span>
+          <span class="tab">History</span>
+          <span class="tab">Work log</span>
+        </div>
+        <div class="comment">
+          <div class="avatar lg purple">RS</div>
+          <div class="comment-input">Add a comment…</div>
+        </div>
+        <div class="comment">
+          <div class="avatar lg yellow">AL</div>
+          <div class="comment-body">
+            <div class="comment-meta"><strong style="font-weight:500">Teammate</strong> <span>2 hours ago</span></div>
+            <div class="line" style="width:85%"></div>
+            <div class="line" style="width:55%"></div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="status-row">
+          <span class="status">In progress <i class="ti ti-chevron-down"></i></span>
+          <span class="btn" style="padding:5px 8px"><i class="ti ti-bolt"></i></span>
+        </div>
+        <div class="details">
+          <div class="details-head">Details <i class="ti ti-chevron-up"></i></div>
+          <div class="fields">
+            <span>Assignee</span>
+            <div class="person"><div class="avatar sm purple">RS</div><div class="line"></div></div>
+            <span>Reporter</span>
+            <div class="person"><div class="avatar sm yellow">AL</div><div class="line"></div></div>
+            <span>Priority</span>
+            <span class="priority"><i class="ti ti-chevrons-up"></i><span>High</span></span>
+            <span>Labels</span>
+            <div class="chips"><span class="chip">ui</span><span class="chip">web</span></div>
+            <span>Sprint</span>
+            <span class="sprint">Sprint 12</span>
+            <span>Points</span>
+            <span class="points">5</span>
+          </div>
+        </div>
+        <div class="timestamps">Created 3 days ago<br>Updated 2 hours ago</div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

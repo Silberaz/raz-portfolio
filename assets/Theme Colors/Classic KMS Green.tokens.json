@@ -1,0 +1,207 @@
+{
+  "Theme General - Alias": {
+    "01-primary-background": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9450980424880981,
+          0.9960784316062927,
+          0.9843137264251709
+        ],
+        "alpha": 1,
+        "hex": "#F1FEFB"
+      },
+      "$extensions": {
+        "com.figma.variableId": "VariableID:74523816f21832959a1dfaac8718e0a1fba08e12/57286:217",
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.aliasData": {
+          "targetVariableId": "VariableID:62f49ee77348d458ae986e70152fd8ce2a6dbe4f/57286:74",
+          "targetVariableName": "Green/green-01",
+          "targetVariableSetId": "VariableCollectionId:5e6bb9d000a3f0ad0d1f0f3b95114381b496e205/57286:41",
+          "targetVariableSetName": "Brand"
+        }
+      }
+    },
+    "03-secondary-pressed": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.6901960968971252,
+          0.9176470637321472,
+          0.8509804010391235
+        ],
+        "alpha": 1,
+        "hex": "#B0EAD9"
+      },
+      "$extensions": {
+        "com.figma.variableId": "VariableID:5dc620c44da69f7cbd2cfe0306e3abbbe1199770/57286:218",
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.aliasData": {
+          "targetVariableId": "VariableID:35e082cf2efeda651ac1c9b6ee2bb6f6033093b7/57286:76",
+          "targetVariableName": "Green/green-03",
+          "targetVariableSetId": "VariableCollectionId:5e6bb9d000a3f0ad0d1f0f3b95114381b496e205/57286:41",
+          "targetVariableSetName": "Brand"
+        }
+      }
+    },
+    "04-secondary-active": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.4431372582912445,
+          0.8470588326454163,
+          0.729411780834198
+        ],
+        "alpha": 1,
+        "hex": "#71D8BA"
+      },
+      "$extensions": {
+        "com.figma.variableId": "VariableID:3d0666474306c0e642ca76a644e88cc67c5c3415/57286:219",
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.aliasData": {
+          "targetVariableId": "VariableID:ea77223b3004d1e04e158176212fb1ff7fd5513b/57286:77",
+          "targetVariableName": "Green/green-04",
+          "targetVariableSetId": "VariableCollectionId:5e6bb9d000a3f0ad0d1f0f3b95114381b496e205/57286:41",
+          "targetVariableSetName": "Brand"
+        }
+      }
+    },
+    "05-secondary": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.062745101749897,
+          0.6509804129600525,
+          0.47843137383461
+        ],
+        "alpha": 1,
+        "hex": "#10A67A"
+      },
+      "$extensions": {
+        "com.figma.variableId": "VariableID:5b0c0428a97f4a076a3ba14eaac70dded292ab0e/57286:220",
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.aliasData": {
+          "targetVariableId": "VariableID:68f4171a90fd7b40c9f4ec0796d405664fd90259/57286:80",
+          "targetVariableName": "Green/green-07",
+          "targetVariableSetId": "VariableCollectionId:5e6bb9d000a3f0ad0d1f0f3b95114381b496e205/57286:41",
+          "targetVariableSetName": "Brand"
+        }
+      }
+    },
+    "06-primary": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.062745101749897,
+          0.6509804129600525,
+          0.47843137383461
+        ],
+        "alpha": 1,
+        "hex": "#10A67A"
+      },
+      "$extensions": {
+        "com.figma.variableId": "VariableID:26aea4fcb04cd6ec193772cfa952281be4eee0c1/57286:221",
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.aliasData": {
+          "targetVariableId": "VariableID:68f4171a90fd7b40c9f4ec0796d405664fd90259/57286:80",
+          "targetVariableName": "Green/green-07",
+          "targetVariableSetId": "VariableCollectionId:5e6bb9d000a3f0ad0d1f0f3b95114381b496e205/57286:41",
+          "targetVariableSetName": "Brand"
+        }
+      }
+    },
+    "07-primary-hover&focus": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.08235294371843338,
+          0.5372549295425415,
+          0.40392157435417175
+        ],
+        "alpha": 1,
+        "hex": "#158967"
+      },
+      "$extensions": {
+        "com.figma.variableId": "VariableID:a5a0e9bf8afbbbfe06216cacea09e8b02b231546/57286:222",
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.aliasData": {
+          "targetVariableId": "VariableID:2ad4897296a11d13b9f04842d88c3e9057862272/57286:81",
+          "targetVariableName": "Green/green-08",
+          "targetVariableSetId": "VariableCollectionId:5e6bb9d000a3f0ad0d1f0f3b95114381b496e205/57286:41",
+          "targetVariableSetName": "Brand"
+        }
+      }
+    },
+    "08-primary-pressed": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.06666667014360428,
+          0.4313725531101227,
+          0.32549020648002625
+        ],
+        "alpha": 1,
+        "hex": "#116E53"
+      },
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1ebbc92aa48ebe5efe83d8297127b5cdfc9df076/57286:223",
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.aliasData": {
+          "targetVariableId": "VariableID:ddba14b5260769b31fb8b7a4ac71e23d01c87abf/57286:100",
+          "targetVariableName": "Green/green-09",
+          "targetVariableSetId": "VariableCollectionId:5e6bb9d000a3f0ad0d1f0f3b95114381b496e205/57286:41",
+          "targetVariableSetName": "Brand"
+        }
+      }
+    },
+    "02-secondary-hover": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9450980424880981,
+          0.9960784316062927,
+          0.9843137264251709
+        ],
+        "alpha": 1,
+        "hex": "#F1FEFB"
+      },
+      "$extensions": {
+        "com.figma.variableId": "VariableID:355e5d1b634a36dd63cf565cfaf0faf126606c1a/57286:224",
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.aliasData": {
+          "targetVariableId": "VariableID:62f49ee77348d458ae986e70152fd8ce2a6dbe4f/57286:74",
+          "targetVariableName": "Green/green-01",
+          "targetVariableSetId": "VariableCollectionId:5e6bb9d000a3f0ad0d1f0f3b95114381b496e205/57286:41",
+          "targetVariableSetName": "Brand"
+        }
+      }
+    }
+  },
+  "$extensions": {
+    "com.figma.modeName": "Classic KMS Green"
+  }
+}
