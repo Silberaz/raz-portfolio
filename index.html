@@ -3477,8 +3477,14 @@ html[data-layout="m3"] .proj-meta .v { font-size: 14px; line-height: 20px; lette
 }
 
 /* hero media spans the full width between the margins */
-html[data-layout="m3"] .proj-hero-image.is-contained { padding: 0 var(--pad-x); }
-html[data-layout="m3"] .proj-hero-image.is-contained img { border-radius: var(--m3-r-lg); }
+/* every hero type (contained, bare, placeholder) fills the width between
+   the margins at its natural height - never shrunk to fit, never cropped */
+html[data-layout="m3"] .proj-hero-image:is(.is-contained, .is-bare, .is-placeholder) { padding: 0 var(--pad-x); }
+html[data-layout="m3"] .proj-hero-image:is(.is-contained, .is-bare) img {
+  width: 100%; height: auto; max-height: none; object-fit: fill;
+  border-radius: var(--m3-r-lg);
+}
+html[data-layout="m3"] .proj-hero-image.is-placeholder .proj-hero-ph { max-height: none; }
 
 /* ── Panes: rail + one flexible content pane ── */
 html[data-layout="m3"] .proj-content {
@@ -3524,8 +3530,12 @@ html[data-layout="m3"] .sidebar-nav li.is-sub { padding-left: 16px; }
 @media (min-width: 840px) {
   html[data-layout="m3"] .proj-sidebar {
     max-height: calc(100vh - var(--m3-bar-h) - 48px);
-    overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin;
+    overflow-y: auto; overscroll-behavior: contain;
+    /* no visible scrollbar - it sat on top of the labels; the list still
+       scrolls (wheel / trackpad / keyboard) and follows the active section */
+    scrollbar-width: none;
   }
+  html[data-layout="m3"] .proj-sidebar::-webkit-scrollbar { display: none; }
 }
 html[data-layout="m3"] .sidebar-nav a:hover { background: color-mix(in oklab, var(--ink) 8%, transparent); }
 html[data-layout="m3"] .sidebar-nav a.active {
@@ -3939,6 +3949,37 @@ html[data-layout="m3"] .proj-mosaic { gap: var(--m3-gap); }
 html[data-layout="m3"] .proj-mosaic-side { gap: var(--m3-gap); }
 html[data-layout="m3"] .proj-ba-pairs { gap: 32px; margin: 24px 0 0; }
 html[data-layout="m3"] .proj-compare { margin: 24px 0 0; max-width: none; }
+
+/* ── Section rhythm - one set of gaps for every case study (Spark's):
+   title -> content 24, text -> text 16, anything -> block 24, image ->
+   caption 8. Components drop their own built-in margins; margins collapse,
+   so text before/after a block still lands on 24. Only flow containers are
+   listed - inside grids (splits, mosaics) the grid gap does the spacing. */
+html[data-layout="m3"] :is(.proj-section, .proj-split-text, .proj-parallax-text, .proj-subsection, .proj-tabs-side) > :is(p, .proj-list) {
+  margin: 0 0 16px;
+}
+html[data-layout="m3"] :is(.proj-section, .proj-split-text, .proj-parallax-text, .proj-subsection) > :is(
+  .proj-media, .proj-mosaic, .proj-media-rows, .proj-ba-pairs, .proj-beforeafter, .proj-compare,
+  .problem-rows, .fv-wrap, .proj-proto-slot, .proj-split, .proj-cards, .outcome-grid,
+  .proj-placeholder, .grid-demo-figure) {
+  margin: 24px 0;
+}
+/* right under a title, the title's own gap (16 compact / 24 up) is the space */
+html[data-layout="m3"] :is(.proj-section, .proj-split-text, .proj-parallax-text) > .proj-section-head + * { margin-top: 0; }
+/* the strip keeps its hover headroom inside, so its visible edge lands on 24 */
+html[data-layout="m3"] .proj-section > .proj-marquee { margin: calc(24px - var(--mq-lift)) 0; }
+/* after text, the paragraph's 16 wins the margin collapse - a negative top
+   margin nets the pair back to 24 - 22 headroom */
+html[data-layout="m3"] .proj-section > :is(p, .proj-list) + .proj-marquee { margin-top: calc(8px - var(--mq-lift)); }
+/* a strip that ends its section: take its 22 headroom off the section gap */
+html[data-layout="m3"] .proj-section:has(> .proj-marquee:last-child) { margin-bottom: calc(var(--m3-section-gap) - 22px); }
+/* a title riding inside the tabs stage: the stage's own 24 gap is the space */
+html[data-layout="m3"] .proj-tabs-stage > .proj-section-head { margin-bottom: calc(var(--m3-head-gap) - 24px); }
+/* groups of media inside a block */
+html[data-layout="m3"] .proj-parallax-media,
+html[data-layout="m3"] .proj-media-rows,
+html[data-layout="m3"] .proj-ba-pairs { gap: 24px; }
+html[data-layout="m3"] .proj-parallax-item { gap: 8px; }
 
 /* columns follow the pane, like the splits: stacked by default */
 html[data-layout="m3"] .proj-section.is-parallax .proj-parallax-row { grid-template-columns: minmax(0, 1fr); gap: 24px; }
@@ -4407,15 +4448,16 @@ const PROJECTS = [
       ]},
       { id: 'problem', title: 'The Problem',
         body: ['The platform had three structural issues that compounded each other:'],
+        listStyle: 'cards',
         list: [
-          { label: 'Cluttered interface.', text: 'The UI was overloaded with information and lacked a clear grid system, making it difficult for users to focus on critical tasks.' },
-          { label: 'Inconsistency.', text: 'Built over several years without a unified design system - and through various outsourced designers - the platform had drifted into a confusing, inconsistent experience. The same pattern appeared in three different forms across the product.' },
-          { label: 'Performance issues.', text: 'Years of layered feature additions had created redundancy, with multiple features serving the same purpose. The system had slowed down, both technically and cognitively.' },
+          { icon: 'clutter', label: 'Cluttered interface', text: 'The UI was overloaded with information and lacked a clear grid system, making it difficult for users to focus on critical tasks.' },
+          { icon: 'drift', label: 'Inconsistency', text: 'Built over several years without a unified design system - and through various outsourced designers - the platform had drifted into a confusing, inconsistent experience. The same pattern appeared in three different forms across the product.' },
+          { icon: 'gauge', label: 'Performance issues', text: 'Years of layered feature additions had created redundancy, with multiple features serving the same purpose. The system had slowed down, both technically and cognitively.' },
         ],
         problemRows: [
-          { label: 'No grid',       images: ['redesign/no-grid-1.png', 'redesign/no-grid-2.png'] },
-          { label: 'Inconsistent',  images: ['redesign/inconsistent-1.png', 'redesign/inconsistent-2.png'] },
-          { label: 'Overwhelming',  images: ['redesign/overwhelming-1.png'] },
+          { label: 'No grid',       images: ['redesign/no-grid-1-crop.png', 'redesign/no-grid-2-crop.png'] },
+          { label: 'Inconsistent',  images: ['redesign/inconsistent-1-crop.png', 'redesign/inconsistent-2-crop.png'] },
+          { label: 'Overwhelming',  images: ['redesign/overwhelming-1-crop.png'] },
         ],
       },
       { id: 'goals', title: 'Initial Goals',
@@ -4461,7 +4503,7 @@ const PROJECTS = [
           'Wireframes explored layout structures, content hierarchy, and how responsiveness would work across devices - particularly for the densest screens like the article editor.',
         ],
         sideBySide: true,
-        sideMedia: { src: 'redesign/wireframing.png', caption: 'Wireframes' },
+        sideMedia: { src: 'redesign/wireframing-crop.png', caption: 'Wireframes' },
       },
       { id: 'prototyping', title: 'Prototyping',
         body: [
@@ -4496,12 +4538,12 @@ const PROJECTS = [
           'The original ambitious redesign isn\'t lost - it\'s documented and preserved as future direction for the platform. Not shipped, but informing future work.',
         ],
         sideGallery: [
-          { src: 'redesign/scrapped-1-collapsed.png',  caption: 'Sidebar collapsed' },
-          { src: 'redesign/scrapped-2-sidebar.png',    caption: 'Field details sidebar' },
-          { src: 'redesign/scrapped-3-history.png',    caption: 'History panel' },
-          { src: 'redesign/scrapped-4-analytics.png',  caption: 'Analytics panel' },
-          { src: 'redesign/scrapped-5-properties.png', caption: 'Properties panel' },
-          { src: 'redesign/scrapped-6-hidden.png',     caption: 'End user view' },
+          { src: 'redesign/scrapped-1-collapsed-crop.png',  caption: 'Sidebar collapsed' },
+          { src: 'redesign/scrapped-2-sidebar-crop.png',    caption: 'Field details sidebar' },
+          { src: 'redesign/scrapped-3-history-crop.png',    caption: 'History panel' },
+          { src: 'redesign/scrapped-4-analytics-crop.png',  caption: 'Analytics panel' },
+          { src: 'redesign/scrapped-5-properties-crop.png', caption: 'Properties panel' },
+          { src: 'redesign/scrapped-6-hidden-crop.png',     caption: 'End user view' },
         ],
       },
       { id: 'pivot', title: 'The Pivot',
@@ -4636,9 +4678,9 @@ const PROJECTS = [
             { src: 'advanced-search/og-03-results.png',          caption: 'Results by type - title and dates, nothing to narrow by' },
           ] },
           { label: 'Then - the keyword search users asked for instead', items: [
-            { src: 'advanced-search/before-01-empty-state.png?v=2', caption: 'A keyword field becomes the entry point' },
-            { src: 'advanced-search/old-02-template-picker.png',    caption: 'Filtering bolted back on as nested dropdowns' },
-            { src: 'advanced-search/before-03-results-table.png?v=2', caption: 'Results grow a versions tab and a second filter set' },
+            { src: 'advanced-search/before-01-empty-state-crop.png', caption: 'A keyword field becomes the entry point' },
+            { src: 'advanced-search/old-02-template-picker-crop.png',    caption: 'Filtering bolted back on as nested dropdowns' },
+            { src: 'advanced-search/before-03-results-table-crop.png', caption: 'Results grow a versions tab and a second filter set' },
           ] },
         ],
       },
@@ -4654,16 +4696,16 @@ const PROJECTS = [
         /* ?v=N on these srcs: the screens were re-exported under the same
            filenames, and the host sends no cache headers - bump N on re-export. */
         beforeAfterPairs: [
-          { before: { src: 'advanced-search/before-01-empty-state.png?v=2', label: 'No search entered' },
-            after:  { src: 'advanced-search/after-01-empty-state.png?v=2',  label: 'No search entered' } },
-          { before: { src: 'advanced-search/before-02-search-options.png', label: 'Search options menu' },
-            after:  { src: 'advanced-search/after-02-search-parameters.png?v=2', label: 'Search parameters menu' } },
-          { before: { src: 'advanced-search/before-03-results-table.png?v=2', label: 'Results table' },
-            after:  { src: 'advanced-search/after-04-results-table.png?v=2',  label: 'Results table' } },
+          { before: { src: 'advanced-search/before-01-empty-state-crop.png', label: 'No search entered' },
+            after:  { src: 'advanced-search/after-01-empty-state-crop.png',  label: 'No search entered' } },
+          { before: { src: 'advanced-search/before-02-search-options-crop.png', label: 'Search options menu' },
+            after:  { src: 'advanced-search/after-02-search-parameters-crop.png', label: 'Search parameters menu' } },
+          { before: { src: 'advanced-search/before-03-results-table-crop.png', label: 'Results table' },
+            after:  { src: 'advanced-search/after-04-results-table-crop.png',  label: 'Results table' } },
         ],
         media: [
-          { src: 'advanced-search/after-03-folder-picker.png?v=2',   caption: 'Redesigned folder picker', kind: 'wide' },
-          { src: 'advanced-search/after-05-results-scrolled.png?v=2', caption: 'Redesigned results, filter row in use', kind: 'wide' },
+          { src: 'advanced-search/after-03-folder-picker-1920.png',   caption: 'Redesigned folder picker', kind: 'wide' },
+          { src: 'advanced-search/after-05-results-scrolled-1920.png', caption: 'Redesigned results, filter row in use', kind: 'wide' },
         ],
       },
       { id: 'stage-2', title: 'Scalable filtering',
@@ -4681,22 +4723,22 @@ const PROJECTS = [
         /* The legacy filtering areas stage 2 targeted, spotlit on the live screens. */
         mediaRows: [
           { items: [
-            { src: 'advanced-search/legacy-01-empty-state.png',
+            { src: 'advanced-search/legacy-01-empty-state-crop.png',
               caption: 'Empty state - the legacy search and filter block',
               /* x/y are the marker centre as a % of the image, pinned to the
                  top-right of each spotlit region. */
               hotspots: [
-                { x: 78.5, y: 27.0, title: 'Wasted empty state',
+                { x: 79.2, y: 27.1, title: 'Wasted empty state',
                   body: 'The default view hands the largest area on the page to an illustration and an instruction to start typing. No recent searches, no saved filter sets, no way into the data. The space costs a lot and returns nothing.' },
               ] },
-            { src: 'advanced-search/legacy-02-search-results.png',
+            { src: 'advanced-search/legacy-02-search-results-crop.png',
               caption: 'Search results - the same block plus the results filter row',
               hotspots: [
-                { x: 68.9, y: 11.2, title: 'Two search bars, one job',
+                { x: 69.4, y: 10.6, title: 'Two search bars, one job',
                   body: 'The product-wide search sits directly above the advanced search, and both end at the same items. The only real difference is that this page returns them as a table with actions attached, which is the actual value here. Doubling the search obscures it.' },
-                { x: 78.3, y: 27.6, title: 'Scattered search settings',
+                { x: 79.0, y: 27.7, title: 'Scattered search settings',
                   body: 'Preferences are split across a parameters control, the template and folder pickers, and a pair of checkboxes, with nothing grouping them. They read as unrelated controls rather than one set of choices, and there is nowhere for them to go once the filter list grows.' },
-                { x: 10.4, y: 59.6, title: 'Filters that appear late',
+                { x: 9.4, y: 61.1, title: 'Filters that appear late',
                   body: 'A second, different set of filters shows up only after a search returns results. It is a legacy split: the items table and the versions table were each given their own filters, leaving the page with two filtering models that share no logic.' },
               ] },
           ] },
@@ -4761,16 +4803,18 @@ const PROJECTS = [
         outro: [
           'What it tests: a more scalable version of what users already know.',
         ],
-        media: [
-          { src: 'advanced-search/concept-a-01-empty.png?v=3',                  caption: 'Search prominent, search settings open in the panel',    kind: 'sq' },
-          { src: 'advanced-search/concept-a-02-search-applied.png?v=3',          caption: 'Keyword searched - results beside search settings',      kind: 'sq' },
-          { src: 'advanced-search/concept-a-03-content-filters.png?v=3',         caption: 'Content filters - source, activity, global filters',     kind: 'sq' },
-          { src: 'advanced-search/concept-a-04-content-filter-selection.png?v=3', caption: 'Selecting a template in content filters',                kind: 'sq' },
-          { src: 'advanced-search/concept-a-05-content-filters-applied.png?v=3', caption: 'Content filters applied, results narrowed',              kind: 'sq' },
-          { src: 'advanced-search/concept-a-06-items-filters.png?v=3',           caption: 'Items filters - status, item and user groups',          kind: 'sq' },
-          { src: 'advanced-search/concept-a-07-items-filters-applied.png?v=3',   caption: 'Status set to Online, exporting the result',            kind: 'sq' },
-          { src: 'advanced-search/concept-a-08-global-filters.png?v=3',          caption: 'Global filters - region narrows country narrows city',  kind: 'sq' },
-          { src: 'advanced-search/concept-a-09-panel-collapsed.png?v=3',         caption: 'Panel collapsed - results take the full width',         kind: 'sq' },
+        /* one screen at a time, beside the text */
+        sideBySide: true,
+        sideGallery: [
+          { src: 'advanced-search/concept-a-01-empty.png?v=3',                  caption: 'Search prominent, search settings open in the panel' },
+          { src: 'advanced-search/concept-a-02-search-applied.png?v=3',          caption: 'Keyword searched - results beside search settings' },
+          { src: 'advanced-search/concept-a-03-content-filters.png?v=3',         caption: 'Content filters - source, activity, global filters' },
+          { src: 'advanced-search/concept-a-04-content-filter-selection.png?v=3', caption: 'Selecting a template in content filters' },
+          { src: 'advanced-search/concept-a-05-content-filters-applied.png?v=3', caption: 'Content filters applied, results narrowed' },
+          { src: 'advanced-search/concept-a-06-items-filters.png?v=3',           caption: 'Items filters - status, item and user groups' },
+          { src: 'advanced-search/concept-a-07-items-filters-applied.png?v=3',   caption: 'Status set to Online, exporting the result' },
+          { src: 'advanced-search/concept-a-08-global-filters.png?v=3',          caption: 'Global filters - region narrows country narrows city' },
+          { src: 'advanced-search/concept-a-09-panel-collapsed.png?v=3',         caption: 'Panel collapsed - results take the full width' },
         ],
       },
       { id: 'stage-2-concept-b', title: 'Concept B - Condition bar',
@@ -4783,13 +4827,15 @@ const PROJECTS = [
         outro: [
           'What it tests: whether filtering has outgrown the need to actively type a keyword, and whether saved filter sets make ongoing work faster than starting from a search each time.',
         ],
-        media: [
-          { src: 'advanced-search/concept-b-01-empty.png?v=3',            caption: 'Search de-emphasized, saved filter sets in view', kind: 'sq' },
-          { src: 'advanced-search/concept-b-02-add-filter.png?v=3',       caption: 'Adding a filter from the condition bar',          kind: 'sq' },
-          { src: 'advanced-search/concept-b-03-filter-selection.png?v=3', caption: 'Selecting values within a filter',                kind: 'sq' },
-          { src: 'advanced-search/concept-b-04-filters-selected.png?v=3', caption: 'Filters staged in the condition bar',             kind: 'sq' },
-          { src: 'advanced-search/concept-b-05-results.png?v=3',          caption: 'Results - items view, 100 matches',               kind: 'sq' },
-          { src: 'advanced-search/concept-b-06-bulk-actions.png?v=3',     caption: 'Bulk actions on the selected set',                kind: 'sq' },
+        /* one screen at a time, beside the text */
+        sideBySide: true,
+        sideGallery: [
+          { src: 'advanced-search/concept-b-01-empty.png?v=3',            caption: 'Search de-emphasized, saved filter sets in view' },
+          { src: 'advanced-search/concept-b-02-add-filter.png?v=3',       caption: 'Adding a filter from the condition bar' },
+          { src: 'advanced-search/concept-b-03-filter-selection.png?v=3', caption: 'Selecting values within a filter' },
+          { src: 'advanced-search/concept-b-04-filters-selected.png?v=3', caption: 'Filters staged in the condition bar' },
+          { src: 'advanced-search/concept-b-05-results.png?v=3',          caption: 'Results - items view, 100 matches' },
+          { src: 'advanced-search/concept-b-06-bulk-actions.png?v=3',     caption: 'Bulk actions on the selected set' },
         ],
       },
       { id: 'stage-2-ab-test', title: 'A/B test',
@@ -8792,6 +8838,10 @@ const CARD_ICONS = {
   compass: <><circle cx="12" cy="12" r="8.5" /><path d="m15.5 8.5-2 5-5 2 2-5 5-2z" /></>,
   /* speech bubbles - collaboration gap */
   chat: <><path d="M4 5.5h11a1.5 1.5 0 0 1 1.5 1.5v6a1.5 1.5 0 0 1-1.5 1.5H9l-3.5 3v-3H4A1.5 1.5 0 0 1 2.5 13V7A1.5 1.5 0 0 1 4 5.5z" /><path d="M16.5 9.5H20a1.5 1.5 0 0 1 1.5 1.5v5.5a1.5 1.5 0 0 1-1.5 1.5h-1v2.5L16 17.5h-3.5" /></>,
+  /* panel crammed edge to edge - cluttered interface */
+  clutter: <><rect x="3.5" y="3.5" width="17" height="17" rx="2" /><path d="M3.5 8h17M8.5 8v12.5M8.5 12h12M8.5 16h12M14.5 8v4M3.5 12h5M3.5 16h5" /></>,
+  /* gauge needle resting low - slowed down */
+  gauge: <><path d="M4.2 17.5a8.5 8.5 0 1 1 15.6 0" /><path d="m12 13.5-4.5-2.5" /><circle cx="12" cy="13.5" r="1.2" /><path d="M6 8.3l1 .8M12 5.5v1.3M18 8.3l-1 .8" /></>,
   /* three mismatched buttons - drift */
   drift: <><rect x="3.5" y="4" width="11" height="4.5" rx="2.25" /><rect x="7" y="10" width="13.5" height="4.5" rx="1" /><rect x="4.5" y="16" width="9" height="4.5" rx="0" /></>,
   /* circular arrows - work redone every handoff */
