@@ -3797,6 +3797,10 @@ html[data-layout="m3"] .cap-pill {              /* assist chip */
 
 /* ── Contact ── */
 html[data-layout="m3"] .contact { padding: calc(var(--m3-section-gap) * 1.5) var(--pad-x); border-top: 0; }
+/* the glow (a 60vw circle, centred) outgrew the section on wide screens and
+   was sliced flat by its overflow; capped to the section it fades out
+   before either edge */
+html[data-layout="m3"] .contact::before { max-height: 100%; }
 html[data-layout="m3"] .contact-eyebrow {       /* Label Large */
   font-size: 14px; line-height: 20px; font-weight: var(--fw-medium); letter-spacing: .1px;
   margin-bottom: 16px;
@@ -4323,10 +4327,10 @@ const PROJECTS = [
     company: 'KMS Lighthouse',
     tags: ['Design System', 'Component Library', 'Design Tokens', 'Figma'],
     statusNote: 'In active internal rollout - not yet shipped to customers.',
-    tile: 'tall',
+    tile: 'sq',
     summary: 'The design system behind KMS Lighthouse - tokens, components, and documentation for a white-label product used by three very different groups: knowledge managers authoring content, agents looking up answers under pressure, and admins running the system. Every surface carries the customer\'s brand, not ours.',
-    tileImage: 'spark/spark images/homepage-thumbnail-1400.webp',
-    tileAspect: '1399 / 2074', /* tile takes the thumbnail's own shape, so nothing is cropped */
+    /* the hero, in the same 4:3 tile as Product Redesign - cover fills it, centred */
+    tileImage: 'spark/spark images/hero-2800.png',
     swatch: { from: '#553A0E', to: '#2B1D05', mark: '#F4D06F' },
     heroImage: 'spark/spark images/hero-2800.png',
     heroContained: true,
