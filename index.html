@@ -2143,7 +2143,6 @@ footer a:hover { color: var(--accent); }
   display: flex; flex-direction: column; gap: .75rem;
   padding: 1.5rem;
   background: var(--surface);
-  border: 1px solid var(--rim);
   border-radius: 6px;
 }
 .proj-card-icon {
@@ -4716,11 +4715,12 @@ const PROJECTS = [
           'The legacy interface no longer matched our design guidelines, and its filtering was the weakest part of the experience. As the platform grew to handle larger datasets and more varied user roles, the existing filter tools stopped scaling - precise searches became slow and error-prone.',
           'Four issues drove the work:',
         ],
+        listStyle: 'cards',
         list: [
-          { label: 'Visual inconsistency -', text: 'the UI sat outside the updated design system, fragmenting the wider product.' },
-          { label: 'Cluttered layout -', text: 'dense and hard to scan, especially for new users.' },
-          { label: 'Limited accessibility -', text: 'nested dropdowns and icon-only buttons blocked keyboard and screen reader users.' },
-          { label: 'High cognitive load -', text: 'users combined filters manually with no visible logic, causing frequent mistakes.' },
+          { icon: 'drift',    label: 'Visual inconsistency',  text: 'The UI sat outside the updated design system, fragmenting the wider product.' },
+          { icon: 'clutter',  label: 'Cluttered layout',      text: 'Dense and hard to scan, especially for new users.' },
+          { icon: 'contrast', label: 'Limited accessibility', text: 'Nested dropdowns and icon-only buttons blocked keyboard and screen reader users.' },
+          { icon: 'gauge',    label: 'High cognitive load',   text: 'Users combined filters manually with no visible logic, causing frequent mistakes.' },
         ],
         /* Two separate features, in the order they appeared: the original
            filtering tool, then the keyword search that grew out of it and
