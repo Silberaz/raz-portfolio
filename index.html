@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark" data-density="dense" data-display-font="regular">
+<html lang="en" data-theme="dark" data-density="dense" data-display-font="regular" data-layout="m3" data-palette="testcard">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -3358,9 +3358,9 @@ dialog.fv-dialog .fv { --fv-h: 100%; border: none; border-radius: 0; margin: 0; 
 }
 
 /* ═══ M3 layout (opt-in experiment) ═══════════════════════════════════════
-   A project with `layout: 'm3'` sets html[data-layout="m3"] (see <Project>),
-   and everything below re-lays the page to Material 3's layout guidance:
-   m3.material.io/foundations/layout. Other pages are untouched.
+   Switched on site-wide by data-layout="m3" on <html>; everything below
+   re-lays the site to Material 3's layout guidance:
+   m3.material.io/foundations/layout. Remove the attribute to switch it off.
 
      breakpoints  compact <600 · medium 600-839 · expanded 840-1199
                   large 1200-1599 · extra-large 1600+
@@ -3513,6 +3513,20 @@ html[data-layout="m3"] .sidebar-nav a {
   transition: color .25s, background .25s;
 }
 html[data-layout="m3"] .sidebar-nav a::before { content: none; }
+/* grouped contents (e.g. Help Center): Title Small headers, indented items */
+html[data-layout="m3"] .sidebar-group-label {
+  display: flex; align-items: center; min-height: 40px; padding: 0 16px; margin-top: 8px;
+  font-size: 14px; line-height: 20px; font-weight: var(--fw-medium); letter-spacing: .1px;
+  color: var(--muted);
+}
+html[data-layout="m3"] .sidebar-nav li.is-sub { padding-left: 16px; }
+/* a long contents list scrolls inside the rail instead of running off-screen */
+@media (min-width: 840px) {
+  html[data-layout="m3"] .proj-sidebar {
+    max-height: calc(100vh - var(--m3-bar-h) - 48px);
+    overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin;
+  }
+}
 html[data-layout="m3"] .sidebar-nav a:hover { background: color-mix(in oklab, var(--ink) 8%, transparent); }
 html[data-layout="m3"] .sidebar-nav a.active {
   color: var(--ink);
@@ -3617,9 +3631,351 @@ html[data-layout="m3"] footer {                  /* Label Medium */
   html[data-layout="m3"] .next-arrow { font-size: 28px; line-height: 36px; }
 }
 
+/* ═══ M3 layout - the rest of the site ═══════════════════════════════════
+   Same rules as the project page, carried to Home, Work, About, Resume and
+   the case-study components the other projects use. */
+
+/* Base tokens: anything without its own role below falls back to Body
+   Large instead of the old 14.4px single size */
+html[data-layout="m3"] { --fs-base: 16px; --ls-base: .03125em; }
+
+/* ── Home hero: open on the page (no container), text on the margin ruler ── */
+html[data-layout="m3"] .hero {
+  min-height: 0; justify-content: flex-end;
+  padding: calc(var(--m3-bar-h) + 24px) var(--pad-x) 0;
+}
+/* the glow (50vw circle) used to run past the hero's bottom and get sliced
+   by its overflow; with no box to hide the cut, keep it inside the hero -
+   it fades out on its own before its edge */
+html[data-layout="m3"] .hero::before { max-height: 90%; }
+html[data-layout="m3"] .hero-eyebrow {           /* Label Large */
+  font-size: 14px; line-height: 20px; font-weight: var(--fw-medium); letter-spacing: .1px;
+  margin-bottom: 16px;
+}
+html[data-layout="m3"] .hero-title {             /* Display Small -> Medium -> Large */
+  font-size: 36px; line-height: 44px; font-weight: var(--fw-regular); letter-spacing: 0;
+}
+html[data-layout="m3"] .hero-title em { font-weight: var(--fw-regular); }
+html[data-layout="m3"] .hero-bottom { margin-top: 32px; gap: 24px; }
+html[data-layout="m3"] .hero-desc {              /* Body Large */
+  font-size: 16px; line-height: 24px; letter-spacing: .5px; max-width: var(--m3-measure);
+}
+html[data-layout="m3"] .hero-meta {              /* Body Medium */
+  font-size: 14px; line-height: 20px; letter-spacing: .25px; gap: 4px;
+}
+html[data-layout="m3"] .hero-meta b {            /* Label Medium */
+  font-size: 12px; line-height: 16px; font-weight: var(--fw-medium); letter-spacing: .5px;
+}
+@media (min-width: 600px) {
+  html[data-layout="m3"] .hero { min-height: 70svh; }
+}
+@media (min-width: 840px) {
+  html[data-layout="m3"] .hero-title { font-size: 45px; line-height: 52px; }
+}
+@media (min-width: 1200px) {
+  html[data-layout="m3"] .hero-title { font-size: 57px; line-height: 64px; letter-spacing: -.25px; }
+}
+
+/* ── Sections + section heads: Headline titles, spacing instead of rules ── */
+html[data-layout="m3"] .section { padding: var(--m3-section-gap) var(--pad-x); }
+/* Work and About open straight under the bar (their inline 9rem tops) */
+html[data-layout="m3"] .page > .section:first-child,
+html[data-layout="m3"] .page > .about:first-child { padding-top: calc(var(--m3-bar-h) + 24px) !important; }
+html[data-layout="m3"] .section-head {
+  border-top: 0; padding: 0; margin-bottom: var(--m3-head-gap);
+  flex-wrap: wrap; gap: 8px 24px;
+}
+html[data-layout="m3"] .section-head h2 {       /* Headline Small -> Medium */
+  font-family: var(--ff-display); font-size: 24px; line-height: 32px;
+  font-weight: var(--fw-regular); letter-spacing: 0;
+}
+html[data-layout="m3"] .section-head h2::before { content: none; }
+html[data-layout="m3"] .section-head .right {   /* Label Large */
+  font-size: 14px; line-height: 20px; font-weight: var(--fw-medium); letter-spacing: .1px;
+}
+@media (min-width: 840px) {
+  html[data-layout="m3"] .section-head h2 { font-size: 28px; line-height: 36px; }
+}
+
+/* ── Work grid ── */
+html[data-layout="m3"] .work-grid { gap: var(--m3-gap); }
+html[data-layout="m3"] .work-grid.polaroid { row-gap: 32px; }
+html[data-layout="m3"] .polaroid .tile-img { border-radius: var(--m3-r-lg); }
+html[data-layout="m3"] .polaroid .tile-meta { padding-top: 12px; gap: 4px 16px; flex-wrap: wrap; }
+html[data-layout="m3"] .tile-name {             /* Title Large */
+  font-size: 22px; line-height: 28px; font-weight: var(--fw-regular); letter-spacing: 0;
+}
+html[data-layout="m3"] .tile-tags {             /* Body Medium */
+  font-size: 14px; line-height: 20px; letter-spacing: .25px;
+}
+@media (min-width: 600px) {
+  html[data-layout="m3"] .work-grid.polaroid { row-gap: 48px; }
+}
+/* Index list (Work page): 56-high list items, state layer on hover */
+html[data-layout="m3"] .index .tile { min-height: 56px; border-radius: 0; }
+html[data-layout="m3"] .index .tile .tile-name { /* Title Medium */
+  font-size: 16px; line-height: 24px; font-weight: var(--fw-medium); letter-spacing: .15px;
+}
+html[data-layout="m3"] .index .tile .tile-num,
+html[data-layout="m3"] .index .tile .tile-tags,
+html[data-layout="m3"] .index .tile .tile-year { font-size: 14px; line-height: 20px; letter-spacing: .25px; }
+@media (hover: hover) {
+  html[data-layout="m3"] .index .tile:hover {
+    padding: 0 16px; border-radius: var(--m3-r-md);
+    background: color-mix(in oklab, var(--ink) 8%, transparent);
+  }
+}
+
+/* Filter chips: 32 high, 8 corners, Label Large; selected = tonal fill */
+html[data-layout="m3"] .filters { gap: 8px; margin-bottom: 32px; }
+html[data-layout="m3"] .filter-chip {
+  min-height: 32px; padding: 6px 16px; border-radius: var(--m3-r-sm);
+  font-size: 14px; line-height: 20px; font-weight: var(--fw-medium); letter-spacing: .1px;
+}
+html[data-layout="m3"] .filter-chip:hover { background: color-mix(in oklab, var(--ink) 8%, transparent); }
+html[data-layout="m3"] .filter-chip.active {
+  background: color-mix(in oklab, var(--accent) 18%, transparent);
+  color: var(--ink); border-color: transparent;
+}
+html[data-layout="m3"] .filter-sort { font-size: 14px; line-height: 20px; font-weight: var(--fw-medium); letter-spacing: .1px; }
+
+/* ── About: photo 5 / text 7 of the 12-column grid from expanded up ── */
+html[data-layout="m3"] .about {
+  padding: var(--m3-section-gap) var(--pad-x); border-top: 0;
+  gap: 32px var(--m3-gap);
+}
+/* the frame (its yellow ground) spans the full column; its height stays what
+   the 3:4 frame had - 4/3 of the column, capped at 540 - and the illustration
+   keeps its size, centred */
+html[data-layout="m3"] .about-photo-col { container-type: inline-size; }
+html[data-layout="m3"] .about .signal-tv {
+  border-radius: var(--m3-r-lg);
+  width: 100%; aspect-ratio: auto;
+  height: min(var(--signal-tv-max-h), calc(100cqw * 4 / 3));
+}
+html[data-layout="m3"] .about-eyebrow {         /* Label Large */
+  font-size: 14px; line-height: 20px; font-weight: var(--fw-medium); letter-spacing: .1px;
+  margin-bottom: 16px;
+}
+html[data-layout="m3"] .about-headline {        /* Headline Small -> Medium -> Large */
+  font-size: 24px; line-height: 32px; font-weight: var(--fw-regular); letter-spacing: 0;
+  margin-bottom: 24px;
+}
+html[data-layout="m3"] .about .about-subhead {  /* Title Large */
+  font-size: 22px; line-height: 28px; letter-spacing: 0;
+  max-width: var(--m3-measure); margin: -8px 0 24px;
+}
+html[data-layout="m3"] .about p {               /* Body Large */
+  font-size: 16px; line-height: 24px; letter-spacing: .5px;
+  margin-bottom: 16px; max-width: var(--m3-measure);
+}
+html[data-layout="m3"] .cap-list { margin-top: 32px; padding-top: 0; border-top: 0; gap: 8px; }
+html[data-layout="m3"] .cap-grid { gap: 8px; }
+html[data-layout="m3"] .cap-pill {              /* assist chip */
+  min-height: 32px; padding: 6px 16px; border-radius: var(--m3-r-sm);
+  font-size: 14px; line-height: 20px; font-weight: var(--fw-medium); letter-spacing: .1px;
+}
+@media (min-width: 840px) {
+  html[data-layout="m3"] .about { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+  html[data-layout="m3"] .about-photo-col { grid-column: span 5; position: sticky; top: calc(var(--m3-bar-h) + 24px); }
+  html[data-layout="m3"] .about-text { grid-column: span 7; }
+  html[data-layout="m3"] .about-headline { font-size: 28px; line-height: 36px; }
+}
+@media (min-width: 1200px) {
+  html[data-layout="m3"] .about-headline { font-size: 32px; line-height: 40px; }
+}
+
+/* ── Contact ── */
+html[data-layout="m3"] .contact { padding: calc(var(--m3-section-gap) * 1.5) var(--pad-x); border-top: 0; }
+html[data-layout="m3"] .contact-eyebrow {       /* Label Large */
+  font-size: 14px; line-height: 20px; font-weight: var(--fw-medium); letter-spacing: .1px;
+  margin-bottom: 16px;
+}
+html[data-layout="m3"] .contact-headline {      /* Headline Large -> Display Small */
+  font-size: 32px; line-height: 40px; letter-spacing: 0; margin-bottom: 32px;
+}
+html[data-layout="m3"] .contact-headline em { font-weight: var(--fw-regular); }
+html[data-layout="m3"] .contact-btn {           /* medium filled button, 56 high */
+  min-height: 56px; padding: 16px 24px;
+  font-size: 16px; line-height: 24px; font-weight: var(--fw-medium); letter-spacing: .15px;
+}
+html[data-layout="m3"] .contact-links { gap: 8px 24px; margin-top: 32px; }
+html[data-layout="m3"] .contact-links a { font-size: 14px; line-height: 20px; font-weight: var(--fw-medium); letter-spacing: .1px; }
+@media (min-width: 840px) {
+  html[data-layout="m3"] .contact-headline { font-size: 36px; line-height: 44px; }
+}
+
+/* ── Resume: boxed head like the heroes, content capped like the pane ── */
+html[data-layout="m3"] .resume {
+  padding: calc(var(--m3-bar-h) + 24px) var(--pad-x) var(--m3-section-gap);
+  max-width: calc(var(--m3-content-max) + 2 * var(--pad-x));
+}
+html[data-layout="m3"] .resume-head {
+  gap: 24px var(--m3-gap); padding: 24px; border-bottom: 0;
+  margin-bottom: var(--m3-section-gap);
+  background: var(--surface); border-radius: var(--m3-r-lg);
+}
+html[data-layout="m3"] .resume-head h1 {        /* Display Small -> Medium */
+  font-size: 36px; line-height: 44px; font-weight: var(--fw-regular); letter-spacing: 0;
+  margin-bottom: 16px;
+}
+html[data-layout="m3"] .resume-head .role {     /* Label Large */
+  font-size: 14px; line-height: 20px; font-weight: var(--fw-medium); letter-spacing: .1px;
+  margin-bottom: 16px;
+}
+html[data-layout="m3"] .resume-head p { font-size: 16px; line-height: 24px; letter-spacing: .5px; max-width: var(--m3-measure); }
+html[data-layout="m3"] .resume-contact { font-size: 14px; line-height: 20px; letter-spacing: .25px; gap: 8px; }
+html[data-layout="m3"] .resume-contact .k { font-size: 12px; line-height: 16px; font-weight: var(--fw-medium); letter-spacing: .5px; }
+html[data-layout="m3"] .resume-block { margin-bottom: var(--m3-section-gap); }
+html[data-layout="m3"] .resume-block h2 {       /* Headline Small -> Medium */
+  font-family: var(--ff-display); font-size: 24px; line-height: 32px;
+  font-weight: var(--fw-regular); letter-spacing: 0;
+  padding: 0; border-bottom: 0; margin-bottom: var(--m3-head-gap);
+}
+html[data-layout="m3"] .resume-block h2::before { content: none; }
+html[data-layout="m3"] .resume-row { gap: 8px var(--m3-gap); padding: 16px 0; }
+html[data-layout="m3"] .resume-row .when {     /* Label Large */
+  font-size: 14px; line-height: 20px; font-weight: var(--fw-medium); letter-spacing: .1px; padding-top: 2px;
+}
+html[data-layout="m3"] .resume-row .where {    /* Label Medium */
+  font-size: 12px; line-height: 16px; font-weight: var(--fw-medium); letter-spacing: .5px; margin-top: 4px;
+}
+html[data-layout="m3"] .resume-row .role-name { /* Title Medium */
+  font-size: 16px; line-height: 24px; font-weight: var(--fw-medium); letter-spacing: .15px;
+}
+html[data-layout="m3"] .resume-row .org { font-size: 14px; line-height: 20px; letter-spacing: .25px; margin-bottom: 8px; }
+html[data-layout="m3"] .resume-row ul { gap: 4px; }
+html[data-layout="m3"] .resume-row li { font-size: 14px; line-height: 20px; letter-spacing: .25px; max-width: var(--m3-measure); }
+@media (min-width: 600px) {
+  html[data-layout="m3"] .resume-head { padding: 40px; }
+  html[data-layout="m3"] .resume-row { padding: 24px 0; }
+}
+@media (min-width: 840px) {
+  html[data-layout="m3"] .resume-head { padding: 56px; }
+  html[data-layout="m3"] .resume-head h1 { font-size: 45px; line-height: 52px; }
+  html[data-layout="m3"] .resume-block h2 { font-size: 28px; line-height: 36px; }
+  html[data-layout="m3"] .resume-row { grid-template-columns: minmax(0, 3fr) minmax(0, 9fr); }
+}
+
+/* ── Case-study components the other projects use ── */
+
+/* corners: media 12, big frames 16, small controls/tags 8 */
+html[data-layout="m3"] .lightbox img,
+html[data-layout="m3"] .lightbox video,
+html[data-layout="m3"] .proj-mosaic-item.is-fill img,
+html[data-layout="m3"] .proj-parallax-item video,
+html[data-layout="m3"] .proj-parallax-item .proj-media-placeholder,
+html[data-layout="m3"] .proj-split-media video,
+html[data-layout="m3"] .proj-side-gallery-frame img,
+html[data-layout="m3"] .problem-img img,
+html[data-layout="m3"] .problem-placeholder,
+html[data-layout="m3"] .proj-beforeafter img,
+html[data-layout="m3"] .proj-placeholder,
+html[data-layout="m3"] .proj-hot-pop,
+html[data-layout="m3"] .proj-marquee-frame,
+html[data-layout="m3"] #proj-grid-demo,
+html[data-layout="m3"] .fv { border-radius: var(--m3-r-md); }
+html[data-layout="m3"] .proj-hero-ph,
+html[data-layout="m3"] dialog.fv-dialog { border-radius: var(--m3-r-lg); }
+html[data-layout="m3"] .proj-side-gallery-btn,
+html[data-layout="m3"] .ba-tag { border-radius: var(--m3-r-sm); }
+/* the hairline-gap grids read as one rounded block */
+html[data-layout="m3"] .outcome-grid,
+html[data-layout="m3"] .proj-compare-grid { border-radius: var(--m3-r-md); overflow: hidden; }
+
+/* type roles */
+html[data-layout="m3"] .proj-media-row-label,
+html[data-layout="m3"] .proj-hot-title,
+html[data-layout="m3"] .proj-placeholder-tag,
+html[data-layout="m3"] .outcome-label,
+html[data-layout="m3"] .proj-side-gallery-btn { /* Label Large */
+  font-size: 14px; line-height: 20px; font-weight: var(--fw-medium); letter-spacing: .1px;
+}
+html[data-layout="m3"] .ba-tag,
+html[data-layout="m3"] .proj-compare-cell-tag,
+html[data-layout="m3"] .proj-compare-col-label { /* Label Medium */
+  font-size: 12px; line-height: 16px; font-weight: var(--fw-medium); letter-spacing: .5px;
+}
+html[data-layout="m3"] .problem-row-label,
+html[data-layout="m3"] .proj-compare-col-title,
+html[data-layout="m3"] .proj-compare-corner-title { /* Title Medium */
+  font-size: 16px; line-height: 24px; font-weight: var(--fw-medium); letter-spacing: .15px;
+}
+html[data-layout="m3"] .proj-compare-dim {      /* Title Small */
+  font-size: 14px; line-height: 20px; font-weight: var(--fw-medium); letter-spacing: .1px;
+}
+html[data-layout="m3"] .proj-hot-pop p,
+html[data-layout="m3"] .proj-compare-cell,
+html[data-layout="m3"] .proj-placeholder p {    /* Body Medium */
+  font-size: 14px; line-height: 20px; letter-spacing: .25px;
+}
+html[data-layout="m3"] .proj-list li,
+html[data-layout="m3"] .proj-compare-note {     /* Body Large */
+  font-size: 16px; line-height: 24px; letter-spacing: .5px;
+}
+html[data-layout="m3"] .proj-list,
+html[data-layout="m3"] .proj-compare-note,
+html[data-layout="m3"] .proj-placeholder { max-width: var(--m3-measure); }
+html[data-layout="m3"] .outcome-num {           /* Headline Medium */
+  font-size: 28px; line-height: 36px; letter-spacing: 0; font-weight: var(--fw-regular);
+}
+
+/* spacing: groups by space, not rules */
+html[data-layout="m3"] .proj-list { gap: 12px; margin: 8px 0 24px; }
+html[data-layout="m3"] .proj-subsection {
+  margin: var(--m3-section-gap) 0 0; padding-top: 0; border-top: 0;
+  scroll-margin-top: calc(var(--m3-bar-h) + 24px);
+}
+html[data-layout="m3"] .proj-parallax-header {
+  border-bottom: 0; padding-bottom: 0; margin-bottom: var(--m3-head-gap);
+}
+html[data-layout="m3"] .problem-row { gap: 16px var(--m3-gap); padding: 24px 0; }
+html[data-layout="m3"] .proj-media-rows { gap: 32px; margin: 24px 0 0; }
+html[data-layout="m3"] .proj-media-row-label { margin-bottom: 8px; }
+html[data-layout="m3"] .proj-media-row-grid,
+html[data-layout="m3"] .problem-row-imgs,
+html[data-layout="m3"] .proj-ba-pair,
+html[data-layout="m3"] .proj-mosaic { gap: var(--m3-gap); }
+html[data-layout="m3"] .proj-mosaic-side { gap: var(--m3-gap); }
+html[data-layout="m3"] .proj-ba-pairs { gap: 32px; margin: 24px 0 0; }
+html[data-layout="m3"] .proj-compare { margin: 24px 0 0; max-width: none; }
+
+/* columns follow the pane, like the splits: stacked by default */
+html[data-layout="m3"] .proj-section.is-parallax .proj-parallax-row { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+html[data-layout="m3"] .proj-section.is-parallax .proj-parallax-text { position: static; }
+html[data-layout="m3"] .problem-row,
+html[data-layout="m3"] .problem-row-imgs,
+html[data-layout="m3"] .proj-ba-pair,
+html[data-layout="m3"] .proj-media-row-grid,
+html[data-layout="m3"] .proj-compare-grid { grid-template-columns: minmax(0, 1fr); }
+html[data-layout="m3"] .problem-row-imgs[data-count="1"] .problem-placeholder,
+html[data-layout="m3"] .problem-row-imgs[data-count="1"] .problem-img { grid-column: auto; }
+html[data-layout="m3"] .proj-compare-corner,
+html[data-layout="m3"] .proj-compare-colhead { display: none; }
+html[data-layout="m3"] .proj-compare-cell-tag { display: block; }
+html[data-layout="m3"] .proj-compare-dim { display: block; }
+@container pane (min-width: 600px) {
+  html[data-layout="m3"] .problem-row-imgs,
+  html[data-layout="m3"] .proj-ba-pair { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  html[data-layout="m3"] .problem-row-imgs[data-count="1"] .problem-placeholder,
+  html[data-layout="m3"] .problem-row-imgs[data-count="1"] .problem-img { grid-column: 2; }
+  html[data-layout="m3"] .proj-media-row-grid { grid-template-columns: repeat(var(--mr-cols, 3), minmax(0, 1fr)); }
+  html[data-layout="m3"] .proj-compare-grid { grid-template-columns: minmax(0, .8fr) minmax(0, 1fr) minmax(0, 1fr); }
+  html[data-layout="m3"] .proj-compare-corner,
+  html[data-layout="m3"] .proj-compare-colhead { display: flex; }
+  html[data-layout="m3"] .proj-compare-cell-tag { display: none; }
+  html[data-layout="m3"] .proj-compare-dim { display: flex; }
+}
+@container pane (min-width: 840px) {
+  html[data-layout="m3"] .problem-row { grid-template-columns: minmax(0, 3fr) minmax(0, 9fr); }
+  html[data-layout="m3"] .proj-section.is-parallax:not(:has(.proj-marquee)) .proj-parallax-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px;
+  }
+  html[data-layout="m3"] .proj-section.is-parallax:not(:has(.proj-marquee)) .proj-parallax-text { position: sticky; }
+}
+
 /* ═══ Test-card palette (opt-in experiment) ══════════════════════════════
-   A project with `palette: 'testcard'` sets html[data-palette="testcard"].
-   Every Signal family is re-pointed at its bar on the "No signal / TV test
+   Switched on site-wide by data-palette="testcard" on <html>. Every Signal family is re-pointed at its bar on the "No signal / TV test
    signal" card (sampled off the image):
 
      tomato  #D14543   red bar          sky     #B0DBDE   pale aqua bar
@@ -3727,6 +4083,17 @@ html[data-palette="testcard"][data-theme="light"] {
   --bar-indigo-surface: #5867B4;
 
   --focus-ring: #BD2E30;
+}
+/* the footer's six-bar strip, in the card's own bars */
+html[data-palette="testcard"] footer::before {
+  background: linear-gradient(to right,
+    #D14543 0 16.666%,
+    #B0DBDE 16.666% 33.333%,
+    #F5D73B 33.333% 50%,
+    #73B874 50% 66.666%,
+    #E09BBE 66.666% 83.333%,
+    #5867B4 83.333% 100%
+  );
 }
 </style>
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
@@ -3922,8 +4289,6 @@ const PROJECTS = [
     swatch: { from: '#553A0E', to: '#2B1D05', mark: '#F4D06F' },
     heroImage: 'spark/spark images/hero-2800.png',
     heroContained: true,
-    layout: 'm3', /* opt-in Material 3 layout experiment - see "M3 layout" in the styles */
-    palette: 'testcard', /* opt-in colour experiment - see "Test-card palette" in the styles */
     sections: [
       { id: 'context', title: 'Context', body: [
         'KMS Lighthouse builds enterprise knowledge management software - the tool support agents, banks, and telcos use to find a verified answer in seconds. It\'s sold white-label, so every customer sees it under their own brand.',
@@ -8672,15 +9037,6 @@ function Project({ projectId, onBack, onOpen }) {
   const next = window.PROJECTS[(window.PROJECTS.indexOf(p) + 1) % window.PROJECTS.length];
   const [activeSection, setActiveSection] = useState(p.sections[0].id);
   const atmosRef = useRef(null);
-  /* Opt-in page layout / palette (e.g. layout: 'm3', palette: 'testcard').
-     Set on <html> so the shared nav follows too; a layout effect, so it
-     lands before the first paint. */
-  React.useLayoutEffect(() => {
-    const root = document.documentElement.dataset;
-    if (p.layout) root.layout = p.layout;
-    if (p.palette) root.palette = p.palette;
-    return () => { delete root.layout; delete root.palette; };
-  }, [p]);
   useEffect(() => {
     const onScroll = () => {
       let cur = p.sections[0].id;
@@ -8702,6 +9058,17 @@ function Project({ projectId, onBack, onOpen }) {
     return () => window.removeEventListener('scroll', onScroll);
   }, [p]);
 
+  /* When the contents list scrolls inside the rail (long lists), keep the
+     active entry in view. Moves the rail's own scroll only, never the page. */
+  useEffect(() => {
+    const rail = document.querySelector('.proj-sidebar');
+    const a = rail && rail.querySelector('.sidebar-nav a.active');
+    if (!a || rail.scrollHeight <= rail.clientHeight) return;
+    const top = a.offsetTop, bottom = top + a.offsetHeight, PAD = 48;
+    if (top - PAD < rail.scrollTop) rail.scrollTop = top - PAD;
+    else if (bottom + PAD > rail.scrollTop + rail.clientHeight) rail.scrollTop = bottom + PAD - rail.clientHeight;
+  }, [activeSection]);
+
   /* ─── Atmospheric background ────────────────────────────────────────
      Blend the page ground toward a subtle Signal hue as the reader
      passes contextual regions (sections carrying an `atmos` key), then
@@ -8715,7 +9082,7 @@ function Project({ projectId, onBack, onOpen }) {
     const el = atmosRef.current;
     if (!el) return;
     const GROUND = { dark: [20, 19, 26], light: [244, 242, 236] };
-    const HUE = p.palette === 'testcard' ? {
+    const HUE = document.documentElement.dataset.palette === 'testcard' ? {
       /* the test card's bars (dark) and their AA text tones (light) */
       tomato: { dark: [209, 69, 67],   light: [189, 46, 48] },
       sky:    { dark: [176, 219, 222], light: [71, 106, 109] },

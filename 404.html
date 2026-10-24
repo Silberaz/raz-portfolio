@@ -12,20 +12,25 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap" rel="stylesheet">
 <style>
 :root {
-  /* Signal palette — dark "Signal lost" tokens */
-  --crt-black:        #14131A;
-  --crt-surface:      #211F2A;
-  --broadcast-white:  #ECE9F0;
-  --text-muted:       #8C8898;
+  /* Test-card palette - matches index.html's data-palette="testcard" */
+  --crt-black:        #0D0D0D;
+  --crt-surface:      #212121;
+  --broadcast-white:  #EAEAEA;
+  --text-muted:       #8B8B8B;
 
-  /* Test-card bars (softened, AA-tuned) */
-  --bar-white:   #ECE9F0;
-  --bar-butter:  #F2D74E;
-  --bar-sky:     #5BC4E8;
-  --bar-sage:    #6FB264;
-  --bar-orchid:  #B05BA8;
-  --bar-tomato:  #F25450;
-  --bar-indigo:  #3A52A0;
+  /* Test-card bars, sampled off the "No signal" card */
+  --bar-white:   #EAEAEA;
+  --bar-butter:  #F5D73B;
+  --bar-sky:     #B0DBDE;
+  --bar-sage:    #73B874;
+  --bar-orchid:  #E09BBE;
+  --bar-tomato:  #D14543;
+  --bar-indigo:  #5867B4;
+
+  /* M3 layout, as on index.html: 16 / 24 margins, 8 / 12 / 16 corners */
+  --pad-x: 16px;
+  --m3-r-sm: 8px;
+  --m3-r-lg: 16px;
 
   /* One family in both roles, matching index.html and the reference:
      Montserrat everywhere, separated by nothing but leading. */
@@ -37,13 +42,14 @@
 
   /* Same reference values as index.html: one size, two leadings,
      one tracking, no uppercase. */
-  --fs-base:    0.9rem;        /* 14.4px */
+  --fs-base:    1rem;          /* 16px - M3 Body Large */
   --fs-display: var(--fs-base);
   --lh-tight:   0.9;
   --lh-text:    1.5;
-  --ls-base:    0.0556em;
+  --ls-base:    0.03125em;     /* .5px at 16px */
   --expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
+@media (min-width: 600px) { :root { --pad-x: 24px; } }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -272,37 +278,37 @@ button { font-family: inherit; font-size: inherit; line-height: inherit; letter-
   z-index: 5;
   background: var(--crt-black);
   color: var(--broadcast-white);
-  padding: clamp(1rem, 2vw, 1.4rem) clamp(2rem, 5vw, 3.6rem);
+  padding: 24px 40px;
   border: 2px solid var(--crt-black);
+  border-radius: var(--m3-r-lg);
   outline: 6px solid rgba(255,255,255,.04);
   box-shadow:
-    0 0 0 1px rgba(236,233,240,.08),
+    0 0 0 1px rgba(234,234,234,.08),
     0 30px 80px rgba(0,0,0,.6);
   text-align: center;
   letter-spacing: var(--ls-base);
   font-family: var(--ff-mono);
   user-select: none;
 }
-.label__error {
+.label__error {                    /* M3 Display Large */
   display: block;
-  font-size: var(--fs-display);
+  font-size: 57px; line-height: 64px;
   font-weight: var(--fw-regular);
-  line-height: var(--lh-tight);
-  letter-spacing: var(--ls-base);
+  letter-spacing: -.25px;
   position: relative;
 }
-.label__signal {
+.label__signal {                   /* Title Large */
   display: block;
-  font-size: var(--fs-display);
+  font-size: 22px; line-height: 28px;
   font-weight: var(--fw-regular);
-  margin-top: .55em;
-  letter-spacing: var(--ls-base);
+  margin-top: 8px;
+  letter-spacing: 0;
 }
-.label__sub {
+.label__sub {                      /* Body Large */
   display: block;
-  margin-top: 1.1em;
-  font-size: var(--fs-display);
-  letter-spacing: var(--ls-base);
+  margin-top: 16px;
+  font-size: 16px; line-height: 24px;
+  letter-spacing: .5px;
   color: var(--text-muted);
   text-transform: none;
 }
@@ -320,18 +326,19 @@ button { font-family: inherit; font-size: inherit; line-height: inherit; letter-
 .label__error::before { color: var(--bar-tomato); }
 .label__error::after  { color: var(--bar-sky); }
 
-.channel {
+.channel {                         /* Label Large */
   position: absolute;
-  top: clamp(1rem, 3vh, 2rem);
-  left: clamp(1rem, 3vw, 2rem);
+  top: var(--pad-x);
+  left: var(--pad-x);
   z-index: 6;
   font-family: var(--ff-mono);
-  font-size: var(--fs-base);
-  letter-spacing: var(--ls-base);
+  font-size: 14px; line-height: 20px; font-weight: 500;
+  letter-spacing: .1px;
   color: var(--broadcast-white);
-  background: rgba(20,19,26,.7);
-  border: 1px solid rgba(236,233,240,.2);
-  padding: .55em .9em;
+  background: rgba(13,13,13,.7);
+  border: 1px solid rgba(234,234,234,.2);
+  border-radius: var(--m3-r-sm);
+  padding: 6px 12px;
   text-transform: none;
   display: flex;
   align-items: center;
@@ -342,43 +349,49 @@ button { font-family: inherit; font-size: inherit; line-height: inherit; letter-
   background: var(--bar-tomato);
   animation: blink 1.4s steps(2) infinite;
 }
-.timestamp {
+.timestamp {                       /* Label Large */
   position: absolute;
-  top: clamp(1rem, 3vh, 2rem);
-  right: clamp(1rem, 3vw, 2rem);
+  top: var(--pad-x);
+  right: var(--pad-x);
   z-index: 6;
   font-family: var(--ff-mono);
   /* Montserrat isn't monospaced, and this clock reticks every second -
      tabular figures keep the digits from shuffling on each tick. */
   font-variant-numeric: tabular-nums;
-  font-size: var(--fs-base);
-  letter-spacing: var(--ls-base);
+  font-size: 14px; line-height: 20px; font-weight: 500;
+  letter-spacing: .1px;
   color: var(--broadcast-white);
-  background: rgba(20,19,26,.7);
-  border: 1px solid rgba(236,233,240,.2);
-  padding: .55em .9em;
+  background: rgba(13,13,13,.7);
+  border: 1px solid rgba(234,234,234,.2);
+  border-radius: var(--m3-r-sm);
+  padding: 6px 12px;
   text-transform: none;
 }
 
 .actions {
   position: absolute;
   z-index: 6;
-  bottom: clamp(1.5rem, 5vh, 3.5rem);
+  bottom: 24px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  gap: 1rem;
+  gap: 8px;
   align-items: center;
   font-family: var(--ff-mono);
-  font-size: var(--fs-base);
-  letter-spacing: var(--ls-base);
+  font-size: 14px; line-height: 20px; font-weight: 500;   /* Label Large */
+  letter-spacing: .1px;
   text-transform: none;
 }
-.btn {
+.btn {                             /* outlined button, 40 high, pill like the site's CTA */
   background: var(--crt-black);
   color: var(--broadcast-white);
-  border: 1px solid rgba(236,233,240,.35);
-  padding: .85em 1.4em;
+  border: 1px solid rgba(234,234,234,.35);
+  border-radius: 999px;
+  min-height: 40px;
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 10px 24px;
+  line-height: 20px;
+  white-space: nowrap;
   cursor: pointer;
   letter-spacing: inherit;
   font-size: inherit;
@@ -408,7 +421,9 @@ button { font-family: inherit; font-size: inherit; line-height: inherit; letter-
 }
 
 @media (max-width: 480px) {
-  .channel, .timestamp { font-size: var(--fs-base); padding: .45em .7em; }
+  .channel, .timestamp { padding: 4px 8px; }
+  .actions { flex-direction: column; align-items: stretch; width: calc(100% - 2 * var(--pad-x)); }
+  .label__error { font-size: 45px; line-height: 52px; letter-spacing: 0; }
   .label__signal { letter-spacing: var(--ls-base); }
 }
 </style>
