@@ -3356,6 +3356,265 @@ dialog.fv-dialog .fv { --fv-h: 100%; border: none; border-radius: 0; margin: 0; 
   .proj-marquee-track { animation: none; }
   .proj-marquee-item, .proj-marquee-item:hover { transition: opacity .35s ease; transform: none; }
 }
+
+/* ═══ M3 layout (opt-in experiment) ═══════════════════════════════════════
+   A project with `layout: 'm3'` sets html[data-layout="m3"] (see <Project>),
+   and everything below re-lays the page to Material 3's layout guidance:
+   m3.material.io/foundations/layout. Other pages are untouched.
+
+     breakpoints  compact <600 · medium 600-839 · expanded 840-1199
+                  large 1200-1599 · extra-large 1600+
+     margins      16 compact, 24 everywhere else (--pad-x is the margin,
+                  so nav, back link, hero, rail and footer share one ruler);
+                  the content pane adds its own inner margin on top -
+                  8 / 24 / 40 / 72 (--m3-content-x minus the margin), growing
+                  past that so the content never exceeds --m3-content-max
+     spacer       24 between panes
+     grid         4 / 8 / 12 columns
+     panes        one content pane; the Contents list is the rail region -
+                  hidden (show/hide) below expanded, a standard expanded
+                  navigation rail from 840 up
+     spacing      8dp scale (space100 = 8px), larger steps on larger windows
+     type         M3 baseline type scale, roles mapped onto our two faces
+     shape        a step under M3's own scale - 8 / 12 / 16, no full pills
+   ───────────────────────────────────────────────────────────────────── */
+html[data-layout="m3"] {
+  --pad-x: 16px;               /* margin */
+  /* content margin ruler - M3 lets margin rulers move inward for more
+     negative space; the hero and its media keep the standard margin */
+  --m3-content-x: 24px;
+  /* widest the pane's content gets: two ~60-character columns + a spacer.
+     Past it the pane's inner margins grow instead of the content */
+  --m3-content-max: 1120px;
+  --m3-spacer: 24px;           /* space between panes */
+  --m3-gap: 16px;              /* gap between grid columns + cards */
+  --m3-cols: 4;
+  --m3-section-gap: 48px;      /* space600 - between sections */
+  --m3-head-gap: 16px;         /* section title -> its content */
+  --m3-bar-h: 64px;            /* app bar */
+  --m3-rail-w: 220px;          /* expanded navigation rail (min width) */
+  --m3-measure: 34em;          /* ~60 characters a line at Body Large */
+  --m3-r-sm: 8px;
+  --m3-r-md: 12px;
+  --m3-r-lg: 16px;
+}
+@media (min-width: 600px) {
+  html[data-layout="m3"] { --pad-x: 24px; --m3-content-x: 48px; --m3-gap: 24px; --m3-cols: 8; --m3-section-gap: 64px; --m3-head-gap: 24px; }
+}
+@media (min-width: 840px)  { html[data-layout="m3"] { --m3-cols: 12; --m3-content-x: 64px; } }
+@media (min-width: 1200px) { html[data-layout="m3"] { --m3-section-gap: 72px; --m3-content-x: 96px; } }
+
+/* Body Large is the default text style */
+html[data-layout="m3"] body { font-size: 16px; line-height: 24px; letter-spacing: .5px; }
+
+/* ── Bar: top app bar, 64 high, title on the margin ruler ── */
+html[data-layout="m3"] nav.top,
+html[data-layout="m3"] nav.top.compact { min-height: var(--m3-bar-h); padding: 0 var(--pad-x); }
+html[data-layout="m3"] .nav-logo { font-size: 22px; line-height: 28px; letter-spacing: 0; }
+html[data-layout="m3"] .nav-links a { font-size: 14px; line-height: 20px; font-weight: var(--fw-medium); letter-spacing: .1px; }
+/* expanded and up keep the destinations in the bar; below that, the menu */
+@media (min-width: 840px) {
+  html[data-layout="m3"] .nav-links,
+  html[data-layout="m3"] .nav-actions { display: flex; }
+  html[data-layout="m3"] .burger,
+  html[data-layout="m3"] .mobile-menu { display: none; }
+}
+
+/* ── Hero ── */
+html[data-layout="m3"] .back-btn {
+  padding: calc(var(--m3-bar-h) + 24px) var(--pad-x) 0;
+  font-size: 14px; line-height: 20px; font-weight: var(--fw-medium); letter-spacing: .1px;
+}
+/* The hero sits in a filled container, like M3's own page headers; the
+   hero media follows 8px below so the two read as one group */
+html[data-layout="m3"] .proj-hero { min-height: 0; padding: 24px var(--pad-x) 8px; }
+html[data-layout="m3"] .proj-hero-inner {
+  grid-template-columns: repeat(var(--m3-cols), minmax(0, 1fr));
+  gap: 32px var(--m3-gap); align-items: end;
+  padding: 24px;
+  background: var(--surface);
+  border-radius: var(--m3-r-lg);
+}
+html[data-layout="m3"] .proj-hero-inner > * { grid-column: 1 / -1; }
+html[data-layout="m3"] .proj-eyebrow {           /* Label Large */
+  font-size: 14px; line-height: 20px; font-weight: var(--fw-medium); letter-spacing: .1px;
+  margin-bottom: 16px;
+}
+html[data-layout="m3"] .proj-hero-title {        /* Display Small -> Medium -> Large */
+  font-size: 36px; line-height: 44px; font-weight: var(--fw-regular); letter-spacing: 0;
+}
+html[data-layout="m3"] .proj-hero-title em {     /* Title Large -> Headline Small */
+  display: block; margin-top: 8px;
+  font-size: 22px; line-height: 28px; letter-spacing: 0;
+}
+html[data-layout="m3"] .proj-summary {           /* Body Large */
+  margin-top: 24px; max-width: var(--m3-measure);
+  font-size: 16px; line-height: 24px; letter-spacing: .5px;
+}
+html[data-layout="m3"] .proj-status-note {       /* Body Medium */
+  margin-top: 16px; max-width: var(--m3-measure);
+  font-size: 14px; line-height: 20px; letter-spacing: .25px;
+}
+html[data-layout="m3"] .proj-meta { gap: 16px; }
+html[data-layout="m3"] .proj-meta .k {           /* Label Medium */
+  font-size: 12px; line-height: 16px; font-weight: var(--fw-medium); letter-spacing: .5px;
+  margin-bottom: 4px;
+}
+html[data-layout="m3"] .proj-meta .v { font-size: 14px; line-height: 20px; letter-spacing: .25px; }
+@media (min-width: 600px) {
+  html[data-layout="m3"] .proj-hero-inner { padding: 40px; }
+}
+@media (min-width: 840px) {
+  html[data-layout="m3"] .proj-hero-inner { padding: 56px; }
+  html[data-layout="m3"] .proj-hero-inner > :first-child { grid-column: span 8; }
+  html[data-layout="m3"] .proj-hero-inner > .proj-meta   { grid-column: span 4; }
+  html[data-layout="m3"] .proj-hero-title { font-size: 45px; line-height: 52px; }
+  html[data-layout="m3"] .proj-hero-title em { font-size: 24px; line-height: 32px; }
+}
+@media (min-width: 1200px) {
+  html[data-layout="m3"] .proj-hero-title { font-size: 57px; line-height: 64px; letter-spacing: -.25px; }
+  html[data-layout="m3"] .proj-hero-title em { letter-spacing: 0; }
+}
+
+/* hero media spans the full width between the margins */
+html[data-layout="m3"] .proj-hero-image.is-contained { padding: 0 var(--pad-x); }
+html[data-layout="m3"] .proj-hero-image.is-contained img { border-radius: var(--m3-r-lg); }
+
+/* ── Panes: rail + one flexible content pane ── */
+html[data-layout="m3"] .proj-content {
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--m3-spacer);
+  padding: var(--m3-section-gap) var(--pad-x);
+}
+html[data-layout="m3"] .proj-sidebar { display: none; }
+/* the pane sizes its own content - columns follow the pane, not the window */
+html[data-layout="m3"] .proj-pane {
+  container: pane / inline-size; min-width: 0;
+  /* the content sits on the inset ruler; the rail stays on the margin.
+     Once the pane outgrows --m3-content-max, the margins take up the rest
+     (% padding resolves against the pane's grid area) */
+  padding-inline: max(calc(var(--m3-content-x) - var(--pad-x)),
+                      calc((100% - var(--m3-content-max)) / 2));
+}
+@media (min-width: 840px) {
+  html[data-layout="m3"] .proj-content { grid-template-columns: var(--m3-rail-w) minmax(0, 1fr); }
+  html[data-layout="m3"] .proj-sidebar { display: block; position: sticky; top: calc(var(--m3-bar-h) + 24px); }
+}
+
+/* Rail: expanded navigation rail items - 56 high, Label Large, active indicator */
+html[data-layout="m3"] .sidebar-label {          /* Title Small */
+  font-size: 14px; line-height: 20px; font-weight: var(--fw-medium); letter-spacing: .1px;
+  padding: 0 16px; margin-bottom: 8px;
+}
+html[data-layout="m3"] .sidebar-nav { gap: 0; }
+html[data-layout="m3"] .sidebar-nav a {
+  min-height: 56px; padding: 0 16px; border-radius: var(--m3-r-lg);
+  font-size: 14px; line-height: 20px; font-weight: var(--fw-medium); letter-spacing: .1px;
+  transition: color .25s, background .25s;
+}
+html[data-layout="m3"] .sidebar-nav a::before { content: none; }
+html[data-layout="m3"] .sidebar-nav a:hover { background: color-mix(in oklab, var(--ink) 8%, transparent); }
+html[data-layout="m3"] .sidebar-nav a.active {
+  color: var(--ink);
+  background: color-mix(in oklab, var(--accent) 18%, transparent);
+}
+
+/* ── Sections: spacing groups, no divider lines ── */
+html[data-layout="m3"] .proj-section { margin-bottom: var(--m3-section-gap); scroll-margin-top: calc(var(--m3-bar-h) + 24px); }
+html[data-layout="m3"] .proj-pane > .proj-section:last-child { margin-bottom: 0; }
+html[data-layout="m3"] .proj-section-head { margin-bottom: var(--m3-head-gap); padding-bottom: 0; border-bottom: 0; }
+html[data-layout="m3"] .proj-head-rule::after { content: none; }
+html[data-layout="m3"] .proj-section-eyebrow {   /* Label Large */
+  font-size: 14px; line-height: 20px; font-weight: var(--fw-medium); letter-spacing: .1px; margin-bottom: 8px;
+}
+html[data-layout="m3"] .proj-section-title {     /* Headline Small -> Headline Medium */
+  font-size: 24px; line-height: 32px; font-weight: var(--fw-regular); letter-spacing: 0;
+}
+html[data-layout="m3"] .proj-sub-title {         /* Title Large */
+  font-size: 22px; line-height: 28px; font-weight: var(--fw-regular); letter-spacing: 0; margin-bottom: 8px;
+}
+html[data-layout="m3"] .proj-section p {         /* Body Large */
+  font-size: 16px; line-height: 24px; letter-spacing: .5px;
+  margin-bottom: 16px; max-width: var(--m3-measure);
+}
+@media (min-width: 840px) {
+  html[data-layout="m3"] .proj-section-title { font-size: 28px; line-height: 36px; }
+}
+
+/* Cards: outlined, 1 -> 2 -> 3 across as the pane grows */
+html[data-layout="m3"] .proj-cards { gap: var(--m3-gap); margin: 8px 0 0; }
+html[data-layout="m3"] .proj-cards.is-2x2 { grid-template-columns: minmax(0, 1fr); }
+html[data-layout="m3"] .proj-card { gap: 8px; padding: 16px; border-radius: var(--m3-r-md); }
+html[data-layout="m3"] .proj-card-icon { width: 40px; height: 40px; margin-bottom: 8px; border-radius: var(--m3-r-md); }
+html[data-layout="m3"] .proj-card-title {        /* Title Medium */
+  font-size: 16px; line-height: 24px; font-weight: var(--fw-medium); letter-spacing: .15px;
+}
+html[data-layout="m3"] .proj-card-text {         /* Body Medium */
+  font-size: 14px; line-height: 20px; letter-spacing: .25px; max-width: none; margin: 0;
+}
+@container pane (min-width: 600px) {
+  html[data-layout="m3"] .proj-cards,
+  html[data-layout="m3"] .proj-cards.is-2x2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  html[data-layout="m3"] .proj-card { padding: 24px; }
+}
+@container pane (min-width: 840px) {
+  html[data-layout="m3"] .proj-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+/* Media: full pane width, natural height, 8px caption gap */
+html[data-layout="m3"] .proj-media { margin: 24px 0 0; gap: 24px; }
+html[data-layout="m3"] .proj-media-item { gap: 8px; }
+html[data-layout="m3"] .proj-media-item img,
+html[data-layout="m3"] .proj-media-item video,
+html[data-layout="m3"] .proj-media-placeholder,
+html[data-layout="m3"] .proj-split-media img { border-radius: var(--m3-r-md); }
+html[data-layout="m3"] .proj-media-item.is-bare img { border-radius: 0; }
+html[data-layout="m3"] .proj-caption {           /* Body Small */
+  font-size: 12px; line-height: 16px; letter-spacing: .4px;
+}
+
+/* Two-column sections (split + tabs): stacked until the pane reaches
+   expanded width, then two equal columns with a 24 spacer */
+html[data-layout="m3"] .proj-split,
+html[data-layout="m3"] .proj-split.is-cols,
+html[data-layout="m3"] .proj-tabs-stage { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+html[data-layout="m3"] .proj-split.is-cols .proj-split-text { position: static; }
+@container pane (min-width: 840px) {
+  html[data-layout="m3"] .proj-split.is-cols,
+  html[data-layout="m3"] .proj-tabs-stage { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+  html[data-layout="m3"] .proj-split.is-cols .proj-split-text { position: sticky; top: calc(var(--m3-bar-h) + 24px); }
+}
+html[data-layout="m3"] .proj-tabs { margin: 0 0 24px; }
+html[data-layout="m3"] .proj-tabs-side > p:last-of-type { margin-bottom: 24px; }
+
+/* Segmented buttons: 40 high, Label Large; rounder than before, short of a pill */
+html[data-layout="m3"] .proj-tabs-seg { padding: 4px; gap: 4px; border-radius: var(--m3-r-md); margin-bottom: 24px; }
+html[data-layout="m3"] .proj-tabs-seg button {
+  min-height: 32px; padding: 6px 16px; border-radius: var(--m3-r-sm);
+  font-size: 14px; line-height: 20px; font-weight: var(--fw-medium); letter-spacing: .1px;
+}
+
+/* ── Next project + footer ── */
+html[data-layout="m3"] .next-proj { padding: 48px var(--pad-x); }
+@media (hover: hover) {
+  html[data-layout="m3"] .next-proj:hover { padding-left: calc(var(--pad-x) + 16px); }
+}
+html[data-layout="m3"] .next-label {             /* Label Large */
+  font-size: 14px; line-height: 20px; font-weight: var(--fw-medium); letter-spacing: .1px; margin-bottom: 8px;
+}
+html[data-layout="m3"] .next-title,
+html[data-layout="m3"] .next-arrow {             /* Headline Small -> Medium */
+  font-size: 24px; line-height: 32px; font-weight: var(--fw-regular); letter-spacing: 0;
+}
+html[data-layout="m3"] footer {                  /* Label Medium */
+  padding: 24px var(--pad-x);
+  font-size: 12px; line-height: 16px; font-weight: var(--fw-medium); letter-spacing: .5px;
+}
+@media (min-width: 840px) {
+  html[data-layout="m3"] .next-proj { padding-top: 64px; padding-bottom: 64px; }
+  html[data-layout="m3"] .next-title,
+  html[data-layout="m3"] .next-arrow { font-size: 28px; line-height: 36px; }
+}
 </style>
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
@@ -3550,6 +3809,7 @@ const PROJECTS = [
     swatch: { from: '#553A0E', to: '#2B1D05', mark: '#F4D06F' },
     heroImage: 'spark/spark images/project-cover-2800.webp',
     heroContained: true,
+    layout: 'm3', /* opt-in Material 3 layout experiment - see "M3 layout" in the styles */
     sections: [
       { id: 'context', title: 'Context', body: [
         'KMS Lighthouse builds enterprise knowledge management software - the tool support agents, banks, and telcos use to find a verified answer in seconds. It\'s sold white-label, so every customer sees it under their own brand.',
@@ -7608,7 +7868,10 @@ function ProjectTabs({ tabs, idBase = 'tabs', title, intro }) {
 
     const measure = () => {
       const stageH = stage.offsetHeight;
-      const on = mq.matches && stageH + STICKY_TOP <= window.innerHeight;
+      /* pin only when the stage really is two columns - a layout can keep it
+         stacked past the width query (e.g. the M3 pane's container query) */
+      const cols = getComputedStyle(stage).gridTemplateColumns.trim().split(/\s+/).length > 1;
+      const on = mq.matches && cols && stageH + STICKY_TOP <= window.innerHeight;
       setPinned(on);
       geo.current = { step: on ? stageH : 0, top: STICKY_TOP };
       track.style.height = on ? `${stageH * (n + 1)}px` : '';
@@ -8296,6 +8559,13 @@ function Project({ projectId, onBack, onOpen }) {
   const next = window.PROJECTS[(window.PROJECTS.indexOf(p) + 1) % window.PROJECTS.length];
   const [activeSection, setActiveSection] = useState(p.sections[0].id);
   const atmosRef = useRef(null);
+  /* Opt-in page layout (e.g. layout: 'm3'). Set on <html> so the shared nav
+     follows too; a layout effect, so it lands before the first paint. */
+  React.useLayoutEffect(() => {
+    if (!p.layout) return;
+    document.documentElement.dataset.layout = p.layout;
+    return () => { delete document.documentElement.dataset.layout; };
+  }, [p]);
   useEffect(() => {
     const onScroll = () => {
       let cur = p.sections[0].id;
@@ -8493,7 +8763,7 @@ function Project({ projectId, onBack, onOpen }) {
             })}
           </ul>
         </aside>
-        <div>
+        <div className="proj-pane">
           {p.sections.map(s => <ProjectSection key={s.id} s={s} />)}
         </div>
       </div>
