@@ -3642,6 +3642,8 @@ html[data-layout="m3"] .proj-media-item video,
 html[data-layout="m3"] .proj-media-placeholder,
 html[data-layout="m3"] .proj-split-media img { border-radius: var(--m3-r-md); }
 html[data-layout="m3"] .proj-media-item.is-bare img { border-radius: 0; }
+/* bare tab images drop the frame but keep the rounded corners */
+html[data-layout="m3"] .proj-tabs-media.is-bare img { border-radius: var(--m3-r-md); }
 html[data-layout="m3"] .proj-caption {           /* Body Small */
   font-size: 12px; line-height: 16px; letter-spacing: .4px;
 }
@@ -4430,15 +4432,16 @@ const PROJECTS = [
         tabs: [
           { label: 'Anatomy', title: 'Anatomy',
             body: ['{{ Placeholder: how a component is broken into named parts - container, label, icon, slots - and which tokens each part uses. }}'],
-            media: { src: 'spark/spark images/anatomy-2800.png',
+            media: { src: 'spark/spark images/anatomy-2800.png?v=2', bare: true,
                      caption: 'Card anatomy - nine named parts, two layouts, and the assembled result' } },
           { label: 'Variants', title: 'Variants',
             body: ['{{ Placeholder: the defined variants and states - sizes, emphasis levels, hover, focus, disabled, error. }}'],
-            media: { src: 'spark/spark images/variants-2800.jpg',
+            media: { src: 'spark/spark images/variants-2800.png',
                      caption: 'Card states - default, hover, pressed, focus, disabled, selected' } },
           { label: 'Usage', title: 'Usage',
             body: ['{{ Placeholder: usage rules - when to use it, when not to, and the do / don\'t examples that come with it. }}'],
-            media: { placeholder: true, label: 'Usage - image placeholder' } },
+            media: { src: 'spark/spark images/usage-2800.png', bare: true,
+                     caption: 'Cards in use - content, selection, grid and mobile layouts' } },
         ],
         media: [
           { src: 'spark/spark images/before-and-after-2400.webp', kind: 'wide', bare: true,
@@ -8526,7 +8529,7 @@ function ProjectTabs({ tabs, idBase = 'tabs', title, intro }) {
             {t.body?.map((para, i) => <p key={i}>{para}</p>)}
           </div>
         </div>
-        <figure className="proj-tabs-media proj-media-item k-wide">
+        <figure className={`proj-tabs-media proj-media-item k-wide ${t.media?.bare ? 'is-bare' : ''}`}>
           {t.media?.placeholder || !t.media?.src ? (
             <div className="proj-media-placeholder"><span>{t.media?.label || `${t.label} - image placeholder`}</span></div>
           ) : (
