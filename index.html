@@ -3368,6 +3368,9 @@ dialog.fv-dialog .fv { --fv-h: 100%; border: none; border-radius: 0; margin: 0; 
 .proj-marquee-track {
   display: flex; gap: 1.5rem; width: max-content;
   animation: proj-marquee-slide 60s linear infinite;
+  /* runs left to right: the screens' features sit on their right side, so
+     a frame shows its right edge first as it enters from the left */
+  animation-direction: reverse;
 }
 .proj-marquee:hover .proj-marquee-track,
 .proj-marquee:focus-within .proj-marquee-track { animation-play-state: paused; }
@@ -3400,6 +3403,14 @@ dialog.fv-dialog .fv { --fv-h: 100%; border: none; border-radius: 0; margin: 0; 
 .proj-marquee-frame.is-video { aspect-ratio: 16 / 9; }
 .proj-marquee-frame.is-video video {
   display: block; width: 100%; height: 100%; object-fit: cover; cursor: zoom-in;
+}
+/* typed caption: one line, a zero-width space holds its height while empty,
+   a caret shows while it types */
+.proj-marquee-cap { white-space: nowrap; will-change: transform; }
+.proj-marquee-cap::before { content: '\200b'; }
+.proj-marquee-cap.is-typing .mq-type::after {
+  content: ''; display: inline-block; width: 1px; height: 1em; margin-left: 2px;
+  vertical-align: -.15em; background: currentColor;
 }
 /* in a parallax media column the strip is the column item itself */
 .proj-parallax-media > .proj-marquee { margin: calc(-1 * var(--mq-lift)) 0; }
@@ -4074,6 +4085,217 @@ html[data-layout="m3"] .proj-compare-dim { display: block; }
     grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px;
   }
   html[data-layout="m3"] .proj-section.is-parallax:not(:has(.proj-marquee)) .proj-parallax-text { position: sticky; }
+}
+
+/* ── Flow viewer: a filled card holding an inset canvas ──
+   Same vocabulary as the rest of the case study - no hairlines between
+   rows, sentence-case type roles instead of tracked uppercase, segmented
+   buttons and filter chips for the switches, standard icon/text buttons
+   for the tools. The canvas sits a layer down (ground), so the diagram
+   reads as content inside the card rather than the card itself. */
+html[data-layout="m3"] .fv { background: var(--surface); }
+html[data-layout="m3"] .fv-placeholder-slot { border-radius: var(--m3-r-md); }
+html[data-layout="m3"] .fv-bar,
+html[data-layout="m3"] .fv-subbar,
+html[data-layout="m3"] .fv-foot { border: 0; background: transparent; gap: 8px 16px; }
+html[data-layout="m3"] .fv-bar { padding: 12px 16px 8px; }
+html[data-layout="m3"] .fv-subbar { padding: 4px 8px 8px 16px; min-height: 56px; }
+html[data-layout="m3"] .fv-mark {               /* Title Medium */
+  font-family: var(--ff-body); font-size: 16px; line-height: 24px; font-weight: var(--fw-medium);
+  letter-spacing: .15px; text-transform: none; color: var(--ink);
+  border: 0; padding: 0; white-space: nowrap;
+}
+/* Admin / Widgets: segmented buttons, as in the case-study tabs */
+html[data-layout="m3"] .fv-tabs {
+  gap: 4px; padding: 4px; border-radius: var(--m3-r-md);
+  background: var(--ground);
+}
+html[data-layout="m3"] .fv-tab {                /* Label Large */
+  min-height: 32px; padding: 6px 16px; border: 0; border-radius: var(--m3-r-sm);
+  font-family: var(--ff-body); font-size: 14px; line-height: 20px; font-weight: var(--fw-medium);
+  letter-spacing: .1px; text-transform: none; color: var(--ink-dim); white-space: nowrap;
+}
+html[data-layout="m3"] .fv-tab:hover { color: var(--ink); background: color-mix(in oklab, var(--ink) 8%, transparent); }
+html[data-layout="m3"] .fv-tab[aria-selected="true"] {
+  background: var(--accent-sky-bg); color: var(--accent-sky);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--accent-sky) 45%, transparent);
+}
+/* breadcrumb: Body Medium trail, Title Medium for where you are */
+html[data-layout="m3"] .fv-crumb { gap: 4px 8px; font-size: 14px; line-height: 20px; letter-spacing: .25px; }
+html[data-layout="m3"] .fv-crumb button { color: var(--ink-dim); }
+html[data-layout="m3"] .fv-crumb .fv-cur {
+  font-size: 16px; line-height: 24px; font-weight: var(--fw-medium); letter-spacing: .15px; gap: 8px;
+}
+html[data-layout="m3"] .fv-crumb .fv-sub {      /* Body Small */
+  font-size: 12px; line-height: 16px; letter-spacing: .4px; color: var(--muted);
+}
+/* component switcher: filter chips, selected = tonal fill */
+html[data-layout="m3"] .fv-pills { gap: 8px; }
+html[data-layout="m3"] .fv-pill {
+  min-height: 32px; padding: 6px 12px; gap: 8px;
+  border: 1px solid var(--rim); border-radius: var(--m3-r-sm);
+  font-size: 14px; line-height: 20px; font-weight: var(--fw-medium); letter-spacing: .1px;
+  color: var(--ink-dim);
+}
+html[data-layout="m3"] .fv-pill:hover { color: var(--ink); border-color: var(--rim); background: color-mix(in oklab, var(--ink) 8%, transparent); }
+html[data-layout="m3"] .fv-pill[aria-current="true"] {
+  background: color-mix(in oklab, var(--accent) 18%, transparent);
+  color: var(--ink); border-color: transparent;
+}
+html[data-layout="m3"] .fv-pill i { width: 8px; height: 8px; }
+html[data-layout="m3"] .fv-select {
+  min-height: 40px; padding: 8px 12px;
+  font-size: 14px; line-height: 20px; letter-spacing: .25px;
+  background: var(--ground); border: 0; border-radius: var(--m3-r-sm);
+}
+/* tools: standard icon + text buttons - no outline, a state layer on hover */
+html[data-layout="m3"] .fv-tools { gap: 4px; }
+html[data-layout="m3"] .fv-tool,
+html[data-layout="m3"] .fv-tool.is-wide {       /* Label Large */
+  min-width: 40px; height: 40px; border: 0; border-radius: var(--m3-r-sm);
+  background: transparent; color: var(--ink-dim);
+  font-family: var(--ff-body); font-size: 14px; line-height: 20px; font-weight: var(--fw-medium);
+  letter-spacing: .1px; text-transform: none;
+}
+html[data-layout="m3"] .fv-tool.is-wide { padding: 0 12px; }
+html[data-layout="m3"] .fv-tool:not(.is-wide) { font-size: 18px; }
+html[data-layout="m3"] .fv-tool:hover { color: var(--ink); background: color-mix(in oklab, var(--ink) 8%, transparent); }
+html[data-layout="m3"] .fv-zoomval {
+  font-family: var(--ff-body); font-size: 14px; line-height: 20px; font-weight: var(--fw-medium);
+  letter-spacing: .1px; color: var(--muted); min-width: 48px;
+}
+html[data-layout="m3"] .fv-divider { height: 24px; margin: 0 4px; background: var(--rim); }
+
+/* the canvas: inset a layer down, its corners following the card's */
+html[data-layout="m3"] .fv-stage {
+  margin: 0 8px 8px; border-radius: var(--m3-r-sm);
+  background: var(--ground);
+}
+html[data-layout="m3"] .fv-armed {              /* Label Medium, assist chip */
+  right: 16px; top: 16px; padding: 6px 12px;
+  font-family: var(--ff-body); font-size: 12px; line-height: 16px; font-weight: var(--fw-medium);
+  letter-spacing: .5px; text-transform: none;
+  border: 0; border-radius: var(--m3-r-sm);
+  background: color-mix(in oklab, var(--surface) 92%, transparent);
+}
+html[data-layout="m3"] .fv-edge-label { font-family: var(--ff-body); letter-spacing: .2px; }
+/* sentence case; the tracking matches ZONE_LABEL_TRACKING, which sizes its knockout */
+html[data-layout="m3"] .fv-zone-label { letter-spacing: .05em; text-transform: none; }
+
+/* system map */
+html[data-layout="m3"] .fv-map { padding: 24px; }
+html[data-layout="m3"] .fv-map-head { gap: 16px 24px; margin-bottom: 24px; }
+html[data-layout="m3"] .fv-map-head h3 {        /* Title Large */
+  font-size: 22px; line-height: 28px; font-weight: var(--fw-regular); letter-spacing: 0; margin: 0 0 4px;
+}
+html[data-layout="m3"] .fv-map-head p {         /* Body Medium */
+  font-size: 14px; line-height: 20px; letter-spacing: .25px; max-width: var(--m3-measure);
+}
+html[data-layout="m3"] .fv-map-stats { gap: 24px; }
+html[data-layout="m3"] .fv-stat b {             /* Headline Small */
+  font-size: 24px; line-height: 32px; font-weight: var(--fw-regular); letter-spacing: 0;
+}
+html[data-layout="m3"] .fv-stat span,
+html[data-layout="m3"] .fv-entry .fv-tag,
+html[data-layout="m3"] .fv-badge,
+html[data-layout="m3"] .fv-legend .fv-ttl,
+html[data-layout="m3"] .fv-steps .fv-step-kind { /* Label Small */
+  font-family: var(--ff-body); font-size: 11px; line-height: 16px; font-weight: var(--fw-medium);
+  letter-spacing: .5px; text-transform: none;
+}
+html[data-layout="m3"] .fv-entry .fv-tag,
+html[data-layout="m3"] .fv-badge {
+  padding: 2px 8px; border: 0; border-radius: var(--m3-r-sm);
+  background: color-mix(in oklab, var(--ink) 8%, transparent); color: var(--ink-dim);
+}
+html[data-layout="m3"] .fv-entry {              /* Title Medium */
+  gap: 12px; padding: 12px 16px; margin-bottom: 0;
+  border-width: 1px; border-radius: var(--m3-r-md); background: var(--surface);
+  font-size: 16px; line-height: 24px; font-weight: var(--fw-medium); letter-spacing: .15px;
+}
+html[data-layout="m3"] .fv-stem { height: 24px; border-left-width: 1px; margin-left: 28px; }
+html[data-layout="m3"] .fv-cards { gap: var(--m3-gap); }
+html[data-layout="m3"] .fv-card { border: 0; border-radius: var(--m3-r-md); background: var(--surface); }
+html[data-layout="m3"] .fv-card:hover { background: color-mix(in oklab, var(--ink) 6%, var(--surface)); }
+html[data-layout="m3"] .fv-card-body { padding: 16px 16px 8px; gap: 8px; }
+html[data-layout="m3"] .fv-card h4 {            /* Title Medium */
+  font-size: 16px; line-height: 24px; font-weight: var(--fw-medium); letter-spacing: .15px; gap: 8px;
+}
+html[data-layout="m3"] .fv-thumb { border-top: 0; background: transparent; padding: 8px 8px 16px; }
+html[data-layout="m3"] .fv-map-foot { margin-top: 24px; gap: 8px; }
+html[data-layout="m3"] .fv-ghost {              /* outlined button, Label Large */
+  min-height: 40px; padding: 10px 16px; border-radius: var(--m3-r-sm);
+  border: 1px solid var(--rim); background: transparent;
+  font-family: var(--ff-body); font-size: 14px; line-height: 20px; font-weight: var(--fw-medium);
+  letter-spacing: .1px; text-transform: none;
+}
+html[data-layout="m3"] .fv-ghost:hover { color: var(--ink); border-color: var(--rim); background: color-mix(in oklab, var(--ink) 8%, transparent); }
+
+/* legend + hint */
+html[data-layout="m3"] .fv-foot { padding: 0 16px 8px; }
+html[data-layout="m3"] .fv-legend { gap: 8px 12px; }
+html[data-layout="m3"] .fv-legend .fv-lg { gap: 4px; font-size: 12px; line-height: 16px; letter-spacing: .4px; }
+html[data-layout="m3"] .fv-hint { font-size: 12px; line-height: 16px; letter-spacing: .4px; }
+html[data-layout="m3"] .fv-hint kbd {
+  font-family: var(--ff-body); font-size: 11px; border: 0; border-radius: 4px; padding: 0 4px;
+  background: color-mix(in oklab, var(--ink) 8%, transparent);
+}
+
+/* step list */
+html[data-layout="m3"] .fv-steps { padding: 16px 16px 24px; }
+html[data-layout="m3"] .fv-steps li { padding: 12px 0 12px 40px; }
+html[data-layout="m3"] .fv-steps li::before {
+  top: 14px; font-family: var(--ff-body); font-size: 12px; line-height: 16px;
+  font-weight: var(--fw-medium); letter-spacing: .5px;
+}
+html[data-layout="m3"] .fv-steps .fv-step-label { font-size: 16px; line-height: 24px; letter-spacing: .5px; }
+html[data-layout="m3"] .fv-steps .fv-step-kind { margin-left: 8px; color: var(--muted); }
+html[data-layout="m3"] .fv-steps .fv-step-out { font-size: 14px; line-height: 20px; letter-spacing: .25px; margin-top: 4px; }
+
+html[data-layout="m3"] .fv-caption {            /* Body Small */
+  font-family: var(--ff-body); font-size: 12px; line-height: 16px; letter-spacing: .4px; margin-top: 8px;
+}
+
+/* full screen: the card itself is the dialog */
+html[data-layout="m3"] dialog.fv-dialog { border: 0; background: var(--surface); }
+html[data-layout="m3"] dialog.fv-dialog .fv { border-radius: 0; }
+
+/* ── Article versioning diagram: tonal containers instead of outlines ──
+   Lanes become filled surfaces, states sit a tone up inside them, the
+   start is a filled container and the decision a tonal one - colour by
+   fill, not by dashed strokes. Highlights take the blue bar, not tomato:
+   red reads as an error state here. Type moves onto the
+   body face, sentence weights. */
+html[data-layout="m3"] .uf-lane-rect { fill: var(--surface); stroke: none; opacity: 1; rx: 16px; }
+html[data-layout="m3"] .uf-lane-title {
+  font-family: var(--ff-body); font-weight: var(--fw-medium); letter-spacing: 0; fill: var(--ink);
+}
+html[data-layout="m3"] .uf-lane-note,
+html[data-layout="m3"] .uf-helper {
+  font-family: var(--ff-body); font-weight: var(--fw-regular); letter-spacing: .25px; fill: var(--muted);
+}
+html[data-layout="m3"] .uf-node {
+  fill: color-mix(in oklab, var(--ink) 7%, var(--surface)); stroke: none; rx: 12px;
+}
+html[data-layout="m3"] .uf-node-title {
+  font-family: var(--ff-body); font-weight: var(--fw-medium); letter-spacing: .15px;
+}
+html[data-layout="m3"] .uf-node-status {
+  font-family: var(--ff-body); font-weight: var(--fw-regular); letter-spacing: .25px;
+}
+html[data-layout="m3"] .uf-decision { fill: color-mix(in oklab, var(--bar-indigo-surface) 24%, transparent); stroke: none; }
+html[data-layout="m3"] .uf-decision-label { font-weight: var(--fw-medium); }
+html[data-layout="m3"] .uf-start-oval { fill: var(--bar-indigo-surface); stroke: none; rx: 12px; }
+html[data-layout="m3"] .uf-start-label {
+  font-family: var(--ff-body); font-weight: var(--fw-medium); letter-spacing: .1px; fill: #FFFFFF;
+}
+html[data-layout="m3"] .uf-arrow-path,
+html[data-layout="m3"] .uf-arrow-path-x { stroke: var(--muted); }
+html[data-layout="m3"] .uf-arrow-head { fill: var(--muted); }
+html[data-layout="m3"] .uf-dot.uf-on { fill: var(--bar-indigo); }
+html[data-layout="m3"] .uf-flow-label-box { fill: var(--surface); stroke: none; rx: 8px; }
+html[data-layout="m3"] .uf-flow-label-text {
+  font-family: var(--ff-body); font-weight: var(--fw-regular); letter-spacing: .25px; fill: var(--ink-dim);
 }
 
 /* ═══ Test-card palette (opt-in experiment) ══════════════════════════════
@@ -5416,12 +5638,12 @@ function resetFonts() { _fontCache = null; }
 const _measureCanvas = document.createElement('canvas');
 const _ctx = _measureCanvas.getContext('2d');
 function measure(text, font) { _ctx.font = font; return _ctx.measureText(text).width; }
-/* .fv-zone-label renders at `500 10px var(--ff-mono)` with letter-spacing:.1em,
+/* .fv-zone-label renders at `500 10px var(--ff-mono)` with letter-spacing:.05em,
    and canvas measureText ignores letter-spacing entirely. Add the tracking back
    or the knockout chip is sized too small and the label overhangs it - invisible
-   with a narrow face, obvious with a wide one. .1em at the label's 10px = 1px
+   with a narrow face, obvious with a wide one. .05em at the label's 10px = .5px
    per character, counting the trailing space CSS also adds. */
-const ZONE_LABEL_TRACKING = 0.1 * 10;
+const ZONE_LABEL_TRACKING = 0.05 * 10;
 function measureZoneLabel(text, font) {
   return measure(text, font) + String(text).length * ZONE_LABEL_TRACKING;
 }
@@ -5744,7 +5966,7 @@ function shapeFor(n, color, opts) {
           { stroke: color, fill: tint(color, 10), 'stroke-width': '1.5' });
       break;
     case 'entry':
-      put('rect', { x: 0, y: 0, width: w, height: h, rx: 7 },
+      put('rect', { x: 0, y: 0, width: w, height: h, rx: 12 },
           { stroke: color, fill: tint(color, 8), 'stroke-width': '2' });
       break;
     case 'action':
@@ -5758,17 +5980,17 @@ function shapeFor(n, color, opts) {
       break;
     }
     case 'dialog':
-      put('rect', { x: 0, y: 0, width: w, height: h, rx: 3 },
+      put('rect', { x: 0, y: 0, width: w, height: h, rx: 8 },
           { stroke: color, fill: 'var(--fv-surface)' });
-      put('rect', { x: 4, y: 4, width: w - 8, height: h - 8, rx: 2, opacity: .55 },
+      put('rect', { x: 4, y: 4, width: w - 8, height: h - 8, rx: 5, opacity: .55 },
           { stroke: color, fill: 'none', 'stroke-width': '0.75' });
       break;
     case 'state':
-      put('rect', { x: 0, y: 0, width: w, height: h, rx: 3, 'stroke-dasharray': '4 3' },
+      put('rect', { x: 0, y: 0, width: w, height: h, rx: 8, 'stroke-dasharray': '4 3' },
           { stroke: color, fill: 'var(--fv-surface-alt)' });
       break;
     default:
-      put('rect', { x: 0, y: 0, width: w, height: h, rx: 3 },
+      put('rect', { x: 0, y: 0, width: w, height: h, rx: 8 },
           { stroke: color, fill: 'var(--fv-surface)' });
   }
   return g;
@@ -5901,7 +6123,7 @@ function renderDiagram(L, opts) {
         g.appendChild(poly);
         gZones.appendChild(g);
 
-        const label = z.name.toUpperCase();
+        const label = z.name;
         const lw = measureZoneLabel(label, resolveFonts().mono) + 3;
         const lg = S('g', { class: 'fv-zone' });
         lg.appendChild(S('rect', {
@@ -6166,7 +6388,7 @@ function renderAllLanes() {
       allNodes.push({ id: key, zone: b.id });
     });
 
-    const label = b.name.toUpperCase();
+    const label = b.name;
     const lw = measureZoneLabel(label, F.mono);
     gLabels.appendChild(S('rect', {
       class: 'fv-knockout', x: PAD + 12, y: dy - 31, width: lw + 16, height: 17, rx: 3
@@ -7485,7 +7707,7 @@ function Resume() {
 /* ─── Article versioning flow diagram (User Flows section) ─── */
 function UserFlowDiagram() {
   return (
-    <svg className="uf-svg" viewBox="0 0 1210 1170" xmlns="http://www.w3.org/2000/svg"
+    <svg className="uf-svg" viewBox="0 0 1210 1230" xmlns="http://www.w3.org/2000/svg"
          role="img" aria-label="Article versioning flow: Draft to Active to Past">
       <defs>
         <marker id="uf-arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
@@ -7501,9 +7723,9 @@ function UserFlowDiagram() {
       <text className="uf-lane-title" x="60" y="670">“Active” version</text>
       <text className="uf-lane-note" x="60" y="698">there can be only one</text>
 
-      <rect className="uf-lane-rect" x="40" y="900" width="1020" height="220" rx="10" />
-      <text className="uf-lane-title" x="60" y="1000">“Past” versions</text>
-      <text className="uf-lane-note" x="60" y="1028">there can be numerous</text>
+      <rect className="uf-lane-rect" x="40" y="960" width="1020" height="220" rx="10" />
+      <text className="uf-lane-title" x="60" y="1060">“Past” versions</text>
+      <text className="uf-lane-note" x="60" y="1088">there can be numerous</text>
 
       <g transform="translate(100, 0)">
         <rect x="410" y="14" width="280" height="44" rx="22" className="uf-start-oval" />
@@ -7517,10 +7739,10 @@ function UserFlowDiagram() {
           <text x="72" y="111" className="uf-node-status">Offline</text>
         </g>
 
-        <path d="M 550 300 L 550 364" className="uf-arrow-path" />
-        <rect x="410" y="364" width="280" height="62" rx="6" className="uf-flow-label-box" />
-        <text x="550" y="390" className="uf-flow-label-text" textAnchor="middle">User marks “Draft”</text>
-        <text x="550" y="406" className="uf-flow-label-text" textAnchor="middle">version as “Active”</text>
+        <path d="M 550 300 L 550 354" className="uf-arrow-path" />
+        <rect x="400" y="354" width="300" height="72" rx="6" className="uf-flow-label-box" />
+        <text x="550" y="385" className="uf-flow-label-text" textAnchor="middle">User marks “Draft”</text>
+        <text x="550" y="407" className="uf-flow-label-text" textAnchor="middle">version as “Active”</text>
         <path d="M 550 426 L 550 448" className="uf-arrow-path" markerEnd="url(#uf-arrow)" />
 
         <g transform="translate(550, 500)">
@@ -7552,39 +7774,39 @@ function UserFlowDiagram() {
         <text x="550" y="654" className="uf-helper" textAnchor="middle">User can toggle</text>
         <path d="M 452 665 L 648 665" className="uf-arrow-path" markerStart="url(#uf-arrow)" markerEnd="url(#uf-arrow)" />
 
-        <path d="M 350 740 L 350 814" className="uf-arrow-path" />
-        <rect x="210" y="814" width="280" height="62" rx="6" className="uf-flow-label-box" />
-        <text x="350" y="832" className="uf-flow-label-text" textAnchor="middle">A new “Draft” version</text>
-        <text x="350" y="848" className="uf-flow-label-text" textAnchor="middle">marked as “Active”,</text>
-        <text x="350" y="864" className="uf-flow-label-text" textAnchor="middle">old one pushed to “Archived”</text>
-        <path d="M 350 876 L 350 928" className="uf-arrow-path" markerEnd="url(#uf-arrow)" />
+        <path d="M 350 740 L 350 816" className="uf-arrow-path" />
+        <rect x="190" y="816" width="320" height="94" rx="6" className="uf-flow-label-box" />
+        <text x="350" y="845" className="uf-flow-label-text" textAnchor="middle">A new “Draft” version</text>
+        <text x="350" y="867" className="uf-flow-label-text" textAnchor="middle">marked as “Active”,</text>
+        <text x="350" y="889" className="uf-flow-label-text" textAnchor="middle">old one pushed to “Archived”</text>
+        <path d="M 350 910 L 350 988" className="uf-arrow-path" markerEnd="url(#uf-arrow)" />
 
-        <path d="M 750 740 L 750 814" className="uf-arrow-path" />
-        <rect x="610" y="814" width="280" height="62" rx="6" className="uf-flow-label-box" />
-        <text x="750" y="832" className="uf-flow-label-text" textAnchor="middle">If the “Active” version</text>
-        <text x="750" y="848" className="uf-flow-label-text" textAnchor="middle">never was “Published”</text>
-        <text x="750" y="864" className="uf-flow-label-text" textAnchor="middle">it turns to “Hidden”</text>
-        <path d="M 750 876 L 750 928" className="uf-arrow-path" markerEnd="url(#uf-arrow)" />
+        <path d="M 750 740 L 750 816" className="uf-arrow-path" />
+        <rect x="590" y="816" width="320" height="94" rx="6" className="uf-flow-label-box" />
+        <text x="750" y="845" className="uf-flow-label-text" textAnchor="middle">If the “Active” version</text>
+        <text x="750" y="867" className="uf-flow-label-text" textAnchor="middle">never was “Published”</text>
+        <text x="750" y="889" className="uf-flow-label-text" textAnchor="middle">it turns to “Hidden”</text>
+        <path d="M 750 910 L 750 988" className="uf-arrow-path" markerEnd="url(#uf-arrow)" />
 
-        <g transform="translate(250, 930)">
+        <g transform="translate(250, 990)">
           <rect className="uf-node" width="200" height="140" rx="2" />
           <text x="100" y="62" className="uf-node-title" textAnchor="middle">“Archived”</text>
           <circle cx="58" cy="106" r="5" className="uf-dot uf-on" />
           <text x="72" y="111" className="uf-node-status">Online</text>
         </g>
 
-        <g transform="translate(650, 930)">
+        <g transform="translate(650, 990)">
           <rect className="uf-node" width="200" height="140" rx="2" />
           <text x="100" y="62" className="uf-node-title" textAnchor="middle">“Hidden”</text>
           <circle cx="58" cy="106" r="5" className="uf-dot uf-off" />
           <text x="72" y="111" className="uf-node-status">Offline</text>
         </g>
 
-        <text x="550" y="984" className="uf-helper" textAnchor="middle">User can toggle</text>
-        <path d="M 452 995 L 648 995" className="uf-arrow-path" markerStart="url(#uf-arrow)" markerEnd="url(#uf-arrow)" />
+        <text x="550" y="1044" className="uf-helper" textAnchor="middle">User can toggle</text>
+        <path d="M 452 1055 L 648 1055" className="uf-arrow-path" markerStart="url(#uf-arrow)" markerEnd="url(#uf-arrow)" />
 
-        <path d="M 850 1000 L 1080 1000 L 1080 230 L 650 230" className="uf-arrow-path" fill="none" markerEnd="url(#uf-arrow)" />
-        <text x="1098" y="615" className="uf-helper" transform="rotate(-90, 1098, 615)" textAnchor="middle">Creating new “Draft”</text>
+        <path d="M 850 1060 L 1080 1060 L 1080 230 L 650 230" className="uf-arrow-path" fill="none" markerEnd="url(#uf-arrow)" />
+        <text x="1098" y="645" className="uf-helper" transform="rotate(-90, 1098, 645)" textAnchor="middle">Creating new “Draft”</text>
       </g>
     </svg>
   );
@@ -8694,6 +8916,82 @@ function ProjectMarquee({ items, speed = 28, label = 'Wireframes - slowly scroll
       root.removeEventListener('pointerleave', onLeave);
     };
   }, [items]);
+  /* Captions type in as their frame enters. The strip runs left to right, so
+     a frame's caption (bottom-left) would be the last thing on screen.
+     Instead it's held at the strip's left edge - where the frame comes in -
+     and typed there letter by letter, each letter staying put, once the
+     frame's leading ~5% is in view. Typing never runs past that same inset
+     from the frame's leading edge, so it stays inside its own frame. Once
+     typed it waits at the edge in full; when the frame is fully in view its
+     left edge reaches the caption, which then locks and rides with the
+     frame, clearing the edge for the next one. Driven by the
+     frames' real positions each animation frame, so hover-pause and resizes
+     need no special cases. */
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const CHAR_MS = 110;    // typing speed
+    const START_AT = 0.046; // typing starts once this share of the frame (from its leading edge) is in
+    const ctx = document.createElement('canvas').getContext('2d');
+    // width of each prefix of the caption, measured once per entry
+    const prefixWidths = (el, text) => {
+      const cs = getComputedStyle(el);
+      ctx.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+      const ls = parseFloat(cs.letterSpacing) || 0;
+      return [...text].map((_, i) => ctx.measureText(text.slice(0, i + 1)).width + ls * (i + 1));
+    };
+    const caps = [...root.querySelectorAll('.proj-marquee-item')].map(fig => {
+      const cap = fig.querySelector('.proj-marquee-cap');
+      return cap && {
+        frame: fig.querySelector('.proj-marquee-frame'), cap,
+        type: cap.querySelector('.mq-type'), full: cap.dataset.caption,
+        t0: 0, widths: null, n: -1, x: null, typing: null,
+      };
+    }).filter(Boolean);
+    if (!caps.length) return;
+    const draw = (c, n, x, typing) => {
+      if (n !== c.n) { c.type.textContent = c.full.slice(0, n); c.n = n; }
+      if (x !== c.x) { c.cap.style.transform = x ? `translateX(${x}px)` : ''; c.x = x; }
+      if (typing !== c.typing) { c.cap.classList.toggle('is-typing', typing); c.typing = typing; }
+    };
+    let raf = 0;
+    const tick = (now) => {
+      const box = root.getBoundingClientRect();
+      caps.forEach(c => {
+        const r = c.frame.getBoundingClientRect();
+        const left = r.left - box.left;
+        const right = left + r.width;
+        if (right <= 0) { c.t0 = 0; draw(c, 0, 0, false); return; }  // off to the left: re-arm
+        if (!c.t0 && left < 0 && right < r.width * START_AT) { draw(c, 0, 0, false); return; } // still coming in
+        if (!c.t0) {
+          // already fully in view (e.g. on load): settled, no typing
+          c.t0 = left >= 0 ? -1 : now;
+          c.widths = prefixWidths(c.cap, c.full);
+        }
+        let n = c.full.length;
+        if (c.t0 > 0) {
+          n = Math.min(n, Math.floor((now - c.t0) / CHAR_MS) + 1); // first letter lands at the start line
+          // only as many letters as fit inside the entering frame, short of its
+          // leading edge by the same inset that starts the typing (and room for the 3px caret)
+          while (n > 0 && c.widths[n - 1] + 3 > right - r.width * START_AT) n--;
+        }
+        // held at the strip's edge until the frame's left edge reaches it
+        const x = left < 0 ? -left : 0;
+        draw(c, n, Math.round(x * 10) / 10, n < c.full.length);
+      });
+      raf = requestAnimationFrame(tick);
+    };
+    const io = new IntersectionObserver(([en]) => {
+      cancelAnimationFrame(raf);
+      if (en.isIntersecting) raf = requestAnimationFrame(tick);
+    });
+    io.observe(root);
+    return () => {
+      io.disconnect(); cancelAnimationFrame(raf);
+      caps.forEach(c => { c.type.textContent = c.full; c.cap.style.transform = ''; c.cap.classList.remove('is-typing'); });
+    };
+  }, [items]);
+
   if (!items || !items.length) return null;
   const loop = [...items, ...items];
   return (
@@ -8713,7 +9011,11 @@ function ProjectMarquee({ items, speed = 28, label = 'Wireframes - slowly scroll
                   <img src={m.src} alt={i < items.length ? (m.caption || '') : ''} />
                 )}
               </div>
-              {m.caption && <figcaption className="proj-caption">{m.caption}</figcaption>}
+              {m.caption && (
+                <figcaption className="proj-caption proj-marquee-cap" data-caption={m.caption}>
+                  <span className="mq-type">{m.caption}</span>
+                </figcaption>
+              )}
             </figure>
           );
         })}
@@ -9582,7 +9884,7 @@ function Lightbox() {
     const entryOf = (media) => {
       const fig = media.closest('figure');
       const capEl = fig && fig.querySelector('.proj-caption');
-      const cap = capEl ? capEl.textContent.trim() : (media.getAttribute('alt') || media.getAttribute('aria-label') || '');
+      const cap = capEl ? (capEl.dataset.caption || capEl.textContent).trim() : (media.getAttribute('alt') || media.getAttribute('aria-label') || '');
       return media.tagName === 'VIDEO'
         ? { videoSrc: media.currentSrc || media.getAttribute('src'), poster: media.getAttribute('poster') || '', cap }
         : { src: media.currentSrc || media.src, cap };
