@@ -2164,6 +2164,12 @@ footer a:hover { color: var(--accent); }
   margin: 2rem 0 2.5rem;
   display: flex; flex-direction: column; gap: 1.75rem;
 }
+.proj-media.cols {
+  display: grid; grid-template-columns: repeat(var(--pm-cols), minmax(0, 1fr));
+  gap: 1.75rem; align-items: start;
+}
+.proj-media.cols .proj-media-col > .proj-media { margin: 0; }
+@media (max-width: 767px) { .proj-media.cols { grid-template-columns: minmax(0, 1fr); } }
 .proj-media.thumbs {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -4591,13 +4597,13 @@ const PROJECTS = [
       },
       { id: 'settings', title: 'Settings',
         group: 'admin',
-        mediaSplit: 'right',  /* text in the left column, image grid on the right */
-        body: ['Website, content, localization, and feedback settings - presented as a carousel of focused panels so admins move through configuration one clear step at a time.'],
+        body: ['Settings split into four tabs - Website, Content, Localization, and Feedback - each a set of focused cards, so admins find a setting by what it affects instead of digging through one long form.'],
+        /* two staggered columns: Website over Localization, Content over Feedback */
         media: [
-          { placeholder: true, caption: 'Settings - Website', kind: 'sq' },
-          { placeholder: true, caption: 'Settings - Content', kind: 'sq' },
-          { placeholder: true, caption: 'Settings - Localization', kind: 'sq' },
-          { placeholder: true, caption: 'Settings - Feedback', kind: 'sq' },
+          { src: 'help center/settings/website.png', caption: 'Settings - Website', kind: 'wide', col: 0 },
+          { src: 'help center/settings/localization.png', caption: 'Settings - Localization', kind: 'wide', col: 0 },
+          { src: 'help center/settings/content.png', caption: 'Settings - Content', kind: 'wide', col: 1 },
+          { src: 'help center/settings/feedback.png', caption: 'Settings - Feedback', kind: 'wide', col: 1 },
         ],
       },
 
@@ -8431,6 +8437,20 @@ function ProjectMedia({ items }) {
   const allThumb = items.length > 1 && items.every(m => m.kind === 'sq');
   const allThird = items.length > 1 && items.every(m => m.kind === 'third');
   const isVideo = (src) => /\.(mp4|mov|webm|ogg)$/i.test(src || '');
+  /* items carrying `col` lay out as staggered columns - each column stacks
+     at its images' natural heights, so the two never line up row by row */
+  const colCount = items.reduce((n, m) => (m.col != null ? Math.max(n, m.col + 1) : n), 0);
+  if (colCount) {
+    return (
+      <div className="proj-media cols" style={{ '--pm-cols': colCount }}>
+        {Array.from({ length: colCount }, (_, c) => (
+          <div key={c} className="proj-media-col">
+            <ProjectMedia items={items.filter(m => m.col === c).map(({ col, ...m }) => m)} />
+          </div>
+        ))}
+      </div>
+    );
+  }
   return (
     <div className={`proj-media ${allThumb ? 'thumbs' : allThird ? 'trio' : 'stack'}`}>
       {items.map((m, i) => (
