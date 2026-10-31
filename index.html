@@ -3678,9 +3678,8 @@ html[data-layout="m3"] .proj-media-item img,
 html[data-layout="m3"] .proj-media-item video,
 html[data-layout="m3"] .proj-media-placeholder,
 html[data-layout="m3"] .proj-split-media img { border-radius: var(--m3-r-md); }
-html[data-layout="m3"] .proj-media-item.is-bare img { border-radius: 0; }
-/* bare tab images drop the frame but keep the rounded corners */
-html[data-layout="m3"] .proj-tabs-media.is-bare img { border-radius: var(--m3-r-md); }
+/* bare images drop the frame but keep the rounded corners */
+html[data-layout="m3"] .proj-media-item.is-bare img { border-radius: var(--m3-r-md); }
 html[data-layout="m3"] .proj-caption {           /* Body Small */
   font-size: 12px; line-height: 16px; letter-spacing: .4px;
 }
@@ -4730,7 +4729,7 @@ const PROJECTS = [
                      caption: 'Cards in use - content, selection, grid and mobile layouts' } },
         ],
         media: [
-          { src: 'spark/spark images/before-and-after-2400.webp', kind: 'wide', bare: true,
+          { src: 'spark/spark images/new-vs-old-2400.webp', kind: 'wide', bare: true,
             caption: 'The same screen, before and after Spark' },
         ],
       },
