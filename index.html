@@ -3571,6 +3571,9 @@ html[data-layout="m3"] .proj-hero-image:is(.is-contained, .is-bare) img {
   border-radius: var(--m3-r-lg);
 }
 html[data-layout="m3"] .proj-hero-image.is-placeholder .proj-hero-ph { max-height: none; }
+/* hero row (heroImages) - equal columns; stacks on phones */
+.proj-hero-image.proj-hero-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; align-items: start; }
+@media (max-width: 599px) { .proj-hero-image.proj-hero-row { grid-template-columns: minmax(0, 1fr); } }
 
 /* ── Panes: rail + one flexible content pane ── */
 html[data-layout="m3"] .proj-content {
@@ -5016,7 +5019,10 @@ const PROJECTS = [
     company: 'KMS Lighthouse',
     tile: 'wide',
     summary: 'A two-stage redesign of the Advanced Search module inside KMS Lighthouse, a knowledge management system used by enterprise support teams. Stage one translated the interface to the Spark design system. Stage two rebuilt filtering as a scalable tool - explored as four concepts, then narrowed to two directions now running as a live A/B test.',
-    heroImage: 'advanced-search/hero-header.png?v=2',
+    heroImages: [
+      { src: 'advanced-search/hero-concept-a.webp', alt: 'Advanced Search - concept A, filters in a side panel' },
+      { src: 'advanced-search/hero-concept-b.webp', alt: 'Advanced Search - concept B, filters as a bar above results' },
+    ],
     tileImage: 'advanced-search/hero-header.png?v=2',
     heroBare: true,
     swatch: { from: '#0E4258', to: '#07222E', mark: '#5BC6D6' },
@@ -5033,20 +5039,9 @@ const PROJECTS = [
           { icon: 'contrast', label: 'Limited accessibility', text: 'Nested dropdowns and icon-only buttons blocked keyboard and screen reader users.' },
           { icon: 'gauge',    label: 'High cognitive load',   text: 'Users combined filters manually with no visible logic, causing frequent mistakes.' },
         ],
-        /* Two separate features, in the order they appeared: the original
-           filtering tool, then the keyword search that grew out of it and
-           became the screen stage 1 rebuilt. Row 1 sets the column width. */
-        mediaRows: [
-          { label: 'First - the original filtering tool', items: [
-            { src: 'advanced-search/og-01-empty.png',           caption: 'One control - pick an item type, then search' },
-            { src: 'advanced-search/og-02-item-type-list.png',   caption: 'Every item type in a single flat list' },
-            { src: 'advanced-search/og-03-results.png',          caption: 'Results by type - title and dates, nothing to narrow by' },
-          ] },
-          { label: 'Then - the keyword search users asked for instead', items: [
-            { src: 'advanced-search/before-01-empty-state-crop.png', caption: 'A keyword field becomes the entry point' },
-            { src: 'advanced-search/old-02-template-picker-crop.png',    caption: 'Filtering bolted back on as nested dropdowns' },
-            { src: 'advanced-search/before-03-results-table-crop.png', caption: 'Results grow a versions tab and a second filter set' },
-          ] },
+        media: [
+          { src: 'advanced-search/old-advanced-search.webp', kind: 'wide', bare: true,
+            caption: 'The original filtering tool, and the keyword search that grew out of it' },
         ],
       },
       { id: 'stage-1', title: 'Stage 1 - Spark UI translation',
@@ -9757,7 +9752,12 @@ function Project({ projectId, onBack, onOpen }) {
         </div>
       </section>
 
-      {p.heroImage ? (
+      {p.heroImages ? (
+        /* several frames side by side, each filling its share at natural height */
+        <div className="proj-hero-image is-bare proj-hero-row">
+          {p.heroImages.map(h => <img key={h.src} src={h.src} alt={h.alt || `${p.title} - hero`} loading="eager" />)}
+        </div>
+      ) : p.heroImage ? (
         <div className={`proj-hero-image ${p.heroBare ? 'is-bare' : ''} ${p.heroContained ? 'is-contained' : ''}`}>
           <img src={p.heroImage} alt={`${p.title} - hero`} loading="eager" />
         </div>
