@@ -5848,14 +5848,6 @@ function layoutFlow(rawNodes, rawEdges, opts) {
     }
   }
 
-  /* ---------- 6. rank-axis position (u) ---------- */
-  let cum = 0;
-  ranks.forEach(r => {
-    const band = Math.max.apply(null, r.map(rankExtent));
-    r.forEach(n => { n.u = cum + (band - rankExtent(n)) / 2; n.band = band; });
-    cum += band + O.rankGap;
-  });
-
   /* ---------- 7. cross-axis position (v) ---------- */
   ranks.forEach(r => {
     let v = 0;
@@ -5893,8 +5885,105 @@ function layoutFlow(rawNodes, rawEdges, opts) {
       pack(r);
     }
   }
+  /* grid: every box snaps to a column (one box plus its gap), so chains
+     stack in clean columns and rows read across. Ranks are placed top-down: a
+     box wants its parents' column (their mean if several), and siblings
+     competing for one column are spread evenly around it - an isotonic fit
+     that keeps the barycentre order, so no new crossings. */
+  const unit = Math.max.apply(null, nodes.map(crossExtent)) + O.crossGap;
+  const col = new Map();
+  ranks.forEach((r, ri) => {
+    const ordered = r.slice().sort((a, b) => a.v - b.v);
+    /* a box with one parent holds that column more firmly than a box with
+       several - the latter branches in anyway, so it is the one to move */
+    const want = ordered.map(n => {
+      const ps = finn.get(n.id).map(e => byId.get(e.from)).filter(p => col.has(p.id));
+      return ps.length
+        ? { c: ps.reduce((sum, p) => sum + col.get(p.id), 0) / ps.length, w: ps.length === 1 ? 4 : 1 }
+        : { c: (n.v + crossExtent(n) / 2) / unit, w: 1 };
+    });
+    /* c[i] >= c[i-1] + 1  <=>  c[i] - i is non-decreasing: weighted pool adjacent violators */
+    const blocks = [];
+    want.forEach((d, i) => {
+      blocks.push({ sum: (d.c - i) * d.w, w: d.w, n: 1 });
+      while (blocks.length > 1) {
+        const a = blocks[blocks.length - 2], b = blocks[blocks.length - 1];
+        if (a.sum / a.w <= b.sum / b.w) break;
+        a.sum += b.sum; a.w += b.w; a.n += b.n; blocks.pop();
+      }
+    });
+    let i = 0;
+    blocks.forEach(b => {
+      const e = Math.round(b.sum / b.w);
+      for (let k = 0; k < b.n; k++, i++) col.set(ordered[i].id, e + i);
+    });
+  });
+  nodes.forEach(n => { n.v = col.get(n.id) * unit - crossExtent(n) / 2; });
   const minV = Math.min.apply(null, nodes.map(n => n.v));
-  nodes.forEach(n => { n.v -= minV; });
+  nodes.forEach(n => { n.v -= minV; n.vc = n.v + crossExtent(n) / 2; });
+
+  /* ---------- 6. tracks + rank-axis position (u) ----------
+     Edges between adjacent ranks leave and enter at the node centre.
+     Every edge from one source shares a single bus line, so a fan-out
+     reads as one trunk that branches. Buses that would overlap across
+     the gap get their own track; the gap grows to fit them. */
+  const TRACK = 12;
+  const tracksIn = ranks.map(() => null);         /* per gap: { buses, count } */
+  const busOf = new Map(), collectorOf = new Map();
+  /* a forward link that skips ranks runs straight down from its source when
+     nothing sits in the way, then joins its target on a collector bus in
+     the gap just above it - the same right-angle language as the rest */
+  edges.forEach(e => {
+    const sN = byId.get(e.from), tN = byId.get(e.to);
+    if (e.back || e.soft || tN.rank - sN.rank < 2) return;
+    let clear = true;
+    for (let ri = sN.rank + 1; ri < tN.rank && clear; ri++)
+      clear = !ranks[ri].some(n => Math.abs(n.vc - sN.vc) < crossExtent(n) / 2 + 10);
+    e.ortho = clear;
+  });
+  ranks.forEach((r, ri) => {
+    if (ri === ranks.length - 1) return;
+    const buses = [];
+    r.forEach(sN => {
+      const tv = edges
+        .filter(e => e.from === sN.id && !e.back && byId.get(e.to).rank === ri + 1)
+        .map(e => byId.get(e.to).vc);
+      if (!tv.length) return;
+      const lo = Math.min(sN.vc, ...tv), hi = Math.max(sN.vc, ...tv);
+      if (hi - lo < 1) return;                    /* straight down - no bus */
+      buses.push({ src: sN.id, lo, hi, k: 0 });
+    });
+    ranks[ri + 1].forEach(tN => {
+      const sv = edges.filter(e => e.ortho && e.to === tN.id).map(e => byId.get(e.from).vc);
+      if (!sv.length) return;
+      const lo = Math.min(tN.vc, ...sv), hi = Math.max(tN.vc, ...sv);
+      if (hi - lo < 1) return;
+      buses.push({ dst: tN.id, lo, hi, k: 0 });
+    });
+    buses.sort((a, b) => a.lo - b.lo);
+    const ends = [];
+    buses.forEach(b => {
+      /* a bus that only meets another end-to-end shares its lane, so the
+         horizontal runs straight through the column they share */
+      let k = ends.findIndex(end => end + 10 < b.lo || Math.abs(end - b.lo) < 0.5);
+      if (k < 0) { k = ends.length; ends.push(b.hi); } else ends[k] = b.hi;
+      b.k = k;
+      if (b.src) busOf.set(b.src, b); else collectorOf.set(b.dst, b);
+    });
+    tracksIn[ri] = { buses, count: ends.length };
+  });
+  let cum = 0;
+  ranks.forEach((r, ri) => {
+    const band = Math.max.apply(null, r.map(rankExtent));
+    r.forEach(n => { n.u = cum + (band - rankExtent(n)) / 2; n.band = band; });
+    const T = (tracksIn[ri] && tracksIn[ri].count) || 1;
+    const gap = Math.max(O.rankGap, 40 + (T - 1) * TRACK);
+    if (tracksIn[ri]) {
+      const mid = cum + band + gap / 2;
+      tracksIn[ri].buses.forEach(b => { b.mu = mid + (b.k - (T - 1) / 2) * TRACK; });
+    }
+    cum += band + gap;
+  });
 
   /* ---------- 8. map to x/y ---------- */
   nodes.forEach(n => {
@@ -5910,30 +5999,19 @@ function layoutFlow(rawNodes, rawEdges, opts) {
   const pt = TB ? ((u, v) => `${v} ${u}`) : ((u, v) => `${u} ${v}`);
   const xy = TB ? ((u, v) => [v, u]) : ((u, v) => [u, v]);
 
-  const outSlots = new Map(), inSlots = new Map();
-  edges.forEach(e => {
-    if (!outSlots.has(e.from)) outSlots.set(e.from, []);
-    if (!inSlots.has(e.to)) inSlots.set(e.to, []);
-    outSlots.get(e.from).push(e);
-    inSlots.get(e.to).push(e);
-  });
-  outSlots.forEach(l => l.sort((a, b) => byId.get(a.to).vc - byId.get(b.to).vc));
-  inSlots.forEach(l => l.sort((a, b) => byId.get(a.from).vc - byId.get(b.from).vc));
-
-  function anchor(node, list, e, spread) {
-    const i = list.indexOf(e), n = list.length;
-    if (n === 1) return node.vc;
-    const usable = Math.min(crossExtent(node) - 18, (n - 1) * spread);
-    return node.vc - usable / 2 + i * (usable / (n - 1));
-  }
-
   const vMax = Math.max.apply(null, nodes.map(n => n.v + crossExtent(n)));
 
   edges.forEach(e => {
     const s = byId.get(e.from), t = byId.get(e.to);
-    const sv = anchor(s, outSlots.get(e.from), e, 13);
-    const tv = anchor(t, inSlots.get(e.to), e, 13);
     const span = t.rank - s.rank;
+    let sv = s.vc, tv = t.vc;
+    /* nearly aligned: draw it straight, sliding the end that has no other
+       link to keep centred (a lone out-edge, or a lone in-edge) */
+    if (span === 1 && !e.back && Math.abs(sv - tv) <= 20) {
+      const adj = l => l.filter(x => !x.back && byId.get(x.to).rank - byId.get(x.from).rank === 1).length;
+      if (adj(out.get(s.id)) === 1) sv = tv;
+      else if (adj(inn.get(t.id)) === 1) tv = sv;
+    }
 
     if (e.back || span <= 0) {
       const su = s.u, tu = t.u + rankExtent(t);
@@ -5951,12 +6029,13 @@ function layoutFlow(rawNodes, rawEdges, opts) {
     const su = s.u + rankExtent(s);
     const tu = t.u;
     const du = tu - su;
-
-    if (span === 1 && Math.abs(sv - tv) < 1.5) {
+    /* right-angle routes keep their segments (in x/y) for crossing detection */
+    const straight = () => {
       e.path = `M ${pt(su, sv)} L ${pt(tu, tv)}`;
-    } else if (span === 1) {
-      const r = Math.max(2, Math.min(12, Math.abs(tv - sv) / 2, du / 2));
-      const mu = su + du / 2;
+      e.segs = [[xy(su, sv), xy(tu, tv)]];
+    };
+    const elbow = mu => {
+      const r = Math.max(2, Math.min(6, Math.abs(tv - sv) / 2, mu - su, tu - mu));
       const dir = tv > sv ? 1 : -1;
       e.path =
         `M ${pt(su, sv)} L ${pt(mu - r, sv)}` +
@@ -5964,6 +6043,18 @@ function layoutFlow(rawNodes, rawEdges, opts) {
         ` L ${pt(mu, tv - dir * r)}` +
         ` Q ${pt(mu, tv)} ${pt(mu + r, tv)}` +
         ` L ${pt(tu, tv)}`;
+      e.segs = [[xy(su, sv), xy(mu, sv)], [xy(mu, sv), xy(mu, tv)], [xy(mu, tv), xy(tu, tv)]];
+    };
+
+    if (span === 1 && Math.abs(sv - tv) < 1.5) {
+      straight();
+    } else if (span === 1) {
+      const bus = busOf.get(s.id);
+      elbow(bus ? bus.mu : su + du / 2);
+    } else if (e.ortho) {
+      const bus = collectorOf.get(t.id);
+      if (!bus || Math.abs(sv - tv) < 1.5) straight();
+      else elbow(bus.mu);
     } else {
       const c = Math.min(du * 0.45, 110);
       e.path = `M ${pt(su, sv)} C ${pt(su + c, sv)} ${pt(tu - c, tv)} ${pt(tu, tv)}`;
@@ -5971,9 +6062,60 @@ function layoutFlow(rawNodes, rawEdges, opts) {
     }
     e.arrow = arrowPoly(xy, tu, tv, 1);
     // anchor the label just before the arrowhead so it never sits on a shared trunk
-    e.labelAt = span === 1
+    e.labelAt = (span === 1 || e.ortho)
       ? xy(tu - 15, tv - (TB ? 0 : 8))
       : xy(su + du * 0.3, sv - (TB ? 0 : 8));
+  });
+
+  /* ---------- 10. crossings ----------
+     Where a line passes clean through another (not where it ends or merges),
+     the cross-axis line is the one that goes "behind": record the point on
+     every edge that draws a cross-axis segment through it. */
+  const isCross = ([[x1, y1], [x2, y2]]) => (TB ? Math.abs(y1 - y2) < 0.5 && Math.abs(x1 - x2) > 0.5
+                                               : Math.abs(x1 - x2) < 0.5 && Math.abs(y1 - y2) > 0.5);
+  const A = TB ? 0 : 1, B = TB ? 1 : 0;           /* along-run axis, level axis */
+  const runs = new Map();                          /* level -> merged [lo, hi] runs */
+  edges.forEach(e => (e.segs || []).filter(isCross).forEach(sg => {
+    const lvl = Math.round(sg[0][B] * 2) / 2;
+    if (!runs.has(lvl)) runs.set(lvl, []);
+    runs.get(lvl).push([Math.min(sg[0][A], sg[1][A]), Math.max(sg[0][A], sg[1][A])]);
+  }));
+  runs.forEach((list, lvl) => {
+    list.sort((a, b) => a[0] - b[0]);
+    const merged = [];
+    list.forEach(iv => {
+      const last = merged[merged.length - 1];
+      if (last && iv[0] <= last[1] + 0.5) last[1] = Math.max(last[1], iv[1]);
+      else merged.push(iv.slice());
+    });
+    runs.set(lvl, merged);
+  });
+  const crossings = [];
+  const crossSeen = new Set();
+  edges.forEach(e => (e.segs || []).filter(sg => !isCross(sg)).forEach(sg => {
+    const at = sg[0][A];
+    const lo = Math.min(sg[0][B], sg[1][B]), hi = Math.max(sg[0][B], sg[1][B]);
+    runs.forEach((list, lvl) => {
+      if (lvl <= lo + 1 || lvl >= hi - 1) return;
+      if (!list.some(iv => at > iv[0] + 1 && at < iv[1] - 1)) return;
+      /* a source's own stem through its own fan-out bar is a junction */
+      const foreign = edges.some(o => o.from !== e.from && (o.segs || []).filter(isCross).some(sg =>
+        Math.abs(sg[0][B] - lvl) < 0.75 &&
+        at >= Math.min(sg[0][A], sg[1][A]) - 0.5 && at <= Math.max(sg[0][A], sg[1][A]) + 0.5));
+      if (!foreign) return;
+      const key = at + ',' + lvl;
+      if (crossSeen.has(key)) return;
+      crossSeen.add(key);
+      crossings.push(TB ? [at, lvl] : [lvl, at]);
+    });
+  }));
+  edges.forEach(e => {
+    const under = crossings.filter(([x, y]) => (e.segs || []).filter(isCross).some(sg => {
+      const p = TB ? [x, y] : [y, x];
+      return Math.abs(sg[0][B] - p[1]) < 0.75 &&
+        p[0] >= Math.min(sg[0][A], sg[1][A]) - 0.5 && p[0] <= Math.max(sg[0][A], sg[1][A]) + 0.5;
+    }));
+    if (under.length) e.under = under;
   });
 
   const width  = Math.max.apply(null, nodes.map(n => n.x + n.w));
@@ -6157,6 +6299,7 @@ function drawNodeEl(n, color, opts) {
   return g;
 }
 
+renderDiagram.seq = 0;
 function renderDiagram(L, opts) {
   opts = opts || {};
   const colorFor = opts.colorFor || (() => 'var(--fv-neutral)');
@@ -6207,6 +6350,29 @@ function renderDiagram(L, opts) {
   const edgeEls = new Map();
   const nodeEls = new Map();
   L.edges.forEach(e => { const el = drawEdgeEl(e, opts); edgeEls.set(e.id, el); gEdges.appendChild(el); });
+
+  /* underpasses: a line crossing behind another lightens around the
+     crossing through a soft radial mask - it fades out and back in, with
+     no hard break, and the line itself stays straight */
+  const under = L.edges.filter(e => e.under);
+  if (under.length) {
+    const uid = 'fvx' + (++renderDiagram.seq);
+    const defs = S('defs');
+    const grad = S('radialGradient', { id: uid + '-g' });
+    [[0, '#8f8f8f'], [1, '#ffffff']].forEach(([o, c]) =>
+      grad.appendChild(S('stop', { offset: o, 'stop-color': c })));
+    defs.appendChild(grad);
+    const box = { x: -60, y: -60, width: L.width + 120, height: L.height + 120 };
+    under.forEach((e, i) => {
+      const m = S('mask', Object.assign({ id: `${uid}-m${i}`, maskUnits: 'userSpaceOnUse' }, box));
+      m.appendChild(S('rect', Object.assign({ fill: '#ffffff' }, box)));
+      e.under.forEach(([x, y]) =>
+        m.appendChild(S('circle', { cx: x, cy: y, r: 12, fill: `url(#${uid}-g)` })));
+      defs.appendChild(m);
+      edgeEls.get(e.id).querySelector('.fv-edge-path').setAttribute('mask', `url(#${uid}-m${i})`);
+    });
+    svg.insertBefore(defs, svg.firstChild);
+  }
   L.nodes.forEach(n => { const el = drawNodeEl(n, colorFor(n), opts); nodeEls.set(n.id, el); gNodes.appendChild(el); });
   return { svg, viewport, edgeEls, nodeEls, L };
 }
@@ -7769,6 +7935,23 @@ function Resume() {
   );
 }
 
+/* Hand-drawn connectors are written as plain "M x y L x y ..." polylines;
+   this rounds every bend to the same radius the generated flows use. */
+function roundedPath(d, r = 10) {
+  const pts = d.trim().split(/[ML]/).filter(t => t.trim()).map(t => t.trim().split(/[\s,]+/).map(Number));
+  let out = `M ${pts[0][0]} ${pts[0][1]}`;
+  for (let i = 1; i < pts.length - 1; i++) {
+    const [px, py] = pts[i - 1], [cx, cy] = pts[i], [nx, ny] = pts[i + 1];
+    const l1 = Math.hypot(cx - px, cy - py), l2 = Math.hypot(nx - cx, ny - cy);
+    const k = Math.min(r, l1 / 2, l2 / 2);
+    const ax = cx - (cx - px) / l1 * k, ay = cy - (cy - py) / l1 * k;
+    const bx = cx + (nx - cx) / l2 * k, by = cy + (ny - cy) / l2 * k;
+    out += ` L ${ax} ${ay} Q ${cx} ${cy} ${bx} ${by}`;
+  }
+  const [lx, ly] = pts[pts.length - 1];
+  return out + ` L ${lx} ${ly}`;
+}
+
 /* ─── Article versioning flow diagram (User Flows section) ─── */
 function UserFlowDiagram() {
   return (
@@ -7819,8 +8002,8 @@ function UserFlowDiagram() {
         <text x="400" y="492" className="uf-helper" textAnchor="middle">Yes</text>
         <text x="700" y="492" className="uf-helper" textAnchor="middle">No</text>
 
-        <path d="M 460 500 L 350 500 L 350 598" className="uf-arrow-path" fill="none" markerEnd="url(#uf-arrow)" />
-        <path d="M 640 500 L 750 500 L 750 598" className="uf-arrow-path" fill="none" markerEnd="url(#uf-arrow)" />
+        <path d={roundedPath("M 460 500 L 350 500 L 350 598")} className="uf-arrow-path" fill="none" markerEnd="url(#uf-arrow)" />
+        <path d={roundedPath("M 640 500 L 750 500 L 750 598")} className="uf-arrow-path" fill="none" markerEnd="url(#uf-arrow)" />
 
         <g transform="translate(250, 600)">
           <rect className="uf-node" width="200" height="140" rx="2" />
@@ -7870,7 +8053,7 @@ function UserFlowDiagram() {
         <text x="550" y="1044" className="uf-helper" textAnchor="middle">User can toggle</text>
         <path d="M 452 1055 L 648 1055" className="uf-arrow-path" markerStart="url(#uf-arrow)" markerEnd="url(#uf-arrow)" />
 
-        <path d="M 850 1060 L 1080 1060 L 1080 230 L 650 230" className="uf-arrow-path" fill="none" markerEnd="url(#uf-arrow)" />
+        <path d={roundedPath("M 850 1060 L 1080 1060 L 1080 230 L 650 230")} className="uf-arrow-path" fill="none" markerEnd="url(#uf-arrow)" />
         <text x="1098" y="645" className="uf-helper" transform="rotate(-90, 1098, 645)" textAnchor="middle">Creating new “Draft”</text>
       </g>
     </svg>
@@ -8267,37 +8450,37 @@ function HCAdminFlowDiagram() {
         <text x="0" y="-4" className="uf-decision-label" textAnchor="middle">Credentials</text>
         <text x="0" y="18" className="uf-decision-label" textAnchor="middle">valid?</text>
       </g>
-      <path d="M 820 211 L 820 245 L 510 245 L 510 202" className="uf-arrow-path" fill="none" markerEnd="url(#hcf-arrow)" />
+      <path d={roundedPath("M 820 211 L 820 245 L 510 245 L 510 202")} className="uf-arrow-path" fill="none" markerEnd="url(#hcf-arrow)" />
       <text x="836" y="236" className="uf-helper">No</text>
-      <path d="M 920 165 L 990 165 L 990 280 L 550 280 L 550 312" className="uf-arrow-path" fill="none" markerEnd="url(#hcf-arrow)" />
+      <path d={roundedPath("M 920 165 L 990 165 L 990 280 L 550 280 L 550 312")} className="uf-arrow-path" fill="none" markerEnd="url(#hcf-arrow)" />
       <text x="955" y="153" className="uf-helper" textAnchor="middle">Yes</text>
 
       <g transform="translate(550, 360)">
         <polygon points="0,-46 100,0 0,46 -100,0" className="uf-decision" />
         <text x="0" y="6" className="uf-decision-label" textAnchor="middle">Admin role?</text>
       </g>
-      <path d="M 450 360 L 300 360 L 300 538" className="uf-arrow-path" fill="none" markerEnd="url(#hcf-arrow)" />
+      <path d={roundedPath("M 450 360 L 300 360 L 300 538")} className="uf-arrow-path" fill="none" markerEnd="url(#hcf-arrow)" />
       <text x="375" y="348" className="uf-helper" textAnchor="middle">KMS admin</text>
-      <path d="M 650 360 L 800 360 L 800 532" className="uf-arrow-path" fill="none" markerEnd="url(#hcf-arrow)" />
-      <text x="725" y="348" className="uf-helper" textAnchor="middle">Customer admin</text>
+      <path d={roundedPath("M 650 360 L 760 360 L 760 532")} className="uf-arrow-path" fill="none" markerEnd="url(#hcf-arrow)" />
+      <text x="705" y="348" className="uf-helper" textAnchor="middle">Customer admin</text>
 
       <rect x="140" y="540" width="320" height="290" rx="2" className="uf-node" />
       <text x="300" y="582" className="uf-node-title" textAnchor="middle">Customers panel</text>
       {['Add customer', 'Delete customer', 'Rename customer', 'Reset admin password', 'Manage customer site']
         .map((l, i) => row(178, 630 + i * 40, l))}
 
-      <g transform="translate(800, 580)">
+      <g transform="translate(760, 580)">
         <polygon points="0,-46 100,0 0,46 -100,0" className="uf-decision" />
         <text x="0" y="-4" className="uf-decision-label" textAnchor="middle">Only one</text>
         <text x="0" y="18" className="uf-decision-label" textAnchor="middle">HC site?</text>
       </g>
-      <path d="M 900 580 L 980 580 L 980 638" className="uf-arrow-path" fill="none" markerEnd="url(#hcf-arrow)" />
-      <text x="940" y="568" className="uf-helper" textAnchor="middle">No</text>
+      <path d={roundedPath("M 860 580 L 980 580 L 980 638")} className="uf-arrow-path" fill="none" markerEnd="url(#hcf-arrow)" />
+      <text x="920" y="568" className="uf-helper" textAnchor="middle">No</text>
       <rect x="915" y="640" width="130" height="56" rx="2" className="uf-node" />
       <text x="980" y="674" className="uf-node-title" textAnchor="middle">Pick a site</text>
-      <path d="M 980 696 L 980 775 L 902 775" className="uf-arrow-path" fill="none" markerEnd="url(#hcf-arrow)" />
-      <path d="M 800 626 L 800 668" className="uf-arrow-path" markerEnd="url(#hcf-arrow)" />
-      <text x="816" y="652" className="uf-helper">Yes</text>
+      <path d={roundedPath("M 980 696 L 980 775 L 902 775")} className="uf-arrow-path" fill="none" markerEnd="url(#hcf-arrow)" />
+      <path d="M 760 626 L 760 668" className="uf-arrow-path" markerEnd="url(#hcf-arrow)" />
+      <text x="776" y="652" className="uf-helper">Yes</text>
 
       <rect x="620" y="670" width="280" height="210" rx="2" className="uf-node" />
       <text x="760" y="710" className="uf-node-title" textAnchor="middle">Site admin panel</text>
@@ -8307,8 +8490,8 @@ function HCAdminFlowDiagram() {
       <path d="M 460 785 L 618 785" className="uf-arrow-path" markerEnd="url(#hcf-arrow)" />
       <text x="540" y="772" className="uf-helper" textAnchor="middle">Enter site</text>
 
-      <path d="M 300 830 L 300 962 L 448 962" className="uf-arrow-path" fill="none" markerEnd="url(#hcf-arrow)" />
-      <path d="M 760 880 L 760 962 L 652 962" className="uf-arrow-path" fill="none" markerEnd="url(#hcf-arrow)" />
+      <path d={roundedPath("M 300 830 L 300 962 L 448 962")} className="uf-arrow-path" fill="none" markerEnd="url(#hcf-arrow)" />
+      <path d={roundedPath("M 760 880 L 760 962 L 652 962")} className="uf-arrow-path" fill="none" markerEnd="url(#hcf-arrow)" />
       <rect x="450" y="940" width="200" height="44" rx="22" className="uf-start-oval" />
       <text x="550" y="968" className="uf-start-label" textAnchor="middle">Log out</text>
     </svg>
