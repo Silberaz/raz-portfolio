@@ -2978,7 +2978,8 @@ footer a:hover { color: var(--accent); }
   padding: .25rem .55rem; border-radius: 2px;
   background: var(--rim-soft); color: var(--ink-dim);
 }
-.ba-tag.after { background: var(--accent-lo); color: var(--accent); }
+/* text one step off the accent so it clears 4.5:1 on its own tint */
+.ba-tag.after { background: var(--accent-lo); color: var(--accent-hover); }
 
 /* Before / After screen pairs - multiple paired rows of full, uncropped,
    zoomable screenshots (reuses .proj-media-item framing + lightbox). */
@@ -4376,14 +4377,15 @@ html[data-palette="testcard"] {
   --rim-soft:  rgba(234,234,234,.06);
   --ink:       #EAEAEA;
   --ink-dim:   #B0B0B0;
-  --muted:     #8B8B8B;
+  --muted:     #A1A1A1;   /* clears 4.5:1 on the strongest (sky) wash */
 
   /* !important: the tweaks panel writes --accent inline on <html> */
-  --accent:        #E65955 !important;
-  --accent-hover:  #F87A73;
-  --accent-active: #FAA8A1;
-  --accent-bg:     #450508;
-  --accent-bg-strong: #7D1016;
+  /* accent - the blue (indigo) bar, lightened in dark mode to clear 4.5:1 on every wash */
+  --accent:        #889DFE !important;
+  --accent-hover:  #A5B6FF;
+  --accent-active: #BECCFE;
+  --accent-bg:     #11163A;
+  --accent-bg-strong: #242C65;
   --accent-text-on: #0D0D0D;
 
   --accent-sky:         #B0DBDE;
@@ -4439,11 +4441,11 @@ html[data-palette="testcard"][data-theme="light"] {
   --ink-dim:   #3D3D3D;
   --muted:     #5A5A5A;
 
-  --accent:        #BD2E30 !important;
-  --accent-hover:  #9A2124;
-  --accent-active: #79171A;
-  --accent-bg:     #FEEBE9;
-  --accent-bg-strong: #FCCDC9;
+  --accent:        #4350B6 !important;
+  --accent-hover:  #313B93;
+  --accent-active: #212772;
+  --accent-bg:     #F0F3FF;
+  --accent-bg-strong: #D8E0FF;
   --accent-text-on: #FFFFFF;
 
   --accent-sky:         #476A6D;
@@ -4462,7 +4464,7 @@ html[data-palette="testcard"][data-theme="light"] {
   --bar-indigo:         #333E81;
   --bar-indigo-surface: #5867B4;
 
-  --focus-ring: #BD2E30;
+  --focus-ring: #4350B6;
 }
 /* the footer's six-bar strip, in the card's own bars */
 html[data-palette="testcard"] footer::before {
