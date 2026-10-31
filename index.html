@@ -3716,6 +3716,44 @@ html[data-layout="m3"] .proj-card-text {         /* Body Medium */
 @container pane (min-width: 840px) {
   html[data-layout="m3"] .proj-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
+/* Flow (listStyle: 'flow') - the same cards, numbered and joined by arrows:
+   stacked with down arrows, then one row with right arrows once it fits */
+.proj-flow {
+  --flow-gap: 32px;
+  list-style: none; padding: 0; margin: 8px 0 0;
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--flow-gap);
+}
+.proj-flow > li { position: relative; }
+.proj-flow-num {
+  font-family: var(--ff-mono); font-weight: var(--fw-mono);
+  font-size: 12px; line-height: 16px; letter-spacing: .5px; color: var(--accent);
+}
+/* connector: stem (::after) + chevron head (::before) in the gap below */
+.proj-flow > li:not(:last-child)::after,
+.proj-flow > li:not(:last-child)::before {
+  content: ''; position: absolute; pointer-events: none;
+}
+.proj-flow > li:not(:last-child)::after {
+  left: 50%; top: 100%; width: 1.5px; height: var(--flow-gap);
+  background: color-mix(in oklab, var(--accent) 55%, transparent);
+  transform: translateX(-50%);
+}
+.proj-flow > li:not(:last-child)::before {
+  left: 50%; top: calc(100% + var(--flow-gap) - 9px); width: 8px; height: 8px;
+  border-right: 1.5px solid var(--accent); border-bottom: 1.5px solid var(--accent);
+  transform: translateX(-50%) rotate(45deg);
+}
+@container pane (min-width: 600px) {
+  .proj-flow { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .proj-flow > li:not(:last-child)::after {
+    left: 100%; top: 50%; width: var(--flow-gap); height: 1.5px;
+    transform: translateY(-50%);
+  }
+  .proj-flow > li:not(:last-child)::before {
+    left: calc(100% + var(--flow-gap) - 9px); top: 50%;
+    transform: translateY(-50%) rotate(-45deg);
+  }
+}
 
 /* Media: full pane width, natural height, 8px caption gap */
 html[data-layout="m3"] .proj-media { margin: 24px 0 0; gap: 24px; }
@@ -5048,24 +5086,17 @@ const PROJECTS = [
         body: [
           'The first stage brought the screen onto Spark, the company design system - every element rebuilt from shared components and tokens instead of one-off styles.',
         ],
+        listStyle: 'flow',
         list: [
-          { label: 'Translated the page to the Spark design system:', text: 'typography, spacing, and components rebuilt on the shared foundation.' },
-          { label: 'Introduced clear hierarchy and grouping', text: 'so controls can be scanned rather than read.' },
-          { label: 'Improved responsive and mobile behaviour.', text: '' },
+          { label: 'Translated the page to Spark', text: 'Typography, spacing, and components rebuilt on the shared foundation.' },
+          { label: 'Introduced clear hierarchy and grouping', text: 'So controls can be scanned rather than read.' },
+          { label: 'Improved responsive and mobile behaviour', text: '' },
         ],
         /* ?v=N on these srcs: the screens were re-exported under the same
            filenames, and the host sends no cache headers - bump N on re-export. */
         beforeAfterPairs: [
-          { before: { src: 'advanced-search/before-01-empty-state-crop.png', label: 'No search entered' },
-            after:  { src: 'advanced-search/after-01-empty-state-crop.png',  label: 'No search entered' } },
-          { before: { src: 'advanced-search/before-02-search-options-crop.png', label: 'Search options menu' },
-            after:  { src: 'advanced-search/after-02-search-parameters-crop.png', label: 'Search parameters menu' } },
           { before: { src: 'advanced-search/before-03-results-table-crop.png', label: 'Results table' },
             after:  { src: 'advanced-search/after-04-results-table-crop.png',  label: 'Results table' } },
-        ],
-        media: [
-          { src: 'advanced-search/after-03-folder-picker-1920.png',   caption: 'Redesigned folder picker', kind: 'wide' },
-          { src: 'advanced-search/after-05-results-scrolled-1920.png', caption: 'Redesigned results, filter row in use', kind: 'wide' },
         ],
       },
       { id: 'stage-2', title: 'Scalable filtering',
@@ -9368,6 +9399,20 @@ function SectionList({ s }) {
           </li>
         ))}
       </ul>
+    );
+  }
+  if (s.listStyle === 'flow') {
+    /* numbered cards joined by arrows - a short sequence read left to right */
+    return (
+      <ol className="proj-flow">
+        {s.list.map((it, i) => (
+          <li key={i} className="proj-card">
+            <span className="proj-flow-num">{String(i + 1).padStart(2, '0')}</span>
+            <h3 className="proj-card-title">{it.label}</h3>
+            {it.text && <p className="proj-card-text">{it.text}</p>}
+          </li>
+        ))}
+      </ol>
     );
   }
   return (
