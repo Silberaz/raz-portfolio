@@ -3596,18 +3596,18 @@ html[data-layout="m3"] .proj-pane {
 /* Rail: expanded navigation rail items - 56 high, Label Large, active indicator */
 html[data-layout="m3"] .sidebar-label {          /* Title Small */
   font-size: 14px; line-height: 20px; font-weight: var(--fw-medium); letter-spacing: .1px;
-  padding: 0 16px; margin-bottom: 8px;
+  padding: 0 12px; margin-bottom: 8px;
 }
 html[data-layout="m3"] .sidebar-nav { gap: 0; }
 html[data-layout="m3"] .sidebar-nav a {
-  min-height: 56px; padding: 0 16px; border-radius: var(--m3-r-lg);
+  min-height: 48px; padding: 0 12px; border-radius: var(--m3-r-md);
   font-size: 14px; line-height: 20px; font-weight: var(--fw-medium); letter-spacing: .1px;
   transition: color .25s, background .25s;
 }
 html[data-layout="m3"] .sidebar-nav a::before { content: none; }
 /* grouped contents (e.g. Help Center): Title Small headers, indented items */
 html[data-layout="m3"] .sidebar-group-label {
-  display: flex; align-items: center; min-height: 40px; padding: 0 16px; margin-top: 8px;
+  display: flex; align-items: center; min-height: 40px; padding: 0 12px; margin-top: 8px;
   font-size: 14px; line-height: 20px; font-weight: var(--fw-medium); letter-spacing: .1px;
   color: var(--muted);
 }
@@ -3627,6 +3627,49 @@ html[data-layout="m3"] .sidebar-nav a:hover { background: color-mix(in oklab, va
 html[data-layout="m3"] .sidebar-nav a.active {
   color: var(--ink);
   background: color-mix(in oklab, var(--accent) 18%, transparent);
+  /* the thumbnails' .signal-tv CRT treatment, on the active marker */
+  position: relative; overflow: hidden; isolation: isolate;
+  animation: sidebar-tv-flicker 5s ease-in-out infinite, sidebar-tv-glitch 7s steps(1) infinite;
+}
+/* scanlines + slow tracking band, under the label */
+html[data-layout="m3"] .sidebar-nav a.active::before {
+  content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  width: auto; height: auto; background-color: transparent; /* drop the classic underline's sizing */
+  background-image:
+    repeating-linear-gradient(to bottom,
+      transparent 0 160px, color-mix(in oklab, var(--ink) 14%, transparent) 160px 164px, transparent 164px 320px),
+    repeating-linear-gradient(to bottom,
+      transparent 0 2px, color-mix(in oklab, var(--ink) 11%, transparent) 2px 3px);
+  background-size: 100% 320px, auto;
+  animation: sidebar-tv-tracking 6s linear infinite;
+}
+/* grain */
+html[data-layout="m3"] .sidebar-nav a.active::after {
+  content: ''; position: absolute; inset: -50%; z-index: -1; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: .14;
+  animation: signal-tv-grain .12s steps(2) infinite;
+}
+@keyframes sidebar-tv-flicker {
+  0%, 100% { filter: brightness(1)    contrast(1); }
+  50%      { filter: brightness(1.03) contrast(1.02); }
+  92%      { filter: brightness(.96)  contrast(1.04); }
+  94%      { filter: brightness(1.05) contrast(.98); }
+}
+@keyframes sidebar-tv-tracking {
+  0%   { background-position: 0 0, 0 0; }
+  100% { background-position: 0 -320px, 0 0; }
+}
+/* a brief chroma split + 1px jitter every few seconds, then clean again */
+@keyframes sidebar-tv-glitch {
+  0%, 88%, 91%, 100% { text-shadow: none; transform: none; }
+  89% { text-shadow: -1.5px 0 rgb(255 40 80 / .55), 1.5px 0 rgb(0 210 255 / .55); transform: translateX(1px); }
+  90% { text-shadow: 1px 0 rgb(255 40 80 / .45), -1px 0 rgb(0 210 255 / .45); transform: translateX(-1px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-layout="m3"] .sidebar-nav a.active,
+  html[data-layout="m3"] .sidebar-nav a.active::before,
+  html[data-layout="m3"] .sidebar-nav a.active::after { animation: none; }
 }
 
 /* ── Sections: spacing groups, no divider lines ── */
