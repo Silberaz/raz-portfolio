@@ -2883,10 +2883,23 @@ footer a:hover { color: var(--accent); }
   background: var(--accent-sky-bg); color: var(--accent-sky);
   box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--accent-sky) 45%, transparent);
 }
-.proj-tabs-side > p:first-of-type, .proj-tabs-text > :first-child { margin-top: 0; }
+.proj-tabs-side > p:first-of-type, .proj-tabs-layer > :first-child { margin-top: 0; }
 .proj-tabs-side > p:last-of-type { margin-bottom: 1.75rem; }
 .proj-tabs-text h3 { margin: 0 0 .75rem; }
 .proj-tabs-media { margin: 0; }
+/* all tabs share one grid cell; the open one fades and settles in over the old */
+.proj-tabs-layers { display: grid; align-items: start; }
+.proj-tabs-layer {
+  grid-area: 1 / 1; min-width: 0; opacity: 0; visibility: hidden; transform: scale(.985);
+  transition: opacity .55s ease, transform .55s cubic-bezier(.2, 0, 0, 1), visibility 0s linear .55s;
+}
+.proj-tabs-layer.is-open {
+  opacity: 1; visibility: visible; transform: none; z-index: 1;
+  transition: opacity .55s ease, transform .55s cubic-bezier(.2, 0, 0, 1), visibility 0s;
+}
+@media (prefers-reduced-motion: reduce) { .proj-tabs-layer { transition: none; } }
+/* Several frames side by side (media.srcs) - each image keeps its own corners */
+.proj-tabs-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
 @media (min-width: 960px) {
   .proj-tabs-stage { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: 1.5rem 2.5rem; }
 }
@@ -4703,15 +4716,15 @@ const PROJECTS = [
         tabs: [
           { label: 'Anatomy', title: 'Anatomy',
             body: ['{{ Placeholder: how a component is broken into named parts - container, label, icon, slots - and which tokens each part uses. }}'],
-            media: { src: 'spark/spark images/anatomy-2800.png?v=2', bare: true,
+            media: { srcs: ['spark/spark images/anatomy-1.png', 'spark/spark images/anatomy-2.png', 'spark/spark images/anatomy-3.png'], bare: true,
                      caption: 'Card anatomy - nine named parts, two layouts, and the assembled result' } },
           { label: 'Variants', title: 'Variants',
             body: ['{{ Placeholder: the defined variants and states - sizes, emphasis levels, hover, focus, disabled, error. }}'],
-            media: { src: 'spark/spark images/variants-2800.png',
+            media: { src: 'spark/spark images/variants-2400.png',
                      caption: 'Card states - default, hover, pressed, focus, disabled, selected' } },
           { label: 'Usage', title: 'Usage',
             body: ['{{ Placeholder: usage rules - when to use it, when not to, and the do / don\'t examples that come with it. }}'],
-            media: { src: 'spark/spark images/usage-2800.png', bare: true,
+            media: { srcs: ['spark/spark images/usage-1.png', 'spark/spark images/usage-2.png', 'spark/spark images/usage-3.png'], bare: true,
                      caption: 'Cards in use - content, selection, grid and mobile layouts' } },
         ],
         media: [
@@ -4724,8 +4737,12 @@ const PROJECTS = [
           'Spark ships with usage documentation, contribution guidelines, and a review path. With multiple designers working across multiple projects, that\'s what keeps everyone building from the same rules - and keeps the system alive long after any one of us stops maintaining it.',
         ],
         media: [
-          { placeholder: true, label: 'IMG-6', kind: 'wide',
-            caption: 'Usage docs and contribution guidelines' },
+          { src: 'spark/spark images/docs-1.png', kind: 'third',
+            caption: 'Change log - every update dated and attributed' },
+          { src: 'spark/spark images/docs-2.png', kind: 'third',
+            caption: 'Annotated layout specs' },
+          { src: 'spark/spark images/docs-3.png', kind: 'third',
+            caption: 'New components enter through a review ticket' },
         ],
       },
       { id: 'status', title: 'Where it stands',
@@ -8704,7 +8721,6 @@ function ProjectTabs({ tabs, idBase = 'tabs', title, intro }) {
   }, [n]);
 
   if (!n) return null;
-  const t = tabs[active];
 
   /* While pinned, picking a tab scrolls to the middle of that tab's stretch,
      so the scroll position and the selection never disagree. */
@@ -8737,20 +8753,37 @@ function ProjectTabs({ tabs, idBase = 'tabs', title, intro }) {
                       onClick={() => go(i)}>{tab.label}</button>
             ))}
           </div>
-          <div className="proj-tabs-text" role="tabpanel" id={`${idBase}-panel`}
+          {/* Every tab's text and media stay mounted in one stacked cell and
+              crossfade (as in ProjectConcepts), so a switch never flashes an
+              empty frame while the next image loads. */}
+          <div className="proj-tabs-text proj-tabs-layers" role="tabpanel" id={`${idBase}-panel`}
                aria-labelledby={`${idBase}-tab-${active}`}>
-            {t.title && <h3 className="proj-sub-title">{t.title}</h3>}
-            {t.body?.map((para, i) => <p key={i}>{para}</p>)}
+            {tabs.map((tab, i) => (
+              <div key={i} className={`proj-tabs-layer ${i === active ? 'is-open' : ''}`}
+                   aria-hidden={i !== active} inert={i === active ? undefined : ''}>
+                {tab.title && <h3 className="proj-sub-title">{tab.title}</h3>}
+                {tab.body?.map((para, j) => <p key={j}>{para}</p>)}
+              </div>
+            ))}
           </div>
         </div>
-        <figure className={`proj-tabs-media proj-media-item k-wide ${t.media?.bare ? 'is-bare' : ''}`}>
-          {t.media?.placeholder || !t.media?.src ? (
-            <div className="proj-media-placeholder"><span>{t.media?.label || `${t.label} - image placeholder`}</span></div>
-          ) : (
-            <img src={t.media.src} alt={t.media.caption || ''} loading="lazy" />
-          )}
-          {t.media?.caption && <figcaption className="proj-caption">{t.media.caption}</figcaption>}
-        </figure>
+        <div className="proj-tabs-layers">
+          {tabs.map((tab, i) => (
+            <figure key={i} className={`proj-tabs-layer proj-tabs-media proj-media-item k-wide ${tab.media?.bare ? 'is-bare' : ''} ${i === active ? 'is-open' : ''}`}
+                    aria-hidden={i !== active} inert={i === active ? undefined : ''}>
+              {tab.media?.srcs ? (
+                <div className="proj-tabs-row">
+                  {tab.media.srcs.map((src, j) => <img key={src} src={src} alt={j === 0 ? (tab.media.caption || '') : ''} />)}
+                </div>
+              ) : tab.media?.placeholder || !tab.media?.src ? (
+                <div className="proj-media-placeholder"><span>{tab.media?.label || `${tab.label} - image placeholder`}</span></div>
+              ) : (
+                <img src={tab.media.src} alt={tab.media.caption || ''} />
+              )}
+              {tab.media?.caption && <figcaption className="proj-caption">{tab.media.caption}</figcaption>}
+            </figure>
+          ))}
+        </div>
       </div>
     </div>
   );
