@@ -4298,6 +4298,43 @@ html[data-layout="m3"] .uf-flow-label-text {
   font-family: var(--ff-body); font-weight: var(--fw-regular); letter-spacing: .25px; fill: var(--ink-dim);
 }
 
+/* ── Help Center flows: the same tonal vocabulary, under a segmented control ──
+   Admin access reuses the .uf-* diagram classes directly. Widget flows
+   come out of the layout engine in tonal mode (.hcf-*), drawn on a
+   surface lane like the versioning diagram's lanes. */
+/* lanes and boxes are tones of the live page wash (--atmos, set by the
+   Project scroll effect), not flat --surface: they shift hue with the
+   page and always sit a visible step off it */
+.hcf {
+  margin: 8px 0 12px;
+  --hcf-ground: var(--atmos, var(--ground));
+  --hcf-lane: color-mix(in oklab, var(--ink) 6%, var(--hcf-ground));
+  --hcf-tone: color-mix(in oklab, var(--ink) 12%, var(--hcf-ground));
+}
+.hcf .uf-svg .uf-lane-rect { fill: var(--hcf-lane); stroke: none; opacity: 1; }
+.hcf .uf-svg .uf-node { fill: var(--hcf-tone); stroke: none; }
+.hcf .hcf-tabs { margin: 0 0 16px; display: inline-flex; }
+.hcf-figure { margin: 0; }
+.hcf-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.hcf-frame {
+  background: var(--hcf-lane); border-radius: 16px;
+  padding: 16px; overflow-x: auto;
+}
+.hcf-canvas svg { display: block; margin: 0 auto; max-width: none; }
+.hcf-node, .hcf-dialog { fill: var(--hcf-tone); }
+.hcf-dialog { stroke: var(--bar-indigo-surface); stroke-width: 1.25; }
+.hcf-entry { fill: var(--bar-indigo-surface); }
+.hcf-decision { fill: color-mix(in oklab, var(--bar-indigo-surface) 24%, transparent); }
+.hcf-state { fill: var(--hcf-ground); }
+.hcf .fv-node-label { fill: var(--ink); }
+.hcf .fv-node-label.hcf-label-entry,
+.hcf .fv-node-label.hcf-label-terminal { fill: #FFFFFF; }
+.hcf .fv-node-label.hcf-label-state { fill: var(--ink-dim); font-weight: var(--fw-regular); }
+.hcf .fv-edge-path { stroke: var(--muted); stroke-width: 1.5; }
+.hcf .fv-arrow { fill: var(--muted); }
+.hcf .fv-edge-label { fill: var(--muted); font-family: var(--ff-body); letter-spacing: .2px; }
+.hcf .fv-edge-label-bg { fill: var(--hcf-lane); }
+
 /* ═══ Test-card palette (opt-in experiment) ══════════════════════════════
    Switched on site-wide by data-palette="testcard" on <html>. Every Signal family is re-pointed at its bar on the "No signal / TV test
    signal" card (sampled off the image):
@@ -4510,7 +4547,7 @@ const PROJECTS = [
         body: [
           'I mapped admin and end-user paths in parallel - shaping an admin model that gives real power without exposing end users to its complexity.',
         ],
-        flowViewer: { caption: 'Admin access & routing, and the homepage widget model behind the customization studio - the real flows, walkable' },
+        flowViewer: { caption: 'Admin access & routing, and the flow behind each homepage widget' },
       },
       { id: 'wireframes', title: 'Wireframes',
         group: 'research',
@@ -5960,6 +5997,27 @@ function shapeFor(n, color, opts) {
     g.appendChild(el);
     return el;
   };
+  /* tonal mode - the Redesign diagram's vocabulary: filled containers,
+     no outlines, the entry a filled indigo pill */
+  if (opts.tonal) {
+    const tone = (tag, attrs, cls) => {
+      const el = S(tag, attrs);
+      el.setAttribute('class', 'hcf-shape ' + cls);
+      g.appendChild(el);
+    };
+    if (n.kind === 'entry' || n.kind === 'terminal')
+      tone('rect', { x: 0, y: 0, width: w, height: h, rx: 12 }, 'hcf-entry');
+    else if (n.kind === 'decision') {
+      const k = 20;
+      tone('polygon', { points: `0,${h / 2} ${k},0 ${w - k},0 ${w},${h / 2} ${w - k},${h} ${k},${h}` }, 'hcf-decision');
+    } else if (n.kind === 'state')
+      tone('rect', { x: 0, y: 0, width: w, height: h, rx: 8 }, 'hcf-state');
+    else if (n.kind === 'dialog')
+      tone('rect', { x: 0, y: 0, width: w, height: h, rx: 12 }, 'hcf-dialog');
+    else
+      tone('rect', { x: 0, y: 0, width: w, height: h, rx: 12 }, 'hcf-node');
+    return g;
+  }
   switch (n.kind) {
     case 'terminal':
       put('rect', { x: 0, y: 0, width: w, height: h, rx: h / 2, ry: h / 2 },
@@ -6072,7 +6130,8 @@ function drawNodeEl(n, color, opts) {
   if (!opts.hideLabels) {
     const startY = n.h / 2 - ((n.lines.length - 1) * 15) / 2 + 4;
     n.lines.forEach((line, i) => {
-      const t = S('text', { class: 'fv-node-label', x: n.w / 2, y: startY + i * 15, 'text-anchor': 'middle' });
+      const t = S('text', { class: 'fv-node-label' + (opts.tonal ? ' hcf-label-' + n.kind : ''),
+                            x: n.w / 2, y: startY + i * 15, 'text-anchor': 'middle' });
       if (n.kind === 'entry' || n.kind === 'terminal') t.setAttribute('font-weight', '600');
       t.textContent = line;
       g.appendChild(t);
@@ -8135,461 +8194,208 @@ function SideGallery({ items }) {
   );
 }
 
-/* ─── Help Center flow viewer ──────────────────────────────────────────
-   An interactive flow explorer embedded as a section of the case study.
-   Two flows as tabs; the widget flow has three levels (system map →
-   branch detail → entire flow) so the reader is never shown more than
-   they can hold. Diagram geometry comes from window.HCFlow (layout
-   engine + SVG builders); this layer owns chrome, routing, and state. */
+/* ─── Help Center flows ────────────────────────────────────────────────
+   Two flows under a segmented control, drawn in the Redesign diagram's
+   tonal vocabulary. Admin access is hand-laid like the versioning
+   diagram; each homepage widget's flow is laid out by window.HCFlow and
+   rendered tonal, static, at a readable fixed scale. */
 
 const FV_STEP_CACHE = new Map();
 function fvSteps(key, nodes, edges) {
   if (!FV_STEP_CACHE.has(key)) FV_STEP_CACHE.set(key, window.HCFlow.textAlt(nodes, edges));
   return FV_STEP_CACHE.get(key);
 }
-const FV_THUMB_CACHE = new Map();
-function fvThumb(branch) {
-  if (!FV_THUMB_CACHE.has(branch.id)) FV_THUMB_CACHE.set(branch.id, window.HCFlow.thumbnail(branch));
-  return FV_THUMB_CACHE.get(branch.id).cloneNode(true);
-}
-function fvResetCaches() { FV_STEP_CACHE.clear(); FV_THUMB_CACHE.clear(); }
 
-function FlowThumb({ branch, tick }) {
-  const ref = useRef(null);
-  useEffect(() => {
-    const host = ref.current;
-    if (!host) return;
-    host.innerHTML = '';
-    host.appendChild(fvThumb(branch));
-  }, [branch, tick]);
-  return <div className="fv-thumb" ref={ref} aria-hidden="true" />;
-}
-
-function FlowShapeSwatch({ kind }) {
-  const ref = useRef(null);
-  useEffect(() => {
-    const host = ref.current;
-    if (!host) return;
-    host.innerHTML = '';
-    host.appendChild(window.HCFlow.legendSwatch(kind));
-  }, [kind]);
-  return <span ref={ref} />;
-}
-
-/* Rank-ordered list of every step and where it goes. Doubles as the
-   text alternative (visually hidden) and as the small-screen view. */
-function FlowSteps({ cacheKey, nodes, edges, label, hidden }) {
+/* Rank-ordered list of every step and where it goes - the text alternative. */
+function FlowSteps({ cacheKey, nodes, edges, label }) {
   const items = fvSteps(cacheKey, nodes, edges);
   return (
-    <div className={hidden ? 'fv-sr' : 'fv-steps'}>
-      <ol aria-label={label}>
-        {items.map((it, i) => (
-          <li key={i}>
-            <span className="fv-step-label">{it.label}</span>
-            <span className="fv-step-kind">{it.kind}</span>
-            {it.outs.map((o, j) => <span key={j} className="fv-step-out">{o}</span>)}
-          </li>
-        ))}
-      </ol>
-    </div>
+    <ol aria-label={label}>
+      {items.map((it, i) => (
+        <li key={i}>
+          {it.label} ({it.kind}){it.outs.length ? ' - ' + it.outs.join('; ') : ''}
+        </li>
+      ))}
+    </ol>
   );
+}
+
+function HCAdminFlowDiagram() {
+  const row = (x, y, label) => (
+    <g key={label}>
+      <circle cx={x} cy={y - 5} r="5" className="uf-dot uf-off" />
+      <text x={x + 16} y={y} className="uf-node-status">{label}</text>
+    </g>
+  );
+  return (
+    <svg className="uf-svg" viewBox="0 0 1100 1000" xmlns="http://www.w3.org/2000/svg"
+         role="img" aria-label="Admin access and routing: login, role resolution, then the KMS customers panel or a help center site admin panel">
+      <defs>
+        <marker id="hcf-arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" className="uf-arrow-head" />
+        </marker>
+      </defs>
+
+      <rect className="uf-lane-rect" x="40" y="100" width="1020" height="200" rx="10" />
+      <text className="uf-lane-title" x="60" y="160">Authentication</text>
+      <text className="uf-lane-note" x="60" y="186">one login for every admin</text>
+
+      <rect className="uf-lane-rect" x="40" y="450" width="500" height="460" rx="10" />
+      <text className="uf-lane-title" x="60" y="490">KMS admin</text>
+      <text className="uf-lane-note" x="60" y="516">manages every customer</text>
+
+      <rect className="uf-lane-rect" x="560" y="450" width="500" height="460" rx="10" />
+      <text className="uf-lane-title" x="580" y="490">HC site admin</text>
+      <text className="uf-lane-note" x="580" y="516">runs one help center</text>
+
+      <rect x="410" y="14" width="280" height="44" rx="22" className="uf-start-oval" />
+      <text x="550" y="42" className="uf-start-label" textAnchor="middle">Admin opens the panel</text>
+      <path d="M 550 58 L 550 128" className="uf-arrow-path" markerEnd="url(#hcf-arrow)" />
+
+      <rect x="450" y="130" width="200" height="70" rx="2" className="uf-node" />
+      <text x="550" y="171" className="uf-node-title" textAnchor="middle">Admin login</text>
+      <path d="M 650 165 L 718 165" className="uf-arrow-path" markerEnd="url(#hcf-arrow)" />
+
+      <g transform="translate(820, 165)">
+        <polygon points="0,-46 100,0 0,46 -100,0" className="uf-decision" />
+        <text x="0" y="-4" className="uf-decision-label" textAnchor="middle">Credentials</text>
+        <text x="0" y="18" className="uf-decision-label" textAnchor="middle">valid?</text>
+      </g>
+      <path d="M 820 211 L 820 245 L 510 245 L 510 202" className="uf-arrow-path" fill="none" markerEnd="url(#hcf-arrow)" />
+      <text x="836" y="236" className="uf-helper">No</text>
+      <path d="M 920 165 L 990 165 L 990 280 L 550 280 L 550 312" className="uf-arrow-path" fill="none" markerEnd="url(#hcf-arrow)" />
+      <text x="955" y="153" className="uf-helper" textAnchor="middle">Yes</text>
+
+      <g transform="translate(550, 360)">
+        <polygon points="0,-46 100,0 0,46 -100,0" className="uf-decision" />
+        <text x="0" y="6" className="uf-decision-label" textAnchor="middle">Admin role?</text>
+      </g>
+      <path d="M 450 360 L 300 360 L 300 538" className="uf-arrow-path" fill="none" markerEnd="url(#hcf-arrow)" />
+      <text x="375" y="348" className="uf-helper" textAnchor="middle">KMS admin</text>
+      <path d="M 650 360 L 800 360 L 800 532" className="uf-arrow-path" fill="none" markerEnd="url(#hcf-arrow)" />
+      <text x="725" y="348" className="uf-helper" textAnchor="middle">Customer admin</text>
+
+      <rect x="140" y="540" width="320" height="290" rx="2" className="uf-node" />
+      <text x="300" y="582" className="uf-node-title" textAnchor="middle">Customers panel</text>
+      {['Add customer', 'Delete customer', 'Rename customer', 'Reset admin password', 'Manage customer site']
+        .map((l, i) => row(178, 630 + i * 40, l))}
+
+      <g transform="translate(800, 580)">
+        <polygon points="0,-46 100,0 0,46 -100,0" className="uf-decision" />
+        <text x="0" y="-4" className="uf-decision-label" textAnchor="middle">Only one</text>
+        <text x="0" y="18" className="uf-decision-label" textAnchor="middle">HC site?</text>
+      </g>
+      <path d="M 900 580 L 980 580 L 980 638" className="uf-arrow-path" fill="none" markerEnd="url(#hcf-arrow)" />
+      <text x="940" y="568" className="uf-helper" textAnchor="middle">No</text>
+      <rect x="915" y="640" width="130" height="56" rx="2" className="uf-node" />
+      <text x="980" y="674" className="uf-node-title" textAnchor="middle">Pick a site</text>
+      <path d="M 980 696 L 980 775 L 902 775" className="uf-arrow-path" fill="none" markerEnd="url(#hcf-arrow)" />
+      <path d="M 800 626 L 800 668" className="uf-arrow-path" markerEnd="url(#hcf-arrow)" />
+      <text x="816" y="652" className="uf-helper">Yes</text>
+
+      <rect x="620" y="670" width="280" height="210" rx="2" className="uf-node" />
+      <text x="760" y="710" className="uf-node-title" textAnchor="middle">Site admin panel</text>
+      {['End-user preview', 'Widget management', 'HC settings', 'Branding']
+        .map((l, i) => row(654, 752 + i * 34, l))}
+
+      <path d="M 460 785 L 618 785" className="uf-arrow-path" markerEnd="url(#hcf-arrow)" />
+      <text x="540" y="772" className="uf-helper" textAnchor="middle">Enter site</text>
+
+      <path d="M 300 830 L 300 962 L 448 962" className="uf-arrow-path" fill="none" markerEnd="url(#hcf-arrow)" />
+      <path d="M 760 880 L 760 962 L 652 962" className="uf-arrow-path" fill="none" markerEnd="url(#hcf-arrow)" />
+      <rect x="450" y="940" width="200" height="44" rx="22" className="uf-start-oval" />
+      <text x="550" y="968" className="uf-start-label" textAnchor="middle">Log out</text>
+    </svg>
+  );
+}
+
+/* fit to the frame, but within a band that keeps labels close to the
+   admin diagram's size - a big flow scrolls sideways rather than shrink */
+const HCF_SCALE = [0.95, 1.15];
+const HCF_PAD = 16;
+
+function HCWidgetFlow({ branch, tick }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    const host = ref.current;
+    if (!host) return;
+    const HC = window.HCFlow;
+    const L = HC.layoutFlow(branch.nodes, branch.edges, { direction: 'TB' });
+    const { svg } = HC.renderDiagram(L, { tonal: true, static: true });
+    const w = L.width + HCF_PAD * 2, h = L.height + HCF_PAD * 2;
+    svg.setAttribute('viewBox', `${-HCF_PAD} ${-HCF_PAD} ${w} ${h}`);
+    svg.setAttribute('aria-hidden', 'true');
+    const size = () => {
+      const k = Math.min(HCF_SCALE[1], Math.max(HCF_SCALE[0], host.clientWidth / w));
+      svg.setAttribute('width', Math.round(w * k));
+      svg.setAttribute('height', Math.round(h * k));
+    };
+    host.innerHTML = '';
+    host.appendChild(svg);
+    size();
+    window.addEventListener('resize', size);
+    return () => { window.removeEventListener('resize', size); host.innerHTML = ''; };
+  }, [branch, tick]);
+  return <div className="hcf-canvas" ref={ref} />;
 }
 
 function HCFlowViewer({ caption }) {
   const HC = window.HCFlow;
   const BRANCHES = HC.FLOWS.widgets.branches;
-
-  const [flow, setFlow]     = useState('admin');   /* admin is the default view:
-                                                      one readable diagram, not a grid */
-  const [view, setView]     = useState('flow');    /* flow | map | branch | all */
-  const [branch, setBranch] = useState('topic');
-  /* TB. Measured against the real embed frame (~880×450 - the case-study
-     content column, not the full page) TB and LR land within a point of
-     each other and TB wins 5 of the 8 graphs. In a wider frame LR pulls
-     ahead, which is what the toggle (and `d`) is for. */
-  const [dir, setDir]       = useState('TB');
-  const [expanded, setExpanded]   = useState(false);
-  const [armed, setArmed]         = useState(false);
-  const [legendOpen, setLegendOpen] = useState(false);
+  const [flow, setFlow]     = useState('admin');
+  const [branch, setBranch] = useState(BRANCHES[0].id);
   const [tick, setTick]     = useState(0);         /* bumps when webfonts land */
-  const [narrow, setNarrow] = useState(
-    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches);
-
-  const rootRef   = useRef(null);
-  const canvasRef = useRef(null);
-  const viewerRef = useRef(null);
-  const zoomRef   = useRef(null);
-  const hoverRef  = useRef(false);
-  const dlgRef    = useRef(null);
-
   const activeBranch = BRANCHES.find(b => b.id === branch) || BRANCHES[0];
-  const showsCanvas  = !narrow && !(flow === 'widgets' && view === 'map');
 
-  /* ── the layout measures real text, so re-run it once webfonts land ── */
+  /* the layout measures real text, so re-run it once webfonts land */
   useEffect(() => {
     if (!document.fonts || !document.fonts.ready) return;
     let alive = true;
     document.fonts.ready.then(() => {
       if (!alive) return;
       HC.resetFonts();
-      fvResetCaches();
+      FV_STEP_CACHE.clear();
       setTick(t => t + 1);
     });
     return () => { alive = false; };
   }, []);
 
-  useEffect(() => {
-    const mq = window.matchMedia('(max-width: 767px)');
-    const on = () => setNarrow(mq.matches);
-    mq.addEventListener('change', on);
-    return () => mq.removeEventListener('change', on);
-  }, []);
-
-  /* ── expand into a full-viewport dialog, same component instance ── */
-  if (!dlgRef.current && typeof document !== 'undefined') {
-    const d = document.createElement('dialog');
-    d.className = 'fv-dialog';
-    d.setAttribute('aria-label', 'Help Center product flows - full screen');
-    dlgRef.current = d;
-  }
-  useEffect(() => {
-    const d = dlgRef.current;
-    if (!d) return;
-    /* esc closes the dialog before it closes a drill-down */
-    const onCancel = ev => { ev.preventDefault(); setExpanded(false); };
-    d.addEventListener('cancel', onCancel);
-    return () => d.removeEventListener('cancel', onCancel);
-  }, []);
-  useEffect(() => {
-    const d = dlgRef.current;
-    if (!d) return;
-    if (expanded) { document.body.appendChild(d); if (!d.open) d.showModal(); }
-    else { if (d.open) d.close(); if (d.parentNode) d.remove(); }
-    return () => { if (d.open) d.close(); if (d.parentNode) d.remove(); };
-  }, [expanded]);
-
-  /* ── mount the diagram ── */
-  useEffect(() => {
-    if (!showsCanvas) return;
-    const host = canvasRef.current;
-    if (!host) return;
-
-    let rendered;
-    if (flow === 'admin') {
-      const F = HC.FLOWS.admin;
-      const zoneColor = new Map(F.zones.map(z => [z.id, z.color]));
-      const L = HC.layoutFlow(F.nodes, F.edges, {
-        direction: dir, nodeWidth: 176, rankGap: 66, crossGap: 28,
-        groupOrder: ['auth', 'route', 'kms', 'hc']
-      });
-      rendered = HC.renderDiagram(L, {
-        colorFor: n => zoneColor.get(n.zone) || 'var(--fv-neutral)',
-        zones: F.zones.filter(z => z.id === 'kms' || z.id === 'hc')
-      });
-    } else if (view === 'all') {
-      rendered = HC.renderAllLanes();
-    } else {
-      const L = HC.layoutFlow(activeBranch.nodes, activeBranch.edges, { direction: dir });
-      rendered = HC.renderDiagram(L, { colorFor: () => activeBranch.color });
-    }
-
-    const v = HC.makeViewer(host, rendered);
-    viewerRef.current = v;
-    v.onZoom = k => { if (zoomRef.current) zoomRef.current.textContent = Math.round(k * 100) + '%'; };
-    HC.wireFocus(rendered);
-
-    if (flow === 'widgets' && view === 'all') {
-      rendered.nodeEls.forEach((el, id) => {
-        el.addEventListener('dblclick', () => {
-          const bid = String(id).split(':')[0];
-          if (BRANCHES.some(b => b.id === bid)) { setBranch(bid); setView('branch'); }
-        });
-      });
-    }
-
-    const raf = requestAnimationFrame(() => v.fit());
-    const onResize = () => v.fit();
-    window.addEventListener('resize', onResize);
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener('resize', onResize);
-      window.HCFlow && (viewerRef.current = null);
-      host.innerHTML = '';
-    };
-  }, [flow, view, branch, dir, expanded, tick, showsCanvas]);
-
-  /* ── plain-wheel zoom stays armed only while the reader is inside ── */
-  useEffect(() => {
-    if (!armed) return;
-    const off = ev => {
-      const host = canvasRef.current;
-      if (!host || !host.contains(ev.target)) setArmed(false);
-    };
-    document.addEventListener('pointerdown', off, true);
-    return () => document.removeEventListener('pointerdown', off, true);
-  }, [armed]);
-  useEffect(() => { if (!showsCanvas) setArmed(false); }, [showsCanvas, flow, view, branch]);
-
-  /* ── keyboard: only while the section has the reader's attention ── */
-  useEffect(() => {
-    const onKey = ev => {
-      const root = rootRef.current;
-      const inside = expanded || hoverRef.current ||
-        (root && root.contains(document.activeElement));
-      if (!inside) return;
-
-      if (ev.key === 'Escape') {
-        if (expanded) return;                       /* the dialog handles its own esc */
-        if (flow === 'widgets' && view !== 'map') { setView('map'); ev.preventDefault(); }
-        else if (armed) { setArmed(false); ev.preventDefault(); }
-        return;
-      }
-      if (ev.key === '0' && viewerRef.current) { viewerRef.current.fit(); ev.preventDefault(); }
-      if ((ev.key === 'd' || ev.key === 'D') && showsCanvas) {
-        setDir(d => (d === 'TB' ? 'LR' : 'TB')); ev.preventDefault();
-      }
-      if ((ev.key === 'ArrowRight' || ev.key === 'ArrowLeft') && flow === 'widgets' && view === 'branch') {
-        const i = BRANCHES.findIndex(b => b.id === branch);
-        const j = (i + (ev.key === 'ArrowRight' ? 1 : -1) + BRANCHES.length) % BRANCHES.length;
-        setBranch(BRANCHES[j].id); ev.preventDefault();
-      }
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [flow, view, branch, expanded, armed, showsCanvas]);
-
-  const goFlow = id => {
-    setFlow(id);
-    setView(id === 'admin' ? 'flow' : 'map');
-    setDir('TB');
-  };
-  const openBranch = id => { setBranch(id); setView('branch'); };
-
-  /* ── legend contents follow the level ── */
-  const SHAPES = ['terminal', 'screen', 'action', 'decision', 'dialog', 'state'];
-  let colorItems = [];
-  if (flow === 'admin') colorItems = HC.FLOWS.admin.zones.map(z => ({ name: z.name, color: z.color }));
-  else if (view === 'all') colorItems = BRANCHES.map(b => ({ name: b.name, color: b.color }));
-  else if (view === 'branch') colorItems = [{ name: activeBranch.name, color: activeBranch.color }];
-
-  const totalSteps = BRANCHES.reduce((s, b) => s + b.nodes.length, 0) + 1;
-
-  /* ── chrome ── */
-  const crumb = (() => {
-    if (flow === 'admin') return (
-      <div className="fv-crumb">
-        <span className="fv-cur">{HC.FLOWS.admin.name}</span>
-        <span className="fv-sep">·</span>
-        <span className="fv-sub">{HC.FLOWS.admin.subtitle}</span>
-      </div>
-    );
-    if (view === 'map') return (
-      <div className="fv-crumb"><span className="fv-cur">Widget customization - system map</span></div>
-    );
-    if (view === 'all') return (
-      <div className="fv-crumb">
-        <button onClick={() => setView('map')}>Widget customization</button>
-        <span className="fv-sep">/</span>
-        <span className="fv-cur">Entire flow - all components</span>
-      </div>
-    );
-    return (
-      <div className="fv-crumb">
-        <button onClick={() => setView('map')}>Widget customization</button>
-        <span className="fv-sep">/</span>
-        <span className="fv-cur">
-          <span className="fv-dot-sw" style={{ background: activeBranch.color }} />
-          {activeBranch.name}
-        </span>
-        {/* the metrics live here, one level down, where someone who has
-            already chosen to engage can find them */}
-        <span className="fv-sub">
-          {activeBranch.nodes.length} steps · {activeBranch.edges.length} paths
-        </span>
-      </div>
-    );
-  })();
-
-  const body = (
-    <div
-      className={`fv ${expanded ? 'is-expanded' : ''}`}
-      ref={rootRef}
-      onMouseEnter={() => { hoverRef.current = true; }}
-      onMouseLeave={() => { hoverRef.current = false; }}
-    >
-      <div className="fv-bar">
-        <span className="fv-mark">Product flows</span>
-        <div className="fv-tabs" role="tablist" aria-label="Help Center flows">
-          {[['admin', 'Admin access'], ['widgets', 'Widget customization']].map(([id, label]) => (
-            <button key={id} className="fv-tab" role="tab"
-                    aria-selected={flow === id ? 'true' : 'false'}
-                    onClick={() => goFlow(id)}>{label}</button>
-          ))}
-        </div>
-      </div>
-
-      <div className="fv-subbar">
-        {crumb}
-        {flow === 'widgets' && view === 'branch' && (
-          <>
-            <div className="fv-pills">
-              {BRANCHES.map(b => (
-                <button key={b.id} className="fv-pill"
-                        aria-current={b.id === branch ? 'true' : 'false'}
-                        onClick={() => openBranch(b.id)}>
-                  <i style={{ background: b.color }} />
-                  <span>{b.name}</span>
-                </button>
-              ))}
-            </div>
-            <select className="fv-select" value={branch} aria-label="Component"
-                    onChange={e => openBranch(e.target.value)}>
-              {BRANCHES.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
-            </select>
-          </>
-        )}
-        <div className="fv-tools">
-          {showsCanvas && (
-            <>
-              <button className="fv-tool is-wide" title="Flip orientation (D)"
-                      onClick={() => setDir(d => (d === 'TB' ? 'LR' : 'TB'))}>
-                {dir === 'TB' ? '⇄ Across' : '⇅ Down'}
-              </button>
-              <span className="fv-divider" />
-              <button className="fv-tool fv-zoom-tool" title="Zoom out"
-                      onClick={() => viewerRef.current && viewerRef.current.zoomOut()}>−</button>
-              <span className="fv-zoomval" ref={zoomRef}>100%</span>
-              <button className="fv-tool fv-zoom-tool" title="Zoom in"
-                      onClick={() => viewerRef.current && viewerRef.current.zoomIn()}>+</button>
-              <button className="fv-tool is-wide" title="Fit to frame (0)"
-                      onClick={() => viewerRef.current && viewerRef.current.fit()}>Fit</button>
-              <button className="fv-tool fv-legend-toggle" title="Legend"
-                      aria-expanded={legendOpen}
-                      onClick={() => setLegendOpen(o => !o)}>?</button>
-            </>
-          )}
-          <button className="fv-tool is-wide" onClick={() => setExpanded(e => !e)}
-                  title={expanded ? 'Close full screen' : 'Open full screen'}>
-            {expanded ? 'Close' : 'Expand'}
-          </button>
-        </div>
-      </div>
-
-      <div className="fv-stage">
-        {showsCanvas ? (
-          <>
-            <div className="fv-grid" />
-            <div className="fv-canvas" ref={canvasRef}
-                 data-zoom-armed={armed ? 'on' : 'off'}
-                 onClick={() => setArmed(true)} />
-            {armed
-              ? <div className="fv-armed">Wheel zooms - click outside to release</div>
-              : <div className="fv-armed">Click to zoom</div>}
-          </>
-        ) : narrow && !(flow === 'widgets' && view === 'map') ? (
-          /* a pan/zoom canvas is a bad experience on a phone - the same
-             graph, as an ordered list of steps */
-          flow === 'admin' ? (
-            <FlowSteps cacheKey="admin" nodes={HC.FLOWS.admin.nodes} edges={HC.FLOWS.admin.edges}
-                       label={HC.FLOWS.admin.name} />
-          ) : (
-            <FlowSteps cacheKey={activeBranch.id} nodes={activeBranch.nodes} edges={activeBranch.edges}
-                       label={activeBranch.name} />
-          )
-        ) : (
-          <div className="fv-map">
-            <div className="fv-map-inner">
-              <div className="fv-map-head">
-                <div>
-                  <h3>{HC.FLOWS.widgets.name}</h3>
-                  <p>{HC.FLOWS.widgets.subtitle}</p>
-                </div>
-                <div className="fv-map-stats">
-                  <div className="fv-stat"><b>{BRANCHES.length}</b><span>Components</span></div>
-                  <div className="fv-stat"><b>{totalSteps}</b><span>Steps</span></div>
-                </div>
-              </div>
-              <div className="fv-entry">
-                <span className="fv-tag">Entry</span>
-                <span>{HC.FLOWS.widgets.rootLabel}</span>
-              </div>
-              <div className="fv-stem" />
-              <div className="fv-cards">
-                {BRANCHES.map(b => (
-                  <button key={b.id} className="fv-card" onClick={() => openBranch(b.id)}>
-                    <span className="fv-accent" style={{ background: b.color }} />
-                    <span className="fv-card-body">
-                      <h4>
-                        <span>{b.name}</span>
-                        {b.shared && <span className="fv-badge">Shared</span>}
-                      </h4>
-                    </span>
-                    <FlowThumb branch={b} tick={tick} />
-                  </button>
-                ))}
-              </div>
-              <div className="fv-map-foot">
-                {!narrow && (
-                  <button className="fv-ghost" onClick={() => setView('all')}>
-                    View the entire flow on one canvas →
-                  </button>
-                )}
-                <button className="fv-ghost" onClick={() => setExpanded(true)}>Open full screen</button>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {showsCanvas && (
-        <div className="fv-foot">
-          {/* six shapes with no key is a puzzle */}
-          <div className={`fv-legend ${legendOpen ? 'is-open' : ''}`}>
-            <span className="fv-ttl">Shape</span>
-            {SHAPES.map(k => (
-              <span className="fv-lg" key={k}>
-                <FlowShapeSwatch kind={k} />
-                <span>{HC.KIND_LABEL[k]}</span>
-              </span>
-            ))}
-            {colorItems.length > 0 && (
-              <>
-                <span className="fv-divider" />
-                <span className="fv-ttl">Colour</span>
-                {colorItems.map(c => (
-                  <span className="fv-lg" key={c.name}>
-                    <i className="fv-dot-sw" style={{ background: c.color }} />
-                    <span>{c.name}</span>
-                  </span>
-                ))}
-              </>
-            )}
-          </div>
-          <div className="fv-hint">
-            <kbd>⌘</kbd>+scroll zooms · <kbd>0</kbd> fit · <kbd>d</kbd> flip
-            {flow === 'widgets' && view === 'branch' && <> · <kbd>←</kbd><kbd>→</kbd> component · <kbd>esc</kbd> back</>}
-            {flow === 'widgets' && view === 'all' && <> · double-click a lane to open it</>}
-          </div>
-        </div>
-      )}
-
-      {/* text alternative - every branch in rank order, always present */}
-      <div className="fv-sr">
-        <FlowSteps cacheKey="admin" nodes={HC.FLOWS.admin.nodes} edges={HC.FLOWS.admin.edges}
-                   label={HC.FLOWS.admin.name} hidden />
-        {BRANCHES.map(b => (
-          <FlowSteps key={b.id} cacheKey={b.id} nodes={b.nodes} edges={b.edges}
-                     label={'Homepage widget customization - ' + b.name} hidden />
+  return (
+    <div className="hcf">
+      <div className="fv-tabs hcf-tabs" role="tablist" aria-label="Help Center flows">
+        {[['admin', 'Admin access'], ['widgets', 'Widget customization']].map(([id, label]) => (
+          <button key={id} className="fv-tab" role="tab"
+                  aria-selected={flow === id ? 'true' : 'false'}
+                  onClick={() => setFlow(id)}>{label}</button>
         ))}
       </div>
-    </div>
-  );
 
-  return (
-    <div className="fv-wrap">
-      {expanded ? <div className="fv-placeholder-slot" /> : body}
-      {expanded && dlgRef.current && ReactDOM.createPortal(body, dlgRef.current)}
-      {caption && !expanded && <p className="fv-caption">{caption}</p>}
+      {flow === 'admin' ? (
+        <figure className="hcf-figure">
+          <HCAdminFlowDiagram />
+        </figure>
+      ) : (
+        <figure className="hcf-figure">
+          <div className="hcf-chips" role="tablist" aria-label="Homepage widget">
+            {BRANCHES.map(b => (
+              <button key={b.id} className="fv-pill" role="tab"
+                      aria-selected={b.id === branch ? 'true' : 'false'}
+                      aria-current={b.id === branch ? 'true' : 'false'}
+                      onClick={() => setBranch(b.id)}>
+                <span>{b.name}</span>
+              </button>
+            ))}
+          </div>
+          <div className="hcf-frame">
+            <HCWidgetFlow branch={activeBranch} tick={tick} />
+          </div>
+          <div className="fv-sr">
+            <FlowSteps cacheKey={activeBranch.id} nodes={activeBranch.nodes} edges={activeBranch.edges}
+                       label={'Homepage widget customization - ' + activeBranch.name} />
+          </div>
+        </figure>
+      )}
+      {caption && <p className="fv-caption">{caption}</p>}
     </div>
   );
 }
