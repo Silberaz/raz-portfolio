@@ -8791,8 +8791,8 @@ function ProjectMedia({ items }) {
    On desktop the section pins while it is in view and the page scroll drives the
    tabs: each tab gets one stage-height of scroll, and the page releases after the
    last one. Where the stage can't fit the viewport it falls back to plain tabs.
-   The section title spans both columns and pins with the stage, so its divider
-   stays full width. */
+   Only the card pins - the section title and intro scroll past above it, which
+   keeps the pinned stage short enough for laptop screens. */
 function ProjectTabs({ tabs, idBase = 'tabs', title, intro }) {
   const [active, setActive] = useState(0);
   const [pinned, setPinned] = useState(false);
@@ -8856,12 +8856,12 @@ function ProjectTabs({ tabs, idBase = 'tabs', title, intro }) {
   };
 
   return (
+    <>
+    {title}
+    {intro && <div className="proj-tabs-side">{intro}</div>}
     <div ref={trackRef} className={`proj-tabs ${pinned ? 'is-pinned' : ''}`}>
-      <div ref={stageRef} className="proj-tabs-stage">
-        {title}
-        {intro && <div className="proj-tabs-side">{intro}</div>}
-        {/* control, tab text and media framed as one full-width card */}
-        <div className="proj-tabs-card is-card">
+      {/* control, tab text and media framed as one full-width card */}
+      <div ref={stageRef} className="proj-tabs-stage proj-tabs-card is-card">
           <div className="proj-tabs-control">
           <div className="proj-tabs-seg" role="tablist" onKeyDown={onKey}>
             {tabs.map((tab, i) => (
@@ -8902,9 +8902,9 @@ function ProjectTabs({ tabs, idBase = 'tabs', title, intro }) {
             </figure>
           ))}
         </div>
-        </div>
       </div>
     </div>
+    </>
   );
 }
 
