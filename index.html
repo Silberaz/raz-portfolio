@@ -3558,8 +3558,8 @@ html[data-layout="m3"] .proj-meta .k {           /* Label Medium */
   margin-bottom: 4px;
 }
 html[data-layout="m3"] .proj-meta .v { font-size: 14px; line-height: 20px; letter-spacing: .25px; }
-/* text + gallery split or concepts accordion framed as a full-width card,
-   like the page title (splitCard: true) */
+/* text + gallery splits and concepts accordions are framed as full-width
+   cards, like the page title */
 html[data-layout="m3"] .proj-split.is-card,
 html[data-layout="m3"] .proj-concepts.is-card {
   padding: 24px; background: var(--surface); border-radius: var(--m3-r-lg);
@@ -5177,7 +5177,6 @@ const PROJECTS = [
         ],
         /* One accordion item per concept, in screen order; the open item's
            screens show beside the list, as a gallery when there are several. */
-        splitCard: true,
         concepts: [
           { label: 'Concept 1 - Side panel',
             body: ['Every filter lives in a collapsible side panel beside the results, grouped by type. Collapsed to a rail, it hands the table back its full width.'],
@@ -5238,7 +5237,6 @@ const PROJECTS = [
         ],
         /* one screen at a time, beside the text */
         sideBySide: true,
-        splitCard: true,
         sideGallery: [
           { src: 'advanced-search/concept-a-01-empty.png?v=3',                  caption: 'Search prominent, search settings open in the panel' },
           { src: 'advanced-search/concept-a-02-search-applied.png?v=3',          caption: 'Keyword searched - results beside search settings' },
@@ -5263,7 +5261,6 @@ const PROJECTS = [
         ],
         /* one screen at a time, beside the text */
         sideBySide: true,
-        splitCard: true,
         sideGallery: [
           { src: 'advanced-search/concept-b-01-empty.png?v=3',            caption: 'Search de-emphasized, saved filter sets in view' },
           { src: 'advanced-search/concept-b-02-add-filter.png?v=3',       caption: 'Adding a filter from the condition bar' },
@@ -8956,13 +8953,13 @@ function ProjectMediaRows({ rows, idBase = 'mr' }) {
 /* Concept accordion - the open concept's screens on one side, the list of
    concepts on the other. Exactly one concept is open at a time; one with
    several screens gets a gallery, one with a single screen a plain figure. */
-function ProjectConcepts({ concepts, idBase = 'concepts', card = false }) {
+function ProjectConcepts({ concepts, idBase = 'concepts' }) {
   const [open, setOpen] = useState(0);
   if (!concepts || !concepts.length) return null;
   /* Every concept's screens stay mounted in one stacked cell and crossfade,
      so a switch never flashes an empty frame while the next image loads. */
   return (
-    <div className={`proj-concepts ${card ? 'is-card' : ''}`}>
+    <div className="proj-concepts is-card">
       <div className="proj-concepts-media">
         {concepts.map((c, i) => {
           const items = c.items || [];
@@ -9472,8 +9469,8 @@ function ProjectSection({ s }) {
   /* sideBySide splits carry their title in the pinned text column */
   const tabsHead = !s.placeholder && !!s.tabs;
   const splitHead = !tabsHead && !s.placeholder && !s.prototype &&
-    ((s.sideBySide && !!(s.sideMedia || s.sideGallery)) || (s.mediaSplit === 'right' && !!s.media));
-  const splitMedia = !splitHead ? null : s.mediaSplit === 'right' ? <ProjectMedia items={s.media} /> : s.sideGallery ? <SideGallery items={s.sideGallery} /> : (
+    ((s.sideBySide && !!s.sideMedia) || (s.mediaSplit === 'right' && !!s.media));
+  const splitMedia = !splitHead ? null : s.mediaSplit === 'right' ? <ProjectMedia items={s.media} /> : (
     <figure className="proj-split-media proj-media-item k-wide">
       {s.sideMedia.placeholder ? (
         <div className="proj-media-placeholder"><span>{s.sideMedia.label || 'Image placeholder'}</span></div>
@@ -9552,7 +9549,7 @@ function ProjectSection({ s }) {
               </figure>
             </div>
           ) : s.sideGallery ? (
-            <div className={`proj-split ${s.sideBySide ? 'is-cols' : ''} ${s.splitCard ? 'is-card' : ''}`}>
+            <div className={`proj-split is-card ${s.sideBySide ? 'is-cols' : ''}`}>
               <div className="proj-split-text">
                 {s.body?.map((para, i) => <p key={`b${i}`}>{para}</p>)}
                 <SectionList s={s} />
@@ -9610,7 +9607,7 @@ function ProjectSection({ s }) {
           {s.media && !s.mediaSplit && <ProjectMedia items={s.media} />}
           {s.marquee && <ProjectMarquee items={s.marquee} />}
           {s.mediaRows && <ProjectMediaRows rows={s.mediaRows} idBase={s.id} />}
-          {s.concepts && <ProjectConcepts concepts={s.concepts} idBase={s.id} card={s.splitCard} />}
+          {s.concepts && <ProjectConcepts concepts={s.concepts} idBase={s.id} />}
           {s.compare && <ProjectCompare data={s.compare} />}
           {s.subsections?.map((sub, i) => (
             <div key={sub.id || i}
