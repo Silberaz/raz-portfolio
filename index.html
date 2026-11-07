@@ -4997,10 +4997,11 @@ const PROJECTS = [
           'Consolidation and collaboration were paused, not killed. They come back in later phases, sequenced by what users need first.',
           'What we took from it:',
         ],
+        listStyle: 'cards',
         list: [
-          { label: 'Change has a budget.', text: 'Every change was right on its own, but users can only absorb so much at once.' },
-          { label: 'The map outlives the design.', text: 'The audit still guides what gets consolidated next.' },
-          { label: 'Foundations first.', text: 'The grid and components could ship now and carry the bigger changes later.' },
+          { icon: 'gauge',  label: 'Change has a budget', text: 'Every change was right on its own, but users can only absorb so much at once.' },
+          { icon: 'map',    label: 'The map outlives the design', text: 'The audit still guides what gets consolidated next.' },
+          { icon: 'layers', label: 'Foundations first', text: 'The grid and components could ship now and carry the bigger changes later.' },
         ],
       },
       { id: 'facelift', title: 'Overview',
@@ -9374,6 +9375,8 @@ function ParallaxSection({ s, isSub }) {
 /* ─── Project page - one section (handles every section variant) ─── */
 /* Line icons for card lists (listStyle: 'cards') - stroke follows currentColor */
 const CARD_ICONS = {
+  /* folded map - the audit that keeps guiding */
+  map: <><path d="M3.5 6.5 9 4l6 2.5L20.5 4v13.5L15 20l-6-2.5-5.5 2.5V6.5z" /><path d="M9 4v13.5M15 6.5V20" /></>,
   /* plain panel - simple by default */
   simple: <><rect x="4" y="4" width="16" height="16" rx="3" /><path d="M8 10h8M8 14h5" /></>,
   /* drop of colour - a brand applied on top */
