@@ -2283,11 +2283,16 @@ footer a:hover { color: var(--accent); }
 /* all layers share one grid cell; the open one fades and settles in over the old */
 .proj-concepts-media { display: grid; }
 /* concept screens and prototype videos sit slightly inset, centred on a dark frame */
-.proj-concepts-media .proj-side-gallery-frame img,
 .proj-proto-slot video {
   box-sizing: border-box; padding: 5%;
   background: #36343C; border-color: transparent;
 }
+/* concept screens: the frame holds the image and its caption */
+.proj-concepts-media .proj-side-gallery-frame {
+  padding: 5%; background: #36343C; border-radius: var(--m3-r-md, 12px);
+}
+html[data-layout="m3"] .proj-concepts-media .proj-side-gallery-frame img { border-color: transparent; border-radius: 4px; }
+html[data-layout="m3"] .proj-concepts-media .proj-side-gallery-frame .proj-caption { color: #D4D2D9; }
 .proj-concepts-layer {
   grid-area: 1 / 1; opacity: 0; visibility: hidden; transform: scale(.985);
   transition: opacity .55s ease, transform .55s cubic-bezier(.2, 0, 0, 1), visibility 0s linear .55s;
@@ -3553,11 +3558,21 @@ html[data-layout="m3"] .proj-meta .k {           /* Label Medium */
   margin-bottom: 4px;
 }
 html[data-layout="m3"] .proj-meta .v { font-size: 14px; line-height: 20px; letter-spacing: .25px; }
+/* text + gallery split or concepts accordion framed as a full-width card,
+   like the page title (splitCard: true) */
+html[data-layout="m3"] .proj-split.is-card,
+html[data-layout="m3"] .proj-concepts.is-card {
+  padding: 24px; background: var(--surface); border-radius: var(--m3-r-lg);
+}
 @media (min-width: 600px) {
-  html[data-layout="m3"] .proj-hero-inner { padding: 40px; }
+  html[data-layout="m3"] .proj-hero-inner,
+  html[data-layout="m3"] .proj-split.is-card,
+  html[data-layout="m3"] .proj-concepts.is-card { padding: 40px; }
 }
 @media (min-width: 840px) {
-  html[data-layout="m3"] .proj-hero-inner { padding: 56px; }
+  html[data-layout="m3"] .proj-hero-inner,
+  html[data-layout="m3"] .proj-split.is-card,
+  html[data-layout="m3"] .proj-concepts.is-card { padding: 56px; }
   html[data-layout="m3"] .proj-hero-inner > :first-child { grid-column: span 8; }
   html[data-layout="m3"] .proj-hero-inner > .proj-meta   { grid-column: span 4; }
   html[data-layout="m3"] .proj-hero-title { font-size: 45px; line-height: 52px; }
@@ -5162,6 +5177,7 @@ const PROJECTS = [
         ],
         /* One accordion item per concept, in screen order; the open item's
            screens show beside the list, as a gallery when there are several. */
+        splitCard: true,
         concepts: [
           { label: 'Concept 1 - Side panel',
             body: ['Every filter lives in a collapsible side panel beside the results, grouped by type. Collapsed to a rail, it hands the table back its full width.'],
@@ -5222,6 +5238,7 @@ const PROJECTS = [
         ],
         /* one screen at a time, beside the text */
         sideBySide: true,
+        splitCard: true,
         sideGallery: [
           { src: 'advanced-search/concept-a-01-empty.png?v=3',                  caption: 'Search prominent, search settings open in the panel' },
           { src: 'advanced-search/concept-a-02-search-applied.png?v=3',          caption: 'Keyword searched - results beside search settings' },
@@ -5246,6 +5263,7 @@ const PROJECTS = [
         ],
         /* one screen at a time, beside the text */
         sideBySide: true,
+        splitCard: true,
         sideGallery: [
           { src: 'advanced-search/concept-b-01-empty.png?v=3',            caption: 'Search de-emphasized, saved filter sets in view' },
           { src: 'advanced-search/concept-b-02-add-filter.png?v=3',       caption: 'Adding a filter from the condition bar' },
@@ -8938,13 +8956,13 @@ function ProjectMediaRows({ rows, idBase = 'mr' }) {
 /* Concept accordion - the open concept's screens on one side, the list of
    concepts on the other. Exactly one concept is open at a time; one with
    several screens gets a gallery, one with a single screen a plain figure. */
-function ProjectConcepts({ concepts, idBase = 'concepts' }) {
+function ProjectConcepts({ concepts, idBase = 'concepts', card = false }) {
   const [open, setOpen] = useState(0);
   if (!concepts || !concepts.length) return null;
   /* Every concept's screens stay mounted in one stacked cell and crossfade,
      so a switch never flashes an empty frame while the next image loads. */
   return (
-    <div className="proj-concepts">
+    <div className={`proj-concepts ${card ? 'is-card' : ''}`}>
       <div className="proj-concepts-media">
         {concepts.map((c, i) => {
           const items = c.items || [];
@@ -9534,7 +9552,7 @@ function ProjectSection({ s }) {
               </figure>
             </div>
           ) : s.sideGallery ? (
-            <div className={`proj-split ${s.sideBySide ? 'is-cols' : ''}`}>
+            <div className={`proj-split ${s.sideBySide ? 'is-cols' : ''} ${s.splitCard ? 'is-card' : ''}`}>
               <div className="proj-split-text">
                 {s.body?.map((para, i) => <p key={`b${i}`}>{para}</p>)}
                 <SectionList s={s} />
@@ -9592,7 +9610,7 @@ function ProjectSection({ s }) {
           {s.media && !s.mediaSplit && <ProjectMedia items={s.media} />}
           {s.marquee && <ProjectMarquee items={s.marquee} />}
           {s.mediaRows && <ProjectMediaRows rows={s.mediaRows} idBase={s.id} />}
-          {s.concepts && <ProjectConcepts concepts={s.concepts} idBase={s.id} />}
+          {s.concepts && <ProjectConcepts concepts={s.concepts} idBase={s.id} card={s.splitCard} />}
           {s.compare && <ProjectCompare data={s.compare} />}
           {s.subsections?.map((sub, i) => (
             <div key={sub.id || i}
