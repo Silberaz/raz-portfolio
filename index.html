@@ -3717,11 +3717,16 @@ html[data-layout="m3"] .proj-card-text {         /* Body Medium */
 @container pane (min-width: 600px) {
   html[data-layout="m3"] .proj-cards,
   html[data-layout="m3"] .proj-cards.is-2x2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  /* every row matches the tallest, so wrapped rows line up */
+  html[data-layout="m3"] .proj-cards { grid-auto-rows: 1fr; }
   html[data-layout="m3"] .proj-card { padding: 24px; }
 }
 @container pane (min-width: 840px) {
   html[data-layout="m3"] .proj-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
+/* list cards (cardsLayout: 'list') - one full-width card per row at every width */
+html[data-layout="m3"] .proj-cards.is-list { grid-template-columns: minmax(0, 1fr); grid-auto-rows: auto; }
+html[data-layout="m3"] .proj-pane .proj-cards.is-list .proj-card-text { max-width: none; margin: 0; }
 /* Flow (listStyle: 'flow') - the same cards, numbered and joined by arrows:
    stacked with down arrows, then one row with right arrows once it fits */
 .proj-flow {
@@ -5110,12 +5115,14 @@ const PROJECTS = [
         body: [
           'A few guidelines set the bar for whatever the filtering tool became:',
         ],
+        listStyle: 'cards',
+        cardsLayout: 'list',
         list: [
-          { label: 'Build on the Spark foundation -', text: 'a modular, accessible system, not one-off styles.' },
-          { label: 'Keep AND/OR logic explicit -', text: 'every combination visible to the user, never inferred.' },
-          { label: 'Scale to dozens of filter types -', text: 'without crowding the page.' },
-          { label: 'Design for keyboard and screen readers first -', text: 'treat WCAG compliance as the baseline, not a pass at the end.' },
-          { label: 'Optimise for time-to-filter -', text: 'raise search success rates, and measure against usage analytics.' },
+          { label: 'Build on the Spark foundation', text: 'A modular, accessible system, not one-off styles.' },
+          { label: 'Keep AND/OR logic explicit', text: 'Every combination visible to the user, never inferred.' },
+          { label: 'Scale to dozens of filter types', text: 'Without crowding the page.' },
+          { label: 'Design for keyboard and screen readers first', text: 'Treat WCAG compliance as the baseline, not a pass at the end.' },
+          { label: 'Optimise for time-to-filter', text: 'Raise search success rates, and measure against usage analytics.' },
         ],
         /* The legacy filtering areas stage 2 targeted, spotlit on the live screens. */
         mediaRows: [
@@ -9397,7 +9404,7 @@ function SectionList({ s }) {
   if (!s.list) return null;
   if (s.listStyle === 'cards') {
     return (
-      <ul className={`proj-cards ${s.list.length === 4 ? 'is-2x2' : ''}`}>
+      <ul className={`proj-cards ${s.cardsLayout === 'list' ? 'is-list' : s.list.length === 4 ? 'is-2x2' : ''}`}>
         {s.list.map((it, i) => (
           <li key={i} className="proj-card">
             {it.icon && <span className="proj-card-icon"><CardIcon name={it.icon} /></span>}
