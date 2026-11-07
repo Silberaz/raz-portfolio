@@ -3561,18 +3561,21 @@ html[data-layout="m3"] .proj-meta .v { font-size: 14px; line-height: 20px; lette
 /* text + gallery splits and concepts accordions are framed as full-width
    cards, like the page title */
 html[data-layout="m3"] .proj-split.is-card,
-html[data-layout="m3"] .proj-concepts.is-card {
+html[data-layout="m3"] .proj-concepts.is-card,
+html[data-layout="m3"] .proj-tabs-card.is-card {
   padding: 24px; background: var(--surface); border-radius: var(--m3-r-lg);
 }
 @media (min-width: 600px) {
   html[data-layout="m3"] .proj-hero-inner,
   html[data-layout="m3"] .proj-split.is-card,
-  html[data-layout="m3"] .proj-concepts.is-card { padding: 40px; }
+  html[data-layout="m3"] .proj-concepts.is-card,
+  html[data-layout="m3"] .proj-tabs-card.is-card { padding: 40px; }
 }
 @media (min-width: 840px) {
   html[data-layout="m3"] .proj-hero-inner,
   html[data-layout="m3"] .proj-split.is-card,
-  html[data-layout="m3"] .proj-concepts.is-card { padding: 56px; }
+  html[data-layout="m3"] .proj-concepts.is-card,
+  html[data-layout="m3"] .proj-tabs-card.is-card { padding: 56px; }
   html[data-layout="m3"] .proj-hero-inner > :first-child { grid-column: span 8; }
   html[data-layout="m3"] .proj-hero-inner > .proj-meta   { grid-column: span 4; }
   html[data-layout="m3"] .proj-hero-title { font-size: 45px; line-height: 52px; }
@@ -3807,6 +3810,15 @@ html[data-layout="m3"] .proj-split.is-cols .proj-split-text { position: static; 
   html[data-layout="m3"] .proj-split.is-cols .proj-split-text { position: sticky; top: calc(var(--m3-bar-h) + 24px); }
 }
 html[data-layout="m3"] .proj-tabs { margin: 0 0 24px; }
+/* segmented control and tab text side by side, top aligned, on the pane's two columns */
+html[data-layout="m3"] .proj-tabs-card { display: grid; gap: 24px; }
+html[data-layout="m3"] .proj-tabs-text .proj-tabs-layer > :last-child { margin-bottom: 0; }
+@container pane (min-width: 840px) {
+  html[data-layout="m3"] .proj-tabs-control {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; align-items: start;
+  }
+  html[data-layout="m3"] .proj-tabs-control .proj-tabs-seg { margin-bottom: 0; }
+}
 html[data-layout="m3"] .proj-tabs-side > p:last-of-type { margin-bottom: 24px; }
 
 /* Segmented buttons: 40 high, Label Large; rounder than before, short of a pill */
@@ -8847,8 +8859,10 @@ function ProjectTabs({ tabs, idBase = 'tabs', title, intro }) {
     <div ref={trackRef} className={`proj-tabs ${pinned ? 'is-pinned' : ''}`}>
       <div ref={stageRef} className="proj-tabs-stage">
         {title}
-        <div className="proj-tabs-side">
-          {intro}
+        {intro && <div className="proj-tabs-side">{intro}</div>}
+        {/* control, tab text and media framed as one full-width card */}
+        <div className="proj-tabs-card is-card">
+          <div className="proj-tabs-control">
           <div className="proj-tabs-seg" role="tablist" onKeyDown={onKey}>
             {tabs.map((tab, i) => (
               <button key={i} type="button" role="tab" id={`${idBase}-tab-${i}`}
@@ -8870,7 +8884,7 @@ function ProjectTabs({ tabs, idBase = 'tabs', title, intro }) {
               </div>
             ))}
           </div>
-        </div>
+          </div>
         <div className="proj-tabs-layers">
           {tabs.map((tab, i) => (
             <figure key={i} className={`proj-tabs-layer proj-tabs-media proj-media-item k-wide ${tab.media?.bare ? 'is-bare' : ''} ${i === active ? 'is-open' : ''}`}
@@ -8887,6 +8901,7 @@ function ProjectTabs({ tabs, idBase = 'tabs', title, intro }) {
               {tab.media?.caption && <figcaption className="proj-caption">{tab.media.caption}</figcaption>}
             </figure>
           ))}
+        </div>
         </div>
       </div>
     </div>
