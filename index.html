@@ -3742,6 +3742,27 @@ html[data-layout="m3"] .proj-card-text {         /* Body Medium */
 @container pane (min-width: 840px) {
   html[data-layout="m3"] .proj-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
+/* thirds split (sideLayout: 'thirds') - text in one column, media across two, outro below */
+@container pane (min-width: 840px) {
+  html[data-layout="m3"] .proj-split.is-thirds { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+  html[data-layout="m3"] .proj-split.is-thirds .proj-split-media { grid-column: span 2; }
+  html[data-layout="m3"] .proj-split.is-thirds .proj-split-outro { grid-column: 1 / -1; }
+}
+html[data-layout="m3"] .proj-split.is-thirds .proj-cards { margin: 0; }
+/* a placeholder fills the card column's height; the caption hangs just below it */
+@container pane (min-width: 840px) {
+  html[data-layout="m3"] .proj-split.is-thirds .proj-split-media:has(> .proj-media-placeholder) {
+    align-self: stretch; position: relative;
+  }
+  html[data-layout="m3"] .proj-split.is-thirds .proj-split-media > .proj-media-placeholder {
+    flex: 1; aspect-ratio: auto; height: 100%;
+  }
+  html[data-layout="m3"] .proj-split.is-thirds .proj-split-media:has(> .proj-media-placeholder) > .proj-caption {
+    position: absolute; top: calc(100% + 8px); left: 0;
+  }
+  html[data-layout="m3"] .proj-split.is-thirds .proj-split-outro { margin-top: 16px; }
+}
+html[data-layout="m3"] .proj-split-outro > p { margin: 0; }
 /* list cards (cardsLayout: 'list') - one full-width card per row at every width */
 html[data-layout="m3"] .proj-cards.is-list { grid-template-columns: minmax(0, 1fr); grid-auto-rows: auto; }
 html[data-layout="m3"] .proj-pane .proj-cards.is-list .proj-card-text { max-width: none; margin: 0; }
@@ -4667,6 +4688,9 @@ const PROJECTS = [
       { id: 'problems', title: 'Problems', atmos: 'orchid',
         group: 'research', groupLabel: 'Research',
         listStyle: 'cards',
+        cardsLayout: 'list',
+        /* cards stacked in the first column, the legacy screen across the other two, outro below */
+        sideLayout: 'thirds',
         list: [
           { icon: 'lock', label: 'No admin control', text: 'Every change - copy, layout, branding - went through a specialized dev team. Admins couldn\'t touch their own site.' },
           { icon: 'mobile', label: 'Not built for mobile', text: 'Most users seek help on their phone; the legacy product wasn\'t responsive, answers were hard to find, and tickets went up.' },
@@ -9547,11 +9571,11 @@ function ProjectSection({ s }) {
                 {s.outro?.map((para, i) => <p key={`o${i}`}>{para}</p>)}
             </StickyHeadSplit>
           ) : s.sideMedia ? (
-            <div className={`proj-split ${s.sideBySide ? 'is-cols' : ''}`}>
+            <div className={`proj-split ${s.sideBySide ? 'is-cols' : ''} ${s.sideLayout === 'thirds' ? 'is-thirds' : ''}`}>
               <div className="proj-split-text">
                 {s.body?.map((para, i) => <p key={`b${i}`}>{para}</p>)}
                 <SectionList s={s} />
-                {s.outro?.map((para, i) => <p key={`o${i}`}>{para}</p>)}
+                {s.sideLayout !== 'thirds' && s.outro?.map((para, i) => <p key={`o${i}`}>{para}</p>)}
               </div>
               <figure className="proj-split-media proj-media-item k-wide">
                 {s.sideMedia.placeholder ? (
@@ -9565,6 +9589,11 @@ function ProjectSection({ s }) {
                 )}
                 {s.sideMedia.caption && <figcaption className="proj-caption">{s.sideMedia.caption}</figcaption>}
               </figure>
+              {s.sideLayout === 'thirds' && s.outro && (
+                <div className="proj-split-outro">
+                  {s.outro.map((para, i) => <p key={`o${i}`}>{para}</p>)}
+                </div>
+              )}
             </div>
           ) : s.sideGallery ? (
             <div className={`proj-split is-card ${s.sideBySide ? 'is-cols' : ''}`}>
