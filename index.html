@@ -2395,7 +2395,7 @@ html[data-layout="m3"] .proj-concepts-media .proj-side-gallery-frame .proj-capti
 .proj-parallax-header {
   position: static;
   z-index: 2;
-  background: var(--atmos, var(--ground)); /* tracks the atmospheric wash */
+  background: var(--ground);
   margin-bottom: 1.5rem;
   padding-bottom: 1.25rem;
   border-bottom: 1px solid var(--rim-soft);
@@ -2408,7 +2408,7 @@ html[data-layout="m3"] .proj-concepts-media .proj-side-gallery-frame .proj-capti
   left: 0; right: 0;
   bottom: 100%;
   height: 5rem;
-  background: var(--atmos, var(--ground));
+  background: var(--ground);
   pointer-events: none;
 }
 .proj-parallax-row {
@@ -3021,28 +3021,6 @@ html[data-layout="m3"] .proj-concepts-media .proj-side-gallery-frame .proj-capti
   text-transform: none; color: var(--muted); margin-bottom: .9rem;
 }
 
-/* ─── Atmospheric background (project pages) ───────────────────────────
-   A single full-bleed layer behind the whole case study whose colour is
-   driven by scroll position (see the atmos effect in <Project>). As the
-   reader moves through contextual regions, the page ground blends from
-   CRT-black (or broadcast-white in light mode) toward a subtle Signal
-   hue and back - a slow, low-saturation shift, never a hard band.
-
-   It sits at z-index 0 inside the positioned .proj-page and every real
-   child is lifted to z-index 1 so content always paints above it. Opaque
-   cards / images (gallery, hero, next-project) keep their own surfaces
-   and simply occlude the atmosphere locally, which is the intended read.
-
-   No CSS transition here: the scroll handler sets the colour every frame,
-   so the blend comes from position interpolation. Theme swaps are eased
-   with a one-shot inline transition from the effect instead. */
-.page.proj-page { position: relative; z-index: 0; }
-.proj-atmos {
-  position: absolute; inset: 0; z-index: 0;
-  pointer-events: none;
-  background-color: var(--ground);
-}
-.page.proj-page > *:not(.proj-atmos) { position: relative; z-index: 1; }
 
 /* ─── Flow viewer ──────────────────────────────────────────────────────
    The Help Center flow explorer. This is the one place in the site where
@@ -4464,12 +4442,11 @@ html[data-layout="m3"] .uf-flow-label-text {
    Admin access reuses the .uf-* diagram classes directly. Widget flows
    come out of the layout engine in tonal mode (.hcf-*), drawn on a
    surface lane like the versioning diagram's lanes. */
-/* lanes and boxes are tones of the live page wash (--atmos, set by the
-   Project scroll effect), not flat --surface: they shift hue with the
-   page and always sit a visible step off it */
+/* lanes and boxes are tones of the page ground, not flat --surface:
+   they always sit a visible step off it */
 .hcf {
   margin: 8px 0 12px;
-  --hcf-ground: var(--atmos, var(--ground));
+  --hcf-ground: var(--ground);
   --hcf-lane: color-mix(in oklab, var(--ink) 6%, var(--hcf-ground));
   --hcf-tone: color-mix(in oklab, var(--ink) 12%, var(--hcf-ground));
 }
@@ -4685,7 +4662,7 @@ const PROJECTS = [
       },
 
       /* ── Research ── */
-      { id: 'problems', title: 'Problems', atmos: 'orchid',
+      { id: 'problems', title: 'Problems',
         group: 'research', groupLabel: 'Research',
         listStyle: 'cards',
         cardsLayout: 'list',
@@ -4729,7 +4706,7 @@ const PROJECTS = [
       },
 
       /* ── Admin panel ── */
-      { id: 'admin-panels', title: 'Admin panel panels', atmos: 'sky',
+      { id: 'admin-panels', title: 'Admin panel panels',
         group: 'admin', groupLabel: 'Admin panel',
         body: [
           'Where the product earns its keep. If admins can\'t run the Help Center themselves, nothing else matters.',
@@ -4768,7 +4745,7 @@ const PROJECTS = [
       },
 
       /* ── End user experience ── */
-      { id: 'enduser', title: 'End-user experience', atmos: 'sage',
+      { id: 'enduser', title: 'End-user experience',
         group: 'enduser', groupLabel: 'End user experience',
         body: [
           'For end users, success is one thing: the right answer, fast. A hero search anchored in the brand\'s own identity, category cards mapped to the most common tasks, and clean article pages with related links and step-by-step guides.',
@@ -9704,7 +9681,6 @@ function Project({ projectId, onBack, onOpen }) {
   const p = window.PROJECTS.find(x => x.id === projectId) || window.PROJECTS[0];
   const next = window.PROJECTS[(window.PROJECTS.indexOf(p) + 1) % window.PROJECTS.length];
   const [activeSection, setActiveSection] = useState(p.sections[0].id);
-  const atmosRef = useRef(null);
   useEffect(() => {
     const onScroll = () => {
       let cur = p.sections[0].id;
@@ -9737,122 +9713,8 @@ function Project({ projectId, onBack, onOpen }) {
     else if (bottom + PAD > rail.scrollTop + rail.clientHeight) rail.scrollTop = bottom + PAD - rail.clientHeight;
   }, [activeSection]);
 
-  /* ─── Atmospheric background ────────────────────────────────────────
-     Blend the page ground toward a subtle Signal hue as the reader
-     passes contextual regions (sections carrying an `atmos` key), then
-     back to ground. The colour is a live interpolation between section
-     centres, so it tracks lazy-loaded layout shifts and reads as one
-     slow, full-width wash rather than discrete bands. Mode-aware: each
-     hue and the ground have a dark + light value; the mix strength is
-     kept low for subtlety (a touch stronger in dark, where near-black
-     hides colour). */
-  useEffect(() => {
-    const el = atmosRef.current;
-    if (!el) return;
-    const GROUND = { dark: [20, 19, 26], light: [244, 242, 236] };
-    const HUE = document.documentElement.dataset.palette === 'testcard' ? {
-      /* the test card's bars (dark) and their AA text tones (light) */
-      tomato: { dark: [209, 69, 67],   light: [189, 46, 48] },
-      sky:    { dark: [176, 219, 222], light: [71, 106, 109] },
-      sage:   { dark: [115, 184, 116], light: [53, 110, 55] },
-      orchid: { dark: [224, 155, 190], light: [132, 72, 104] },
-      indigo: { dark: [88, 103, 180],  light: [51, 62, 129] },
-    } : {
-      tomato: { dark: [242, 84, 80],  light: [196, 32, 24] },
-      sky:    { dark: [91, 196, 232], light: [19, 107, 146] },
-      sage:   { dark: [54, 150, 104],  light: [26, 96, 68] },
-      orchid: { dark: [176, 91, 168], light: [96, 48, 150] },
-      indigo: { dark: [122, 146, 224], light: [42, 63, 133] },
-    };
-    /* the live --ground, so a page palette's ground is what the wash returns to */
-    const groundNow = (mode) => {
-      const hex = getComputedStyle(document.documentElement).getPropertyValue('--ground').trim();
-      const m = /^#([0-9a-f]{6})$/i.exec(hex);
-      return m ? [0, 2, 4].map(i => parseInt(m[1].slice(i, i + 2), 16)) : GROUND[mode];
-    };
-    const STRENGTH = { dark: 0.22, light: 0.14 };
-    const mix = (a, b, t) => a.map((v, i) => Math.round(v + (b[i] - v) * t));
-    const smooth = t => t * t * (3 - 2 * t);
-    let raf = 0, lastMode = null;
-    const compute = () => {
-      raf = 0;
-      const mode = document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';
-      if (lastMode !== null && mode !== lastMode) {
-        // ease the whole wash across a theme swap, then hand back to scroll
-        el.style.transition = 'background-color .6s var(--expo)';
-        clearTimeout(compute._t);
-        compute._t = setTimeout(() => { el.style.transition = 'none'; }, 640);
-      }
-      lastMode = mode;
-      // Each tinted section owns a wash centred on the section: full tint
-      // while the viewport centre is within HOLD of it, then a gradual RAMP
-      // back to ground. Spans scale to viewport height, so a shift lasts a
-      // long, even stretch of scrolling with neutral gaps between zones.
-      const ih = window.innerHeight || 800;
-      const HOLD = ih * 0.85, RAMP = ih * 0.9;
-      const ref = window.scrollY + ih * 0.5;
-
-      // Anchors: explicit `atmos` keys win (per-section, hand-placed - e.g.
-      // Help Center). With none, auto-distribute evenly across the content
-      // span so every project page gets the same even-spread, long-hold
-      // treatment for free, with the zone count scaled to page length.
-      const anchors = [];
-      for (const s of p.sections) {
-        if (!s.atmos || !HUE[s.atmos]) continue;
-        const node = document.getElementById('s-' + s.id);
-        if (!node) continue;
-        const r = node.getBoundingClientRect();
-        anchors.push({ center: r.top + window.scrollY + r.height / 2, hue: HUE[s.atmos][mode] });
-      }
-      if (!anchors.length) {
-        const first = document.getElementById('s-' + p.sections[0].id);
-        const last = document.getElementById('s-' + p.sections[p.sections.length - 1].id);
-        if (first && last) {
-          const fr = first.getBoundingClientRect(), lr = last.getBoundingClientRect();
-          const top = fr.top + window.scrollY;
-          const span = (lr.top + window.scrollY + lr.height) - top;
-          const SEQ = ['orchid', 'sky', 'sage', 'indigo'];
-          const N = Math.max(1, Math.min(4, Math.round(span / (ih * 4.5))));
-          for (let i = 0; i < N; i++) {
-            anchors.push({ center: top + span * (i + 0.5) / N, hue: HUE[SEQ[i % SEQ.length]][mode] });
-          }
-        }
-      }
-
-      let bestW = 0, bestHue = null;
-      for (const a of anchors) {
-        const d = Math.abs(ref - a.center);
-        const w = d <= HOLD ? 1 : d >= HOLD + RAMP ? 0 : 1 - smooth((d - HOLD) / RAMP);
-        if (w > bestW) { bestW = w; bestHue = a.hue; }
-      }
-      const g = groundNow(mode);
-      const color = bestHue ? mix(g, bestHue, STRENGTH[mode] * bestW) : g;
-      const rgb = `rgb(${color.join(',')})`;
-      el.style.backgroundColor = rgb;
-      // Publish the live wash colour so opaque sticky surfaces (parallax
-      // section headers) can match it instead of painting a flat --ground
-      // box on top of the tint.
-      if (el.parentElement) el.parentElement.style.setProperty('--atmos', rgb);
-    };
-    const schedule = () => { if (!raf) raf = requestAnimationFrame(compute); };
-    compute();
-    window.addEventListener('scroll', schedule, { passive: true });
-    window.addEventListener('resize', schedule);
-    const mo = new MutationObserver(schedule);
-    mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
-    const ro = new ResizeObserver(schedule);
-    if (el.parentElement) ro.observe(el.parentElement);
-    return () => {
-      window.removeEventListener('scroll', schedule);
-      window.removeEventListener('resize', schedule);
-      mo.disconnect(); ro.disconnect();
-      if (raf) cancelAnimationFrame(raf);
-      clearTimeout(compute._t);
-    };
-  }, [p]);
   return (
     <div className="page active proj-page">
-      <div className="proj-atmos" aria-hidden="true" ref={atmosRef} />
       <a className="back-btn" href="#" onClick={e => { e.preventDefault(); onBack(); }}>
         <span>←</span> All work
       </a>
