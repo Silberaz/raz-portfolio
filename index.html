@@ -2125,6 +2125,13 @@ footer a:hover { color: var(--accent); }
   content: ''; position: absolute; left: 0; top: .7em;
   width: .6rem; height: 1px; background: var(--accent);
 }
+.proj-list li.has-icon { padding-left: 2rem; }
+.proj-list li.has-icon::before { content: none; }
+.proj-list-icon {
+  position: absolute; left: 0; top: calc((1lh - 1.25rem) / 2);
+  display: flex; color: var(--accent);
+}
+.proj-list-icon svg { width: 1.25rem; height: 1.25rem; }
 .proj-list li strong {
   color: var(--ink); font-weight: var(--fw-regular); margin-right: .35rem;
 }
@@ -4968,11 +4975,11 @@ const PROJECTS = [
       { id: 'goals', title: 'Goals',
         body: ['Five goals, each answering something the map or the users told us:'],
         list: [
-          { label: 'Simplify the interface.', text: 'Reduce cognitive load and improve task completion.' },
-          { label: 'Build for consistency and scale.', text: 'Establish a unified design system the company could grow with.' },
-          { label: 'Optimize for mobile.', text: 'Make the platform genuinely responsive, not just adapted.' },
-          { label: 'Consolidate features.', text: 'Merge redundant features that had drifted apart over years of patches.' },
-          { label: 'Enhance collaboration.', text: 'Add comments, tagging, and simultaneous editing - features long requested by users.' },
+          { icon: 'simple', label: 'Simplify the interface.', text: 'Reduce cognitive load and improve task completion.' },
+          { icon: 'layers', label: 'Build for consistency and scale.', text: 'Establish a unified design system the company could grow with.' },
+          { icon: 'mobile', label: 'Optimize for mobile.', text: 'Make the platform genuinely responsive, not just adapted.' },
+          { icon: 'merge', label: 'Consolidate features.', text: 'Merge redundant features that had drifted apart over years of patches.' },
+          { icon: 'chat', label: 'Enhance collaboration.', text: 'Add comments, tagging, and simultaneous editing - features long requested by users.' },
         ],
         outro: ['These goals were the right destination. They turned out not to be the right route.'],
       },
@@ -9425,6 +9432,8 @@ const CARD_ICONS = {
   contrast: <><circle cx="12" cy="12" r="8.5" /><path d="M12 3.5v17" /><path d="M12 7.5h3.5M12 12h4.5M12 16.5h3.5" /></>,
   /* phone - not built for mobile */
   mobile: <><rect x="7" y="3" width="10" height="18" rx="2" /><path d="M11 17.5h2" /></>,
+  /* two paths joining into one - consolidate features */
+  merge: <><path d="M6 3.5v4.5a4 4 0 0 0 1.2 2.8l3.6 3.6A4 4 0 0 1 12 17.2v3.3" /><path d="M18 3.5v4.5a4 4 0 0 1-1.2 2.8l-2.3 2.3" /></>,
   /* palette - barely customizable */
   palette: <><path d="M12 3.5a8.5 8.5 0 1 0 0 17c1.1 0 1.7-.8 1.7-1.7 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2 0-.9.8-1.7 1.7-1.7h2a4.1 4.1 0 0 0 4.1-4.1c0-3.9-3.8-7.1-8.5-7.1z" /><circle cx="7.8" cy="11.5" r="1" /><circle cx="10.2" cy="7.6" r="1" /><circle cx="14.6" cy="7.8" r="1" /></>,
 };
@@ -9470,7 +9479,10 @@ function SectionList({ s }) {
   return (
     <ul className="proj-list">
       {s.list.map((it, i) => (
-        <li key={i}><strong>{it.label}</strong> {it.text}</li>
+        <li key={i} className={it.icon ? 'has-icon' : undefined}>
+          {it.icon && <span className="proj-list-icon"><CardIcon name={it.icon} /></span>}
+          <strong>{it.label}</strong> {it.text}
+        </li>
       ))}
     </ul>
   );
